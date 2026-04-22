@@ -34,7 +34,7 @@
       padding-bottom: calc(env(safe-area-inset-bottom) + 0px);
       padding-left: env(safe-area-inset-left);
       padding-right: env(safe-area-inset-right);
-      background: #fff;
+      background: linear-gradient(180deg, #fff8f9 0%, #fdedf2 40%, #fad4e2 100%);
       overflow-x: clip;
       position: relative;
     }
@@ -106,6 +106,11 @@
       letter-spacing: 2px;
     }
 
+    .home-title .sparkles-left {
+      color: #c9a84c;
+      font-size: 0.65em;
+    }
+
     .home-subtitle {
       color: #555;
       font-size: clamp(0.82rem, 3.5vw, 0.95rem);
@@ -126,11 +131,11 @@
     .home-pink-bg {
       position: absolute;
       bottom: 0;
-      left: -10%;
-      width: 120%;
-      height: 58%;
-      background: linear-gradient(180deg, #fde8ef 0%, #f9c8d8 100%);
-      border-radius: 50% 50% 0 0 / 30% 30% 0 0;
+      left: -15%;
+      width: 130%;
+      height: 68%;
+      background: linear-gradient(180deg, #f9c8d8 0%, #f4a8c4 100%);
+      border-radius: 50% 50% 0 0 / 35% 35% 0 0;
       z-index: 0;
       pointer-events: none;
     }
@@ -158,7 +163,7 @@
     .prod-found { width: clamp(28px, 8vw, 36px);   height: clamp(100px, 28vw, 130px); }
 
     .home-bottom {
-      background: linear-gradient(180deg, #f9c8d8 0%, #f5a8c0 100%);
+      background: linear-gradient(180deg, #f4a8c4 0%, #ef90b4 100%);
       padding: 20px 28px calc(env(safe-area-inset-bottom) + 28px);
       width: 100%;
       position: relative;
@@ -1255,9 +1260,8 @@
 
     <div class="home-content">
       <h1 class="home-title">
-        Beauty <span class="sparkles">✦ ✦</span><br>
-        Memory<br>
-        Match
+        Beauty <span class="sparkles">✦</span><br>
+        <span class="sparkles-left">✦</span> Memory Match
       </h1>
       <p class="home-subtitle">Match iconic L'Oréal Paris products and win rewards!</p>
     </div>
