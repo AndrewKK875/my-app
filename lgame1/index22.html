@@ -1,0 +1,1941 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#ffffff">
+  <title>L'Oréal Memory</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100dvh;
+      background: #fff5f7;
+    }
+
+    /* ── HOME SCREEN ── */
+    #home-screen {
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: calc(env(safe-area-inset-bottom) + 0px);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+      background: #fff;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .home-topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      position: relative;
+      padding: 20px 20px 0;
+    }
+
+    .loreal-logo {
+      text-align: center;
+    }
+
+    .loreal-logo-main {
+      font-size: 1.25rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: #111;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .loreal-logo-sub {
+      font-size: 0.6rem;
+      letter-spacing: 4px;
+      font-weight: 400;
+      color: #111;
+      text-transform: uppercase;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .home-settings {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      font-size: 1.2rem;
+      color: #555;
+      cursor: pointer;
+    }
+
+    .home-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 28px 0;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .home-title {
+      font-size: clamp(2rem, 9vw, 2.8rem);
+      font-weight: 900;
+      color: #e8527a;
+      line-height: 1.05;
+      margin: 0 0 4px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .home-title .sparkles {
+      color: #c9a84c;
+      font-size: 0.65em;
+      letter-spacing: 2px;
+    }
+
+    .home-subtitle {
+      color: #555;
+      font-size: clamp(0.82rem, 3.5vw, 0.95rem);
+      margin: 10px 0 0;
+      max-width: 240px;
+      line-height: 1.5;
+    }
+
+    .home-products-wrap {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .home-pink-bg {
+      position: absolute;
+      bottom: 0;
+      left: -10%;
+      width: 120%;
+      height: 58%;
+      background: linear-gradient(180deg, #fde8ef 0%, #f9c8d8 100%);
+      border-radius: 50% 50% 0 0 / 30% 30% 0 0;
+      z-index: 0;
+    }
+
+    .home-products {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: clamp(6px, 3vw, 16px);
+      padding-bottom: 0;
+      width: 100%;
+      max-width: 340px;
+    }
+
+    .home-products img {
+      object-fit: contain;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.18));
+    }
+
+    .prod-jar   { width: clamp(56px, 15vw, 72px);  height: clamp(56px, 15vw, 72px); }
+    .prod-lip   { width: clamp(24px, 7vw, 32px);   height: clamp(90px, 24vw, 120px); }
+    .prod-elseve{ width: clamp(52px, 14vw, 68px);  height: clamp(120px, 32vw, 160px); }
+    .prod-found { width: clamp(28px, 8vw, 36px);   height: clamp(100px, 28vw, 130px); }
+
+    .home-bottom {
+      background: linear-gradient(180deg, #f9c8d8 0%, #f5a8c0 100%);
+      padding: 20px 28px calc(env(safe-area-inset-bottom) + 28px);
+      width: 100%;
+    }
+
+    #play-btn {
+      display: block;
+      width: 100%;
+      padding: 17px;
+      background: linear-gradient(135deg, #e8527a, #c94070);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(201,64,112,0.4);
+      touch-action: manipulation;
+      min-height: 54px;
+      -webkit-appearance: none;
+    }
+
+    #play-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* ── DAILY REWARD SCREEN ── */
+    #reward-screen {
+      display: none;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: calc(env(safe-area-inset-bottom) + 0px);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+      background: #fdf0f3;
+    }
+
+    .reward-topbar {
+      padding: 16px 20px 0;
+    }
+
+    .reward-back {
+      background: none;
+      border: none;
+      color: #e8527a;
+      font-size: 1.3rem;
+      cursor: pointer;
+      padding: 4px;
+      touch-action: manipulation;
+      line-height: 1;
+    }
+
+    .reward-inner {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 20px 0;
+    }
+
+    .reward-title {
+      font-size: clamp(1.4rem, 7vw, 1.9rem);
+      font-weight: 900;
+      color: #e8527a;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 0 0 6px;
+    }
+
+    .reward-subtitle {
+      color: #888;
+      font-size: clamp(0.8rem, 3.5vw, 0.9rem);
+      text-align: center;
+      line-height: 1.5;
+      margin: 0 0 20px;
+      max-width: 240px;
+    }
+
+    .reward-grid {
+      width: 100%;
+      max-width: 360px;
+      background: #fff;
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 2px 16px rgba(201,64,112,0.08);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .reward-day {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: #fdf0f3;
+      border-radius: 12px;
+      padding: 12px 8px;
+      border: 2px solid transparent;
+    }
+
+    .reward-day.claimed {
+      background: #f0faf0;
+      border-color: transparent;
+    }
+
+    .reward-day.today {
+      background: #fff;
+      border-color: #e8527a;
+    }
+
+    .reward-day-icon { font-size: clamp(1.3rem, 6vw, 1.6rem); line-height: 1; }
+    .reward-day-label {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #aaa;
+    }
+
+    .reward-day.claimed .reward-day-label { color: #4caf50; }
+    .reward-day.today .reward-day-label { color: #e8527a; }
+
+    .reward-day-7 {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      background: #fdf0f3;
+      border-radius: 12px;
+      padding: 14px 16px;
+      border: 2px solid transparent;
+    }
+
+    .reward-day-7 img {
+      width: clamp(44px, 12vw, 56px);
+      object-fit: contain;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.15));
+    }
+
+    .reward-day-7-text strong {
+      display: block;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 2px;
+    }
+
+    .reward-day-7-text span {
+      font-size: clamp(0.8rem, 3.5vw, 0.9rem);
+      font-weight: 700;
+      color: #333;
+    }
+
+    .reward-bottom {
+      padding: 20px 20px calc(env(safe-area-inset-bottom) + 20px);
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    #claim-btn {
+      display: block;
+      width: 100%;
+      max-width: 360px;
+      padding: 17px;
+      background: linear-gradient(135deg, #e8527a, #c94070);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(201,64,112,0.35);
+      touch-action: manipulation;
+      min-height: 54px;
+      -webkit-appearance: none;
+    }
+
+    #claim-btn:active { transform: scale(0.97); }
+
+    /* ── LEVEL SELECT SCREEN ── */
+    #level-screen {
+      display: none;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: calc(env(safe-area-inset-bottom) + 24px);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+      background: #fdf0f3;
+    }
+
+    .level-topbar {
+      padding: 16px 20px 0;
+    }
+
+    .level-back {
+      background: none;
+      border: none;
+      color: #e8527a;
+      font-size: 1.3rem;
+      cursor: pointer;
+      padding: 4px;
+      touch-action: manipulation;
+      line-height: 1;
+    }
+
+    .level-inner {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 20px 0;
+    }
+
+    .level-title {
+      font-size: clamp(1.4rem, 7vw, 1.9rem);
+      font-weight: 900;
+      color: #e8527a;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 0 0 4px;
+    }
+
+    .level-subtitle {
+      color: #888;
+      font-size: clamp(0.82rem, 3.5vw, 0.95rem);
+      margin: 0 0 22px;
+    }
+
+    .level-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .level-card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 12px rgba(201,64,112,0.08);
+      cursor: pointer;
+      touch-action: manipulation;
+      border: 2px solid transparent;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+
+    .level-card:active { transform: scale(0.98); }
+    .level-card.easy:active   { border-color: #4caf50; }
+    .level-card.medium:active { border-color: #e5950a; }
+    .level-card.hard:active   { border-color: #7c4daa; }
+
+    .level-card-info { display: flex; flex-direction: column; gap: 3px; }
+
+    .level-name {
+      font-size: clamp(1.4rem, 7vw, 1.8rem);
+      font-weight: 900;
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+
+    .level-name.easy   { color: #4caf50; }
+    .level-name.medium { color: #e5950a; }
+    .level-name.hard   { color: #7c4daa; }
+
+    .level-pairs {
+      font-size: clamp(0.82rem, 3.5vw, 0.92rem);
+      font-weight: 800;
+      color: #222;
+    }
+
+    .level-desc {
+      font-size: clamp(0.75rem, 3vw, 0.85rem);
+      color: #aaa;
+    }
+
+    .level-card-img {
+      width: clamp(80px, 22vw, 110px);
+      height: clamp(90px, 26vw, 130px);
+      object-fit: contain;
+      flex-shrink: 0;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+    }
+
+    /* ── LOBBY / HOME SCREEN ── */
+    #lobby-screen {
+      display: none;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding-top: env(safe-area-inset-top);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+      background: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lobby-bg {
+      position: absolute;
+      bottom: 60px;
+      left: -20%;
+      width: 140%;
+      height: 55%;
+      background: radial-gradient(ellipse at 60% 80%, #fde0e9 0%, #fce8ef 40%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .lobby-topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      position: relative;
+      padding: 20px 20px 0;
+      z-index: 1;
+    }
+
+    .lobby-settings {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      font-size: 1.2rem;
+      color: #888;
+      cursor: pointer;
+    }
+
+    .lobby-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 20px 16px;
+      gap: 14px;
+      z-index: 1;
+    }
+
+    .lobby-stats {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 2px 16px rgba(201,64,112,0.10);
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      align-items: center;
+      padding: 18px 24px;
+      gap: 0;
+    }
+
+    .lobby-stat {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .lobby-stat-icon {
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+
+    .lobby-stat-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .lobby-stat-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #aaa;
+    }
+
+    .lobby-stat-value {
+      font-size: clamp(1.3rem, 6vw, 1.6rem);
+      font-weight: 900;
+      color: #222;
+      line-height: 1.1;
+    }
+
+    .lobby-stat-divider {
+      width: 1px;
+      height: 36px;
+      background: #f0e0e6;
+      margin: 0 16px;
+    }
+
+    .lobby-btn-primary {
+      display: block;
+      width: 100%;
+      max-width: 360px;
+      padding: 18px;
+      background: linear-gradient(135deg, #e8527a, #c94070);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 900;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(201,64,112,0.35);
+      touch-action: manipulation;
+      min-height: 56px;
+      -webkit-appearance: none;
+    }
+
+    .lobby-btn-primary:active { transform: scale(0.97); }
+
+    .lobby-btn-secondary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      max-width: 360px;
+      padding: 16px;
+      background: #fff;
+      color: #333;
+      border: 1.5px solid #f0e0e6;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(201,64,112,0.07);
+      touch-action: manipulation;
+      min-height: 52px;
+      -webkit-appearance: none;
+      position: relative;
+    }
+
+    .lobby-btn-secondary:active { background: #fdf0f3; }
+
+    .lobby-btn-secondary .btn-icon {
+      font-size: 1.1rem;
+    }
+
+    .lobby-btn-badge {
+      position: absolute;
+      top: -6px;
+      right: 20px;
+      background: #e8527a;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 800;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lobby-nav {
+      display: flex;
+      border-top: 1px solid #f5e8ec;
+      background: #fff;
+      padding-bottom: env(safe-area-inset-bottom);
+      z-index: 1;
+    }
+
+    .lobby-nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 10px 0;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .lobby-nav-item .nav-icon { font-size: 1.3rem; }
+    .lobby-nav-item .nav-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #bbb;
+    }
+
+    .lobby-nav-item.active .nav-icon { color: #e8527a; }
+    .lobby-nav-item.active .nav-label { color: #e8527a; }
+
+    /* ── ONBOARDING SCREEN ── */
+    #onboarding-screen {
+      display: none;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: calc(env(safe-area-inset-bottom) + 0px);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+      background: #fdf0f3;
+    }
+
+    .ob-inner {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 20px 24px;
+    }
+
+    .ob-title {
+      font-size: clamp(1.5rem, 7vw, 2rem);
+      font-weight: 900;
+      color: #e8527a;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 0 0 28px;
+    }
+
+    .ob-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .ob-step {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      box-shadow: 0 2px 12px rgba(201,64,112,0.08);
+    }
+
+    .ob-step-icon {
+      flex-shrink: 0;
+      width: clamp(64px, 18vw, 80px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ob-cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      width: 100%;
+    }
+
+    .ob-mini-card {
+      aspect-ratio: 1;
+      border-radius: 7px;
+      background: #f2b8c6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(0.9rem, 4vw, 1.1rem);
+    }
+
+    .ob-mini-card.tapped {
+      background: #c9a84c;
+    }
+
+    .ob-pair-imgs {
+      display: flex;
+      gap: 4px;
+      align-items: flex-end;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .ob-pair-imgs img {
+      object-fit: contain;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.15));
+    }
+
+    .ob-pair-imgs .img-lip  { width: clamp(18px, 5vw, 24px); height: clamp(60px, 16vw, 76px); }
+    .ob-pair-imgs .img-jar  { width: clamp(44px, 12vw, 56px); height: clamp(44px, 12vw, 56px); }
+
+    .ob-timer {
+      font-size: clamp(2rem, 9vw, 2.8rem);
+      line-height: 1;
+    }
+
+    .ob-step-text strong {
+      display: block;
+      font-size: clamp(0.9rem, 4vw, 1rem);
+      font-weight: 800;
+      color: #222;
+      margin-bottom: 3px;
+    }
+
+    .ob-step-text span {
+      font-size: clamp(0.78rem, 3.5vw, 0.88rem);
+      color: #888;
+    }
+
+    .ob-bottom {
+      padding: 16px 20px calc(env(safe-area-inset-bottom) + 20px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+    }
+
+    #letsgo-btn {
+      display: block;
+      width: 100%;
+      max-width: 360px;
+      padding: 17px;
+      background: linear-gradient(135deg, #e8527a, #c94070);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(201,64,112,0.35);
+      touch-action: manipulation;
+      min-height: 54px;
+      -webkit-appearance: none;
+    }
+
+    #letsgo-btn:active { transform: scale(0.97); }
+
+    #skip-btn {
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 8px;
+      touch-action: manipulation;
+    }
+
+    #skip-btn:active { opacity: 0.6; }
+
+    /* ── GAME SCREEN ── */
+    #game-screen {
+      display: none;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+      background: #fdf0f3;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .game-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px 10px;
+      position: sticky;
+      top: 0;
+      background: #fdf0f3;
+      z-index: 10;
+    }
+
+    .game-back {
+      background: none;
+      border: none;
+      color: #e8527a;
+      font-size: 1.3rem;
+      cursor: pointer;
+      padding: 4px;
+      touch-action: manipulation;
+    }
+
+    .game-level-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #fff;
+      background: linear-gradient(135deg, #e8527a, #c94070);
+      padding: 4px 14px;
+      border-radius: 50px;
+    }
+
+    #score {
+      display: flex;
+      gap: 16px;
+      font-size: clamp(0.78rem, 3.5vw, 0.88rem);
+      color: #888;
+      font-weight: 600;
+    }
+
+    #score span { color: #e8527a; font-weight: 800; }
+
+    .grid {
+      display: grid;
+      gap: clamp(5px, 1.5vw, 10px);
+      padding: 0 clamp(8px, 3vw, 16px);
+      margin: 0 auto;
+      width: 100%;
+      max-width: min(95vw, 480px);
+      padding-bottom: 16px;
+    }
+
+    .card {
+      position: relative;
+      transition: transform 0.4s ease;
+      transform-style: preserve-3d;
+      cursor: pointer;
+      aspect-ratio: 1;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .card.selected { transform: rotateY(180deg); }
+
+    .front, .back {
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    .front {
+      z-index: 2;
+      background: linear-gradient(135deg, #f2b8c6, #e8527a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(1rem, 5vw, 1.6rem);
+      box-shadow: 0 3px 8px rgba(201,64,112,0.25);
+      color: rgba(255,255,255,0.7);
+    }
+
+    .back {
+      transform: rotateY(180deg);
+      background-color: #fff;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      box-shadow: 0 3px 8px rgba(201,64,112,0.15);
+    }
+
+    .card.match .front { background: linear-gradient(135deg, #a8d5a2, #4caf50); }
+    .card.match .back  { box-shadow: 0 0 0 2px #4caf50, 0 3px 8px rgba(0,0,0,0.1); }
+
+    #win-message {
+      display: none;
+      text-align: center;
+      color: #e8527a;
+      font-size: clamp(1rem, 5vw, 1.4rem);
+      font-weight: 800;
+      margin: 16px 16px 0;
+      animation: pop 0.5s ease;
+    }
+
+    @keyframes pop {
+      0%   { opacity: 0; transform: scale(0.7); }
+      70%  { transform: scale(1.05); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    #restart {
+      display: block;
+      margin: 14px auto 0;
+      padding: 14px 36px;
+      background: linear-gradient(135deg, #e8527a, #c94070);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-size: clamp(0.9rem, 4vw, 1rem);
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      touch-action: manipulation;
+      min-height: 48px;
+      box-shadow: 0 4px 14px rgba(201,64,112,0.3);
+      -webkit-appearance: none;
+    }
+
+    #restart:active { transform: scale(0.97); }
+
+    /* ── AMAZING / WIN SCREEN ── */
+    #win-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      padding: env(safe-area-inset-top) 28px calc(env(safe-area-inset-bottom) + 28px);
+      background: linear-gradient(180deg, #fff8f0 0%, #fde8ef 100%);
+      text-align: center;
+      gap: 0;
+    }
+    .win-trophy { font-size: clamp(4rem, 18vw, 6rem); margin-bottom: 8px; }
+    .win-title  { font-size: clamp(2rem, 10vw, 2.8rem); font-weight: 900; color: #e8527a; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 4px; }
+    .win-sub    { font-size: clamp(0.85rem, 4vw, 1rem); color: #aaa; margin: 0 0 28px; }
+    .win-score-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 20px 40px;
+      box-shadow: 0 4px 20px rgba(201,64,112,0.12);
+      margin-bottom: 32px;
+    }
+    .win-score-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #bbb; margin-bottom: 4px; }
+    .win-score-value { font-size: clamp(2.4rem, 12vw, 3.2rem); font-weight: 900; color: #222; line-height: 1; }
+    .win-stars { color: #c9a84c; font-size: 1.2rem; margin-top: 6px; }
+    .win-btn {
+      width: 100%; max-width: 340px; padding: 17px;
+      background: linear-gradient(135deg, #e8527a, #c94070);
+      color: #fff; border: none; border-radius: 50px;
+      font-size: 1rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; box-shadow: 0 6px 20px rgba(201,64,112,0.35);
+      touch-action: manipulation; min-height: 54px; -webkit-appearance: none;
+      margin-bottom: 16px;
+    }
+    .win-btn:active { transform: scale(0.97); }
+    .win-link { color: #e8527a; font-size: 0.9rem; font-weight: 700; letter-spacing: 1px; background: none; border: none; cursor: pointer; text-decoration: underline; touch-action: manipulation; }
+
+    /* ── TIME'S UP / LOSE SCREEN ── */
+    #lose-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      padding: env(safe-area-inset-top) 28px calc(env(safe-area-inset-bottom) + 28px);
+      background: #fdf0f3;
+      text-align: center;
+      gap: 0;
+    }
+    .lose-icon  { font-size: clamp(3.5rem, 16vw, 5rem); margin-bottom: 8px; }
+    .lose-title { font-size: clamp(1.8rem, 9vw, 2.4rem); font-weight: 900; color: #e8527a; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 6px; }
+    .lose-sub   { font-size: clamp(0.85rem, 4vw, 1rem); color: #aaa; margin: 0 0 32px; }
+    .lose-score-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 16px 36px;
+      box-shadow: 0 4px 20px rgba(201,64,112,0.10);
+      margin-bottom: 32px;
+      display: flex;
+      gap: 32px;
+    }
+    .lose-stat { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .lose-stat-value { font-size: clamp(1.4rem, 7vw, 1.8rem); font-weight: 900; color: #222; }
+    .lose-stat-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #bbb; }
+    .lose-btn {
+      width: 100%; max-width: 340px; padding: 17px;
+      background: linear-gradient(135deg, #e8527a, #c94070);
+      color: #fff; border: none; border-radius: 50px;
+      font-size: 1rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; box-shadow: 0 6px 20px rgba(201,64,112,0.35);
+      touch-action: manipulation; min-height: 54px; -webkit-appearance: none;
+      margin-bottom: 16px;
+    }
+    .lose-btn:active { transform: scale(0.97); }
+    .lose-link { color: #888; font-size: 0.9rem; font-weight: 700; letter-spacing: 1px; background: none; border: none; cursor: pointer; touch-action: manipulation; }
+
+    /* ── PRODUCT CARD SCREEN ── */
+    #product-screen {
+      display: none;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: calc(env(safe-area-inset-bottom) + 0px);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+      background: #fdf0f3;
+    }
+    .product-topbar { display: flex; align-items: center; padding: 16px 20px 0; }
+    .product-back { background: none; border: none; color: #e8527a; font-size: 1.3rem; cursor: pointer; padding: 4px; touch-action: manipulation; }
+    .product-inner { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 16px 20px 0; }
+    .product-img-wrap {
+      width: 100%; max-width: 360px;
+      background: #fff;
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(201,64,112,0.10);
+      margin-bottom: 20px;
+    }
+    .product-img-wrap img { width: clamp(100px, 40vw, 160px); height: clamp(120px, 48vw, 190px); object-fit: contain; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15)); }
+    .product-brand { font-size: 0.68rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #e8527a; margin-bottom: 6px; }
+    .product-name  { font-size: clamp(1.1rem, 5vw, 1.4rem); font-weight: 900; color: #222; margin: 0 0 10px; text-align: center; max-width: 280px; }
+    .product-stars { color: #c9a84c; font-size: 1rem; margin-bottom: 4px; }
+    .product-reviews { font-size: 0.75rem; color: #bbb; margin-bottom: 16px; }
+    .product-price { font-size: clamp(1.4rem, 7vw, 1.8rem); font-weight: 900; color: #222; margin-bottom: 8px; }
+    .product-desc { font-size: clamp(0.8rem, 3.5vw, 0.9rem); color: #888; text-align: center; max-width: 280px; line-height: 1.5; margin-bottom: 0; }
+    .product-bottom { padding: 20px 20px calc(env(safe-area-inset-bottom) + 20px); width: 100%; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .product-buy-btn {
+      width: 100%; max-width: 360px; padding: 17px;
+      background: linear-gradient(135deg, #e8527a, #c94070);
+      color: #fff; border: none; border-radius: 50px;
+      font-size: 1rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; box-shadow: 0 6px 20px rgba(201,64,112,0.35);
+      touch-action: manipulation; min-height: 54px; -webkit-appearance: none;
+    }
+    .product-buy-btn:active { transform: scale(0.97); }
+
+    /* ── GLOW CHALLENGE SCREEN ── */
+    #glow-screen {
+      display: none;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: calc(env(safe-area-inset-bottom) + 0px);
+      background: #fff;
+      overflow: hidden;
+      position: relative;
+    }
+    .glow-topbar { display: flex; align-items: center; padding: 16px 20px 0; }
+    .glow-back { background: none; border: none; color: #e8527a; font-size: 1.3rem; cursor: pointer; padding: 4px; touch-action: manipulation; }
+    .glow-inner { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 12px 24px 0; text-align: center; }
+    .glow-badge { background: linear-gradient(135deg, #e8527a, #c94070); color: #fff; font-size: 0.65rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 4px 14px; border-radius: 50px; margin-bottom: 14px; }
+    .glow-title { font-size: clamp(1.6rem, 8vw, 2.2rem); font-weight: 900; color: #222; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 6px; line-height: 1.1; }
+    .glow-title span { color: #e8527a; }
+    .glow-sub { font-size: clamp(0.82rem, 3.5vw, 0.95rem); color: #888; margin: 0 0 20px; line-height: 1.5; max-width: 260px; }
+    .glow-progress-wrap { width: 100%; max-width: 340px; background: #fff; border-radius: 16px; padding: 14px 18px; box-shadow: 0 2px 14px rgba(201,64,112,0.10); margin-bottom: 20px; }
+    .glow-progress-label { display: flex; justify-content: space-between; font-size: 0.72rem; font-weight: 700; color: #bbb; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+    .glow-progress-bar { height: 8px; background: #f5e0e6; border-radius: 50px; overflow: hidden; }
+    .glow-progress-fill { height: 100%; width: 65%; background: linear-gradient(90deg, #e8527a, #c94070); border-radius: 50px; }
+    .glow-products { display: flex; gap: 12px; justify-content: center; margin-bottom: 16px; }
+    .glow-product-card { background: #fdf0f3; border-radius: 14px; padding: 10px; display: flex; flex-direction: column; align-items: center; gap: 8px; width: clamp(80px, 22vw, 100px); }
+    .glow-product-card img { width: 100%; height: clamp(60px, 16vw, 76px); object-fit: contain; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12)); }
+    .glow-product-name { font-size: 0.62rem; font-weight: 700; color: #888; text-align: center; line-height: 1.3; }
+    .glow-bottom { padding: 16px 20px calc(env(safe-area-inset-bottom) + 20px); display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .glow-play-btn {
+      width: 100%; max-width: 340px; padding: 17px;
+      background: linear-gradient(135deg, #e8527a, #c94070);
+      color: #fff; border: none; border-radius: 50px;
+      font-size: 1rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; box-shadow: 0 6px 20px rgba(201,64,112,0.35);
+      touch-action: manipulation; min-height: 54px; -webkit-appearance: none;
+    }
+    .glow-play-btn:active { transform: scale(0.97); }
+
+    /* ── PROFILE / BEAUTY LOVER SCREEN ── */
+    #profile-screen {
+      display: none;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: calc(env(safe-area-inset-bottom) + 0px);
+      background: #fdf0f3;
+    }
+    .profile-topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 0; }
+    .profile-back { background: none; border: none; color: #e8527a; font-size: 1.3rem; cursor: pointer; padding: 4px; touch-action: manipulation; }
+    .profile-title { font-size: 0.85rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #555; }
+    .profile-inner { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 20px 20px 0; gap: 16px; }
+    .profile-avatar { width: clamp(72px, 20vw, 90px); height: clamp(72px, 20vw, 90px); border-radius: 50%; background: linear-gradient(135deg, #f2b8c6, #e8527a); display: flex; align-items: center; justify-content: center; font-size: clamp(2rem, 9vw, 2.6rem); box-shadow: 0 4px 16px rgba(201,64,112,0.3); }
+    .profile-name { font-size: clamp(1.2rem, 6vw, 1.5rem); font-weight: 900; color: #222; margin: 0; }
+    .profile-badge { background: linear-gradient(135deg, #e8527a, #c94070); color: #fff; font-size: 0.65rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 4px 14px; border-radius: 50px; }
+    .profile-stats { display: flex; gap: 0; background: #fff; border-radius: 20px; box-shadow: 0 2px 14px rgba(201,64,112,0.08); width: 100%; max-width: 360px; overflow: hidden; }
+    .profile-stat { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 16px 8px; gap: 4px; border-right: 1px solid #f5e8ec; }
+    .profile-stat:last-child { border-right: none; }
+    .profile-stat-icon { font-size: 1.2rem; }
+    .profile-stat-value { font-size: clamp(1.1rem, 5vw, 1.3rem); font-weight: 900; color: #222; line-height: 1; }
+    .profile-stat-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #bbb; }
+    .profile-section-title { font-size: 0.7rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #bbb; align-self: flex-start; margin-bottom: -8px; padding-left: 4px; }
+    .profile-badges-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; max-width: 360px; }
+    .profile-achievement { background: #fff; border-radius: 14px; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; box-shadow: 0 2px 10px rgba(201,64,112,0.07); }
+    .profile-achievement-icon { font-size: 1.5rem; }
+    .profile-achievement-label { font-size: 0.58rem; font-weight: 700; color: #aaa; text-align: center; line-height: 1.3; }
+    .profile-achievement.locked { opacity: 0.35; }
+    .profile-nav {
+      display: flex; border-top: 1px solid #f5e8ec; background: #fff;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .profile-nav .lobby-nav-item.active .nav-icon,
+    .profile-nav .lobby-nav-item.active .nav-label { color: #e8527a; }
+
+    /* ── LEADERBOARD SCREEN ── */
+    #leaderboard-screen {
+      display: none;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: calc(env(safe-area-inset-bottom) + 0px);
+      background: #fdf0f3;
+    }
+    .lb-topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 0; }
+    .lb-back { background: none; border: none; color: #e8527a; font-size: 1.3rem; cursor: pointer; padding: 4px; touch-action: manipulation; }
+    .lb-title-text { font-size: 0.85rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #555; }
+    .lb-inner { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 16px 20px 0; gap: 14px; overflow-y: auto; }
+    .lb-podium { display: flex; align-items: flex-end; justify-content: center; gap: 10px; width: 100%; max-width: 340px; margin-bottom: 4px; }
+    .lb-podium-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+    .lb-podium-avatar { border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+    .lb-podium-item:nth-child(1) .lb-podium-avatar { width: 48px; height: 48px; background: #f5c842; box-shadow: 0 3px 10px rgba(245,200,66,0.5); }
+    .lb-podium-item:nth-child(2) .lb-podium-avatar { width: 40px; height: 40px; background: linear-gradient(135deg, #e8527a, #f2b8c6); }
+    .lb-podium-item:nth-child(3) .lb-podium-avatar { width: 36px; height: 36px; background: #d4a574; }
+    .lb-podium-rank { font-size: 1.1rem; }
+    .lb-podium-name { font-size: 0.65rem; font-weight: 700; color: #555; text-align: center; }
+    .lb-podium-score { font-size: 0.7rem; font-weight: 900; color: #e8527a; }
+    .lb-podium-bar { width: 100%; border-radius: 8px 8px 0 0; }
+    .lb-podium-item:nth-child(1) .lb-podium-bar { height: 60px; background: #f5c842; }
+    .lb-podium-item:nth-child(2) .lb-podium-bar { height: 80px; background: linear-gradient(180deg, #e8527a, #c94070); }
+    .lb-podium-item:nth-child(3) .lb-podium-bar { height: 44px; background: #d4a574; }
+    .lb-list { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 360px; }
+    .lb-row { background: #fff; border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 10px rgba(201,64,112,0.07); }
+    .lb-row.me { border: 2px solid #e8527a; }
+    .lb-row-rank { font-size: 0.8rem; font-weight: 900; color: #bbb; width: 20px; text-align: center; }
+    .lb-row-avatar { width: 36px; height: 36px; border-radius: 50%; background: #fde8ef; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .lb-row-name { flex: 1; font-size: 0.9rem; font-weight: 700; color: #222; }
+    .lb-row-score { font-size: 0.9rem; font-weight: 900; color: #e8527a; }
+    .lb-row-level { font-size: 0.65rem; color: #bbb; font-weight: 600; }
+
+    /* ── RESPONSIVE BREAKPOINTS ── */
+
+    /* Tablet: 600px+ */
+    @media (min-width: 600px) {
+      #home-screen, #onboarding-screen, #lobby-screen,
+      #reward-screen, #level-screen, #game-screen {
+        max-width: 620px;
+        margin-left: auto;
+        margin-right: auto;
+        box-shadow: 0 0 60px rgba(201,64,112,0.07);
+      }
+      .grid {
+        max-width: 580px;
+        gap: 10px;
+      }
+      .level-cards { max-width: 520px; }
+      .ob-steps   { max-width: 520px; }
+      .lobby-content { padding-top: 32px; }
+      .reward-grid { max-width: 520px; }
+    }
+
+    /* Desktop: 1024px+ */
+    @media (min-width: 1024px) {
+      #home-screen, #onboarding-screen, #lobby-screen,
+      #reward-screen, #level-screen, #game-screen {
+        max-width: 720px;
+        border-radius: 24px;
+        min-height: min(100dvh, 900px);
+        box-shadow: 0 8px 60px rgba(201,64,112,0.12);
+      }
+      body {
+        min-height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f5e8ec;
+        padding: 24px;
+      }
+      .grid { max-width: 660px; gap: 10px; }
+      .lobby-btn-primary, .lobby-btn-secondary { max-width: 480px; }
+      .level-cards { max-width: 600px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HOME SCREEN -->
+  <div id="home-screen">
+    <div class="home-topbar">
+      <div class="loreal-logo">
+        <div class="loreal-logo-main">L'ORÉAL</div>
+        <span class="loreal-logo-sub">Paris</span>
+      </div>
+      <div class="home-settings">⚙</div>
+    </div>
+
+    <div class="home-content">
+      <h1 class="home-title">
+        Beauty <span class="sparkles">✦ ✦</span><br>
+        Memory<br>
+        Match
+      </h1>
+      <p class="home-subtitle">Match iconic L'Oréal Paris products and win rewards!</p>
+    </div>
+
+    <div class="home-products-wrap">
+      <div class="home-pink-bg"></div>
+      <div class="home-products">
+        <img class="prod-jar" src="https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/consumer-products-division/loreal-paris/2025/2025-loreal-consumer-products-division-brand-revitalift-age-correcting-serum-red-bottle.png" alt="Revitalift">
+        <img class="prod-lip" src="https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/loreal-luxe-division/ysl/2026/2026-luxe-division-brand-ysl-beauty-black-mascara-silver-bottle.png" alt="Lipstick">
+        <img class="prod-elseve" src="https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/professional-products/kerastase/2025/2025-kerastase-loreal-professional-product-exilir-yellow-transparent-bottle-with-black-top.png" alt="Elseve">
+        <img class="prod-found" src="https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/consumer-products-division/loreal-paris/2025/2025-loreal-consumer-products-division-brand-anti-fall-scalp-serum-orange-bottle.png" alt="Foundation">
+      </div>
+    </div>
+
+    <div class="home-bottom">
+      <button id="play-btn">Play Now</button>
+    </div>
+  </div>
+
+  <!-- DAILY REWARD SCREEN -->
+  <div id="reward-screen">
+    <div class="reward-topbar">
+      <button class="reward-back" id="reward-back">←</button>
+    </div>
+
+    <div class="reward-inner">
+      <h2 class="reward-title">Daily Reward</h2>
+      <p class="reward-subtitle">Come back every day<br>and win amazing rewards!</p>
+
+      <div class="reward-grid">
+        <div class="reward-day claimed">
+          <div class="reward-day-icon">✅</div>
+          <div class="reward-day-label">Day 1<br>Claimed</div>
+        </div>
+        <div class="reward-day claimed">
+          <div class="reward-day-icon">✅</div>
+          <div class="reward-day-label">Day 2<br>Claimed</div>
+        </div>
+        <div class="reward-day today">
+          <div class="reward-day-icon">🎁</div>
+          <div class="reward-day-label">Day 3<br>Today</div>
+        </div>
+        <div class="reward-day">
+          <div class="reward-day-icon">💡</div>
+          <div class="reward-day-label">Day 4<br>Hint</div>
+        </div>
+        <div class="reward-day">
+          <div class="reward-day-icon">⏱</div>
+          <div class="reward-day-label">Day 5<br>+30s</div>
+        </div>
+        <div class="reward-day">
+          <div class="reward-day-icon">🔀</div>
+          <div class="reward-day-label">Day 6<br>Shuffle</div>
+        </div>
+
+        <div class="reward-day-7">
+          <img src="https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/consumer-products-division/loreal-paris/2025/2025-loreal-consumer-products-division-brand-revitalift-age-correcting-serum-red-bottle.png" alt="Revitalift">
+          <div class="reward-day-7-text">
+            <strong>Day 7 · Special Reward</strong>
+            <span>Revitalift Night Serum</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reward-bottom">
+      <button id="claim-btn">Claim</button>
+    </div>
+  </div>
+
+  <!-- LEVEL SELECT SCREEN -->
+  <div id="level-screen">
+    <div class="level-topbar">
+      <button class="level-back" id="level-back">←</button>
+    </div>
+
+    <div class="level-inner">
+      <h2 class="level-title">Select Level</h2>
+      <p class="level-subtitle">Choose your challenge</p>
+
+      <div class="level-cards">
+        <div class="level-card easy" data-level="easy">
+          <div class="level-card-info">
+            <span class="level-name easy">EASY</span>
+            <span class="level-pairs">6 PAIRS</span>
+            <span class="level-desc">Perfect for beginners!</span>
+          </div>
+          <img class="level-card-img" src="https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/consumer-products-division/loreal-paris/2025/2025-loreal-consumer-products-division-brand-revitalift-age-correcting-serum-red-bottle.png" alt="Revitalift">
+        </div>
+
+        <div class="level-card medium" data-level="medium">
+          <div class="level-card-info">
+            <span class="level-name medium">MEDIUM</span>
+            <span class="level-pairs">12 PAIRS</span>
+            <span class="level-desc">A little challenge!</span>
+          </div>
+          <img class="level-card-img" src="https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/loreal-luxe-division/ysl/2026/2026-luxe-division-brand-ysl-beauty-black-mascara-silver-bottle.png" alt="Lipstick">
+        </div>
+
+        <div class="level-card hard" data-level="hard">
+          <div class="level-card-info">
+            <span class="level-name hard">HARD</span>
+            <span class="level-pairs">20 PAIRS</span>
+            <span class="level-desc">For true beauty experts!</span>
+          </div>
+          <img class="level-card-img" src="https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/professional-products/kerastase/2025/2025-kerastase-loreal-professional-product-exilir-yellow-transparent-bottle-with-black-top.png" alt="Elseve">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOBBY / HOME SCREEN -->
+  <div id="lobby-screen">
+    <div class="lobby-bg"></div>
+
+    <div class="lobby-topbar">
+      <div class="loreal-logo">
+        <div class="loreal-logo-main">L'ORÉAL</div>
+        <span class="loreal-logo-sub">Paris</span>
+      </div>
+      <div class="lobby-settings">⚙</div>
+    </div>
+
+    <div class="lobby-content">
+      <div class="lobby-stats">
+        <div class="lobby-stat">
+          <div class="lobby-stat-icon">👑</div>
+          <div class="lobby-stat-info">
+            <span class="lobby-stat-label">Best Score</span>
+            <span class="lobby-stat-value" id="best-score">0</span>
+          </div>
+        </div>
+        <div class="lobby-stat-divider"></div>
+        <div class="lobby-stat">
+          <div class="lobby-stat-icon">⭐</div>
+          <div class="lobby-stat-info">
+            <span class="lobby-stat-label">Level</span>
+            <span class="lobby-stat-value" id="player-level">1</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="lobby-btn-primary" id="lobby-play-btn">Play</button>
+
+      <button class="lobby-btn-secondary" id="daily-challenge-btn">
+        <span class="btn-icon">📅</span> Daily Challenge
+      </button>
+
+      <button class="lobby-btn-secondary" id="glow-challenge-btn">
+        <span class="btn-icon">✨</span> Glow Challenge
+        <span class="lobby-btn-badge">2</span>
+      </button>
+    </div>
+
+    <nav class="lobby-nav">
+      <div class="lobby-nav-item active" data-nav="lobby-screen">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Home</span>
+      </div>
+      <div class="lobby-nav-item" data-nav="profile-screen">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Profile</span>
+      </div>
+      <div class="lobby-nav-item" data-nav="leaderboard-screen">
+        <span class="nav-icon">🏅</span>
+        <span class="nav-label">Ranks</span>
+      </div>
+    </nav>
+  </div>
+
+  <!-- ONBOARDING SCREEN -->
+  <div id="onboarding-screen">
+    <div class="ob-inner">
+      <h2 class="ob-title">How to Play</h2>
+      <div class="ob-steps">
+
+        <div class="ob-step">
+          <div class="ob-step-icon">
+            <div class="ob-cards-grid">
+              <div class="ob-mini-card">✦</div>
+              <div class="ob-mini-card">✦</div>
+              <div class="ob-mini-card">✦</div>
+              <div class="ob-mini-card tapped">👆</div>
+            </div>
+          </div>
+          <div class="ob-step-text">
+            <strong>Tap cards</strong>
+            <span>to reveal products</span>
+          </div>
+        </div>
+
+        <div class="ob-step">
+          <div class="ob-step-icon">
+            <div class="ob-pair-imgs">
+              <img class="img-lip" src="https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/loreal-luxe-division/ysl/2026/2026-luxe-division-brand-ysl-beauty-black-mascara-silver-bottle.png" alt="">
+              <img class="img-jar" src="https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/consumer-products-division/loreal-paris/2025/2025-loreal-consumer-products-division-brand-revitalift-age-correcting-serum-red-bottle.png" alt="">
+            </div>
+          </div>
+          <div class="ob-step-text">
+            <strong>Find pairs</strong>
+            <span>to match them</span>
+          </div>
+        </div>
+
+        <div class="ob-step">
+          <div class="ob-step-icon">
+            <div class="ob-timer">⏱</div>
+          </div>
+          <div class="ob-step-text">
+            <strong>Complete before</strong>
+            <span>time runs out!</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="ob-bottom">
+      <button id="letsgo-btn">Let's Go!</button>
+      <button id="skip-btn">Skip</button>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="game-screen">
+    <div class="game-topbar">
+      <button class="game-back" id="game-back">←</button>
+      <span class="game-level-badge" id="game-level-label">Easy</span>
+      <div id="score">
+        <span>Попыток: <span id="count">0</span></span>
+        <span>Пар: <span id="matches">0</span>/<span id="total-pairs">6</span></span>
+      </div>
+    </div>
+    <div id="game" class="grid"></div>
+    <div id="win-message">🎉 Все пары найдены!</div>
+    <button id="restart">Завершить</button>
+  </div>
+
+  <!-- AMAZING / WIN SCREEN -->
+  <div id="win-screen">
+    <div class="win-trophy">🏆</div>
+    <h2 class="win-title">Amazing!</h2>
+    <p class="win-sub">No pairs left! You matched them all!</p>
+    <div class="win-score-card">
+      <div class="win-score-label">Your Score</div>
+      <div class="win-score-value" id="win-score-display">0</div>
+      <div class="win-stars" id="win-stars">★★★</div>
+    </div>
+    <button class="win-btn" id="win-next-btn">Next Level</button>
+    <button class="win-link" id="win-products-btn">View Products</button>
+  </div>
+
+  <!-- TIME'S UP / LOSE SCREEN -->
+  <div id="lose-screen">
+    <div class="lose-icon">⏱</div>
+    <h2 class="lose-title">Time's Up!</h2>
+    <p class="lose-sub">Don't give up — you're almost there!</p>
+    <div class="lose-score-card">
+      <div class="lose-stat">
+        <div class="lose-stat-value" id="lose-pairs-val">0</div>
+        <div class="lose-stat-label">Pairs Found</div>
+      </div>
+      <div class="lose-stat">
+        <div class="lose-stat-value" id="lose-tries-val">0</div>
+        <div class="lose-stat-label">Attempts</div>
+      </div>
+    </div>
+    <button class="lose-btn" id="lose-try-btn">Try Again</button>
+    <button class="lose-link" id="lose-exit-btn">Exit to Home</button>
+  </div>
+
+  <!-- PRODUCT CARD SCREEN -->
+  <div id="product-screen">
+    <div class="product-topbar">
+      <button class="product-back" id="product-back">←</button>
+    </div>
+    <div class="product-inner">
+      <div class="product-img-wrap">
+        <img src="https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/consumer-products-division/loreal-paris/2025/2025-loreal-consumer-products-division-brand-revitalift-age-correcting-serum-red-bottle.png" alt="Revitalift">
+      </div>
+      <div class="product-brand">L'Oréal Paris</div>
+      <h2 class="product-name">Revitalift Laser Pure Retinol Serum</h2>
+      <div class="product-stars">★★★★★</div>
+      <div class="product-reviews">4.8 · 2,341 reviews</div>
+      <div class="product-price">¥ 1,280</div>
+      <p class="product-desc">Powerful anti-aging serum with pure retinol. Visibly reduces wrinkles in 4 weeks.</p>
+    </div>
+    <div class="product-bottom">
+      <button class="product-buy-btn">Buy Now</button>
+    </div>
+  </div>
+
+  <!-- GLOW CHALLENGE SCREEN -->
+  <div id="glow-screen">
+    <div class="glow-topbar">
+      <button class="glow-back" id="glow-back">←</button>
+    </div>
+    <div class="glow-inner">
+      <div class="glow-badge">Limited Event</div>
+      <h2 class="glow-title">Glow<br><span>Challenge</span></h2>
+      <p class="glow-sub">Match all Revitalift products to unlock an exclusive discount!</p>
+      <div class="glow-progress-wrap">
+        <div class="glow-progress-label">
+          <span>Progress</span>
+          <span>6 / 9 matched</span>
+        </div>
+        <div class="glow-progress-bar">
+          <div class="glow-progress-fill"></div>
+        </div>
+      </div>
+      <div class="glow-products">
+        <div class="glow-product-card">
+          <img src="https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/consumer-products-division/loreal-paris/2025/2025-loreal-consumer-products-division-brand-revitalift-age-correcting-serum-red-bottle.png" alt="">
+          <div class="glow-product-name">Revitalift Serum</div>
+        </div>
+        <div class="glow-product-card">
+          <img src="https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/dermatological-beauty/vichy/2025/2025-vichy-luxe-brand-bonding-serum-collagen-specialist-red-bottle.png" alt="">
+          <div class="glow-product-name">Vichy Collagen</div>
+        </div>
+        <div class="glow-product-card">
+          <img src="https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/professional-products/kerastase/2025/2025-kerastase-loreal-professional-product-exilir-yellow-transparent-bottle-with-black-top.png" alt="">
+          <div class="glow-product-name">Kérastase Elixir</div>
+        </div>
+      </div>
+    </div>
+    <div class="glow-bottom">
+      <button class="glow-play-btn" id="glow-play-btn">Play Now</button>
+    </div>
+  </div>
+
+  <!-- PROFILE / BEAUTY LOVER SCREEN -->
+  <div id="profile-screen">
+    <div class="profile-topbar">
+      <button class="profile-back" id="profile-back">←</button>
+      <span class="profile-title">Profile</span>
+      <span style="width:28px"></span>
+    </div>
+    <div class="profile-inner">
+      <div class="profile-avatar">💄</div>
+      <h2 class="profile-name" id="profile-name">Beauty Lover</h2>
+      <div class="profile-badge" id="profile-badge">Level 1</div>
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <div class="profile-stat-icon">👑</div>
+          <div class="profile-stat-value" id="profile-score">0</div>
+          <div class="profile-stat-label">Best Score</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-icon">⭐</div>
+          <div class="profile-stat-value" id="profile-level">1</div>
+          <div class="profile-stat-label">Level</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-icon">🏅</div>
+          <div class="profile-stat-value" id="profile-wins">0</div>
+          <div class="profile-stat-label">Wins</div>
+        </div>
+      </div>
+      <div class="profile-section-title">Achievements</div>
+      <div class="profile-badges-grid">
+        <div class="profile-achievement">
+          <div class="profile-achievement-icon">🌸</div>
+          <div class="profile-achievement-label">First Match</div>
+        </div>
+        <div class="profile-achievement">
+          <div class="profile-achievement-icon">💅</div>
+          <div class="profile-achievement-label">Beauty Fan</div>
+        </div>
+        <div class="profile-achievement locked">
+          <div class="profile-achievement-icon">💎</div>
+          <div class="profile-achievement-label">Diamond</div>
+        </div>
+        <div class="profile-achievement locked">
+          <div class="profile-achievement-icon">🔥</div>
+          <div class="profile-achievement-label">On Fire</div>
+        </div>
+        <div class="profile-achievement locked">
+          <div class="profile-achievement-icon">🏆</div>
+          <div class="profile-achievement-label">Champion</div>
+        </div>
+        <div class="profile-achievement locked">
+          <div class="profile-achievement-icon">✨</div>
+          <div class="profile-achievement-label">Glow Up</div>
+        </div>
+        <div class="profile-achievement locked">
+          <div class="profile-achievement-icon">👑</div>
+          <div class="profile-achievement-label">Queen</div>
+        </div>
+        <div class="profile-achievement locked">
+          <div class="profile-achievement-icon">🌟</div>
+          <div class="profile-achievement-label">Legend</div>
+        </div>
+      </div>
+    </div>
+    <nav class="profile-nav lobby-nav">
+      <div class="lobby-nav-item" data-nav="lobby-screen">
+        <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
+      </div>
+      <div class="lobby-nav-item active">
+        <span class="nav-icon">👤</span><span class="nav-label">Profile</span>
+      </div>
+      <div class="lobby-nav-item" data-nav="leaderboard-screen">
+        <span class="nav-icon">🏅</span><span class="nav-label">Ranks</span>
+      </div>
+    </nav>
+  </div>
+
+  <!-- LEADERBOARD SCREEN -->
+  <div id="leaderboard-screen">
+    <div class="lb-topbar">
+      <button class="lb-back" id="lb-back">←</button>
+      <span class="lb-title-text">Leaderboard</span>
+      <span style="width:28px"></span>
+    </div>
+    <div class="lb-inner">
+      <div class="lb-podium">
+        <div class="lb-podium-item">
+          <div class="lb-podium-rank">🥈</div>
+          <div class="lb-podium-avatar">👩</div>
+          <div class="lb-podium-name">Sophie</div>
+          <div class="lb-podium-score">3,820</div>
+          <div class="lb-podium-bar"></div>
+        </div>
+        <div class="lb-podium-item">
+          <div class="lb-podium-rank">🥇</div>
+          <div class="lb-podium-avatar">👸</div>
+          <div class="lb-podium-name">Emma</div>
+          <div class="lb-podium-score">5,090</div>
+          <div class="lb-podium-bar"></div>
+        </div>
+        <div class="lb-podium-item">
+          <div class="lb-podium-rank">🥉</div>
+          <div class="lb-podium-avatar">💁</div>
+          <div class="lb-podium-name">Mia</div>
+          <div class="lb-podium-score">2,450</div>
+          <div class="lb-podium-bar"></div>
+        </div>
+      </div>
+
+      <div class="lb-list">
+        <div class="lb-row"><div class="lb-row-rank">4</div><div class="lb-row-avatar">👩‍🦰</div><div class="lb-row-name">Olivia<div class="lb-row-level">Level 8</div></div><div class="lb-row-score">2,180</div></div>
+        <div class="lb-row"><div class="lb-row-rank">5</div><div class="lb-row-avatar">👩‍🦱</div><div class="lb-row-name">Chloe<div class="lb-row-level">Level 7</div></div><div class="lb-row-score">1,940</div></div>
+        <div class="lb-row"><div class="lb-row-rank">6</div><div class="lb-row-avatar">🧑‍🦳</div><div class="lb-row-name">Isabelle<div class="lb-row-level">Level 6</div></div><div class="lb-row-score">1,720</div></div>
+        <div class="lb-row me"><div class="lb-row-rank">7</div><div class="lb-row-avatar">💄</div><div class="lb-row-name">You<div class="lb-row-level" id="lb-your-level">Level 1</div></div><div class="lb-row-score" id="lb-your-score">0</div></div>
+        <div class="lb-row"><div class="lb-row-rank">8</div><div class="lb-row-avatar">👩‍🦲</div><div class="lb-row-name">Luna<div class="lb-row-level">Level 4</div></div><div class="lb-row-score">980</div></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BASE = 'https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/';
+    const allCards = [
+      { name: 'revitalift',     img: BASE + 'consumer-products-division/loreal-paris/2025/2025-loreal-consumer-products-division-brand-revitalift-age-correcting-serum-red-bottle.png',                             label: 'Revitalift Serum' },
+      { name: 'anti-fall',      img: BASE + 'consumer-products-division/loreal-paris/2025/2025-loreal-consumer-products-division-brand-anti-fall-scalp-serum-orange-bottle.png',                                    label: 'Anti-Fall Serum' },
+      { name: 'ysl-perfume',    img: BASE + 'loreal-luxe-division/ysl/2026/2026-luxe-division-brand-ysl-beauty-perfume-bottle-with-berries-and-flowers.png',                                                        label: 'YSL Perfume' },
+      { name: 'ysl-mascara',    img: BASE + 'loreal-luxe-division/ysl/2026/2026-luxe-division-brand-ysl-beauty-black-mascara-silver-bottle.png',                                                                    label: 'YSL Mascara' },
+      { name: 'kerastase',      img: BASE + 'professional-products/kerastase/2025/2025-kerastase-loreal-professional-product-exilir-yellow-transparent-bottle-with-black-top.png',                                  label: 'Kérastase Elixir' },
+      { name: 'redken',         img: BASE + 'professional-products/redken/2025/2025-loreal-professional-products-division-all-in-one-multibenefit-treatment-grey-bottle.png',                                       label: 'Redken Treatment' },
+      { name: 'ysl-shots',      img: BASE + 'loreal-luxe-division/ysl/2026/2026-luxe-division-brand-ysl-beauty-pure-shots-transparent-bottle.png',                                                                  label: 'YSL Pure Shots' },
+      { name: 'lrp-mela',       img: BASE + 'dermatological-beauty/la-roche-posay/2025/2025-la-roche-posay-brand-mela-b3-serum-purple.jpg',                                                                         label: 'La Roche-Posay Mela B3' },
+      { name: 'vichy-serum',    img: BASE + 'dermatological-beauty/vichy/2025/2025-vichy-luxe-brand-bonding-serum-collagen-specialist-red-bottle.png',                                                               label: 'Vichy Collagen Serum' },
+      { name: 'maybelline-lip', img: BASE + 'consumer-products-division/maybelline-new-york/2025/2025-consumer-product-division-brand-maybelline-super-stay-matte-ink-lipstick-range.png',                         label: 'Maybelline Lip' },
+      { name: 'kerastase-prem', img: BASE + 'professional-products/kerastase/2025/2025-kerastase-loreal-professional-product-premiere-collection-white-and-red-bottle.png',                                         label: 'Kérastase Première' },
+      { name: 'biotherm-glow',  img: BASE + 'loreal-luxe-division/biotherm/2025/2025-biotherm-luxe-aquasource-vitamin-glow-gel-orange.jpg',                                                                         label: 'Biotherm Glow Gel' },
+      { name: 'redken-pink',    img: BASE + 'professional-products/redken/2025/2025-loreal-professional-products-division-equalizing-conditioning-color-pink-bottle.png',                                           label: 'Redken Color' },
+      { name: 'lrp-baume',      img: BASE + 'dermatological-beauty/la-roche-posay/2025/2025-la-roche-posay-brand-cicaplast-baume-b5-plus-white-tube-baby-sitting.jpg',                                             label: 'Cicaplast Baume B5+' },
+      { name: 'maybelline-con', img: BASE + 'consumer-products-division/maybelline-new-york/2025/2025-consumer-product-division-brand-maybelline-easer-concealer-range.png',                                       label: 'Maybelline Concealer' },
+      { name: 'biotherm-pink',  img: BASE + 'loreal-luxe-division/biotherm/2025/2025-biotherm-luxe-brand-intensive-hydra-body-care-cream-collagen-boost-pink-bottle.png',                                           label: 'Biotherm Collagen' },
+      { name: 'biotherm-blue',  img: BASE + 'loreal-luxe-division/biotherm/2025/2025-biotherm-luxe-anti-wrinkle-cream-supreme-face-reshaper-blue.jpg',                                                              label: 'Biotherm Supreme' },
+      { name: 'itc-cream',      img: BASE + 'loreal-luxe-division/it-cosmetics/2025/2025-loreal-luxe-brand-it-cosmetic-anti-aging-armour-cream-beige-bottle-grey-cap.png',                                         label: 'IT Cosmetics Cream' },
+      { name: 'itc-serum',      img: BASE + 'loreal-luxe-division/it-cosmetics/2025/2025-loreal-luxe-brand-it-cosmetic-color-correcting-serum-high-coverage-and-spf50.png',                                        label: 'IT Cosmetics Serum' },
+      { name: 'redken-gloss',   img: BASE + 'professional-products/redken/2025/2025-loreal-professional-products-division-haircare-shampoo-color-gloss-shampoo.png',                                               label: 'Redken Gloss' },
+    ];
+
+    const LEVEL_CONFIG = {
+      easy:   { pairs: 6  },
+      medium: { pairs: 12 },
+      hard:   { pairs: 20 },
+    };
+
+    function getResponsiveCols(level) {
+      const w = window.innerWidth;
+      // desktop 1024+: 4 / 6 / 8 cols
+      if (w >= 1024) return { easy: 4, medium: 6, hard: 8 }[level];
+      // tablet 600–1023: 4 / 6 / 8 cols
+      if (w >= 600)  return { easy: 4, medium: 6, hard: 8 }[level];
+      // large phone 390–599: 3 / 4 / 5 cols
+      if (w >= 390)  return { easy: 3, medium: 4, hard: 5 }[level];
+      // small phone < 390: 3 / 4 / 4 cols (avoid tiny cards on Hard)
+      return               { easy: 3, medium: 4, hard: 4 }[level];
+    }
+
+    let currentLevel = 'easy';
+    let firstGuess = '';
+    let secondGuess = '';
+    let count = 0;
+    let matchCount = 0;
+    let busy = false;
+    const delay = 1000;
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function updateScore() {
+      const cfg = LEVEL_CONFIG[currentLevel];
+      document.getElementById('count').textContent = count;
+      document.getElementById('matches').textContent = matchCount;
+      document.getElementById('total-pairs').textContent = cfg.pairs;
+    }
+
+    function initGame() {
+      const cfg = LEVEL_CONFIG[currentLevel];
+      const cols = getResponsiveCols(currentLevel);
+      const cards = allCards.slice(0, cfg.pairs);
+
+      firstGuess = '';
+      secondGuess = '';
+      count = 0;
+      matchCount = 0;
+      busy = false;
+      document.getElementById('win-message').style.display = 'none';
+      updateScore();
+
+      const game = document.getElementById('game');
+      game.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      game.innerHTML = '';
+
+      shuffle([...cards, ...cards]).forEach(item => {
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.dataset.name = item.name;
+
+        const front = document.createElement('div');
+        front.classList.add('front');
+        front.textContent = '✦';
+
+        const back = document.createElement('div');
+        back.classList.add('back');
+        back.style.backgroundImage = `url('${item.img}')`;
+
+        card.appendChild(front);
+        card.appendChild(back);
+        game.appendChild(card);
+
+        card.addEventListener('click', onCardClick);
+      });
+    }
+
+    function onCardClick(e) {
+      const card = e.currentTarget;
+      if (busy) return;
+      if (card.classList.contains('selected')) return;
+      if (card.classList.contains('match')) return;
+
+      card.classList.add('selected');
+
+      if (!firstGuess) {
+        firstGuess = card;
+        count++;
+        updateScore();
+        return;
+      }
+
+      secondGuess = card;
+      count++;
+      updateScore();
+      busy = true;
+
+      if (firstGuess.dataset.name === secondGuess.dataset.name) {
+        matchCount++;
+        updateScore();
+        setTimeout(() => {
+          firstGuess.classList.add('match');
+          secondGuess.classList.add('match');
+          reset();
+          if (matchCount === LEVEL_CONFIG[currentLevel].pairs) {
+            setTimeout(finishGame, 800);
+          }
+        }, delay);
+      } else {
+        setTimeout(() => {
+          firstGuess.classList.remove('selected');
+          secondGuess.classList.remove('selected');
+          reset();
+        }, delay);
+      }
+    }
+
+    function reset() {
+      firstGuess = '';
+      secondGuess = '';
+      busy = false;
+    }
+
+    const SCREENS = ['home-screen','onboarding-screen','lobby-screen','reward-screen','level-screen','game-screen','win-screen','lose-screen','product-screen','glow-screen','profile-screen','leaderboard-screen'];
+    let totalWins = 0;
+    let bestScore = 0;
+    let playerLevel = 1;
+
+    function showScreen(id) {
+      SCREENS.forEach(s => document.getElementById(s).style.display = 'none');
+      document.getElementById(id).style.display = 'flex';
+    }
+
+    function startGame() {
+      const labels = { easy: 'Easy · 6 пар', medium: 'Medium · 12 пар', hard: 'Hard · 20 пар' };
+      document.getElementById('game-level-label').textContent = labels[currentLevel];
+      showScreen('game-screen');
+      initGame();
+    }
+
+    function finishGame() {
+      const score = Math.max(0, matchCount * 100 - count * 5);
+      if (score > bestScore) {
+        bestScore = score;
+        playerLevel = Math.floor(bestScore / 300) + 1;
+        document.getElementById('best-score').textContent = bestScore.toLocaleString();
+        document.getElementById('player-level').textContent = playerLevel;
+      }
+      totalWins++;
+      // update profile
+      document.getElementById('profile-score').textContent = bestScore.toLocaleString();
+      document.getElementById('profile-level').textContent = playerLevel;
+      document.getElementById('profile-wins').textContent = totalWins;
+      document.getElementById('profile-badge').textContent = 'Level ' + playerLevel;
+      // update leaderboard "You" row
+      document.getElementById('lb-your-score').textContent = bestScore.toLocaleString();
+      document.getElementById('lb-your-level').textContent = 'Level ' + playerLevel;
+      showWin(score);
+    }
+
+    document.getElementById('play-btn').addEventListener('click', () => showScreen('onboarding-screen'));
+    document.getElementById('letsgo-btn').addEventListener('click', () => showScreen('lobby-screen'));
+    document.getElementById('skip-btn').addEventListener('click', () => showScreen('lobby-screen'));
+    document.getElementById('lobby-play-btn').addEventListener('click', () => showScreen('level-screen'));
+    document.getElementById('restart').addEventListener('click', finishGame);
+    document.getElementById('level-back').addEventListener('click', () => showScreen('lobby-screen'));
+    document.querySelectorAll('.level-card').forEach(card => {
+      card.addEventListener('click', () => {
+        currentLevel = card.dataset.level;
+        startGame();
+      });
+    });
+
+    document.getElementById('game-back').addEventListener('click', () => showScreen('level-screen'));
+
+    window.addEventListener('resize', () => {
+      if (document.getElementById('game-screen').style.display === 'flex') {
+        const game = document.getElementById('game');
+        game.style.gridTemplateColumns = `repeat(${getResponsiveCols(currentLevel)}, 1fr)`;
+      }
+    });
+    document.getElementById('glow-challenge-btn').addEventListener('click', () => showScreen('glow-screen'));
+    document.getElementById('daily-challenge-btn').addEventListener('click', () => showScreen('reward-screen'));
+    document.getElementById('reward-back').addEventListener('click', () => showScreen('lobby-screen'));
+    document.getElementById('claim-btn').addEventListener('click', () => showScreen('lobby-screen'));
+    // ── WIN / AMAZING ──
+    function showWin(score) {
+      document.getElementById('win-score-display').textContent = score.toLocaleString();
+      const stars = score >= 800 ? '★★★' : score >= 400 ? '★★☆' : '★☆☆';
+      document.getElementById('win-stars').textContent = stars;
+      showScreen('win-screen');
+    }
+
+    // ── LOSE / TIME'S UP ──
+    function showLose() {
+      document.getElementById('lose-pairs-val').textContent = matchCount;
+      document.getElementById('lose-tries-val').textContent = count;
+      showScreen('lose-screen');
+    }
+
+    document.getElementById('win-next-btn').addEventListener('click', () => showScreen('level-screen'));
+    document.getElementById('win-products-btn').addEventListener('click', () => showScreen('product-screen'));
+    document.getElementById('lose-try-btn').addEventListener('click', startGame);
+    document.getElementById('lose-exit-btn').addEventListener('click', () => showScreen('lobby-screen'));
+    document.getElementById('product-back').addEventListener('click', () => showScreen('win-screen'));
+    document.getElementById('glow-back').addEventListener('click', () => showScreen('lobby-screen'));
+    document.getElementById('glow-play-btn').addEventListener('click', () => { currentLevel = 'medium'; startGame(); });
+    document.getElementById('profile-back').addEventListener('click', () => showScreen('lobby-screen'));
+    document.getElementById('lb-back').addEventListener('click', () => showScreen('lobby-screen'));
+
+    // lobby nav
+    document.querySelectorAll('[data-nav]').forEach(el => {
+      el.addEventListener('click', () => showScreen(el.dataset.nav));
+    });
+
+  </script>
+
+</body>
+</html>
