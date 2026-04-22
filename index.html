@@ -889,23 +889,16 @@
       width: 100%;
       max-width: min(95vw, 480px);
       padding-bottom: 16px;
-      perspective: 1000px;
     }
 
     .card {
       position: relative;
-      transition: transform 0.4s ease;
-      transform-style: preserve-3d;
-      -webkit-transform-style: preserve-3d;
       cursor: pointer;
       aspect-ratio: 1;
       user-select: none;
       -webkit-user-select: none;
-      will-change: transform;
       touch-action: manipulation;
     }
-
-    .card.selected { transform: rotateY(180deg); }
 
     .front, .back {
       position: absolute;
@@ -914,8 +907,7 @@
       bottom: 0;
       left: 0;
       border-radius: 10px;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
+      transition: transform 0.25s ease, opacity 0.25s ease;
     }
 
     .front {
@@ -927,19 +919,40 @@
       font-size: clamp(1rem, 5vw, 1.6rem);
       box-shadow: 0 3px 8px rgba(201,64,112,0.25);
       color: rgba(255,255,255,0.7);
+      transform: scale(1);
+      opacity: 1;
     }
 
     .back {
-      transform: rotateY(180deg);
+      z-index: 1;
       background-color: #fff;
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
       box-shadow: 0 3px 8px rgba(201,64,112,0.15);
+      transform: scale(0.7);
+      opacity: 0;
     }
 
-    .card.match .front { background: linear-gradient(135deg, #a8d5a2, #4caf50); }
-    .card.match .back  { box-shadow: 0 0 0 2px #4caf50, 0 3px 8px rgba(0,0,0,0.1); }
+    .card.selected .front {
+      transform: scale(0.7);
+      opacity: 0;
+      z-index: 1;
+    }
+
+    .card.selected .back {
+      transform: scale(1);
+      opacity: 1;
+      z-index: 2;
+    }
+
+    .card.match .front { opacity: 0; z-index: 1; }
+    .card.match .back  {
+      transform: scale(1);
+      opacity: 1;
+      z-index: 2;
+      box-shadow: 0 0 0 2px #4caf50, 0 3px 8px rgba(0,0,0,0.1);
+    }
 
     #win-message {
       display: none;
