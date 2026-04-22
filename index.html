@@ -899,12 +899,6 @@
       touch-action: manipulation;
     }
 
-    .card::before {
-      content: '';
-      display: block;
-      padding-top: 100%;
-    }
-
     .front, .back {
       position: absolute;
       top: 0;
@@ -1925,6 +1919,10 @@
       document.getElementById('game-level-label').textContent = labels[currentLevel];
       showScreen('game-screen');
       initGame();
+      const gameEl = document.getElementById('game');
+      const cols = getResponsiveCols(currentLevel);
+      const cellW = Math.floor(gameEl.clientWidth / cols);
+      gameEl.style.gridAutoRows = cellW + 'px';
       startTimer(TIMER_CONFIG[currentLevel]);
     }
 
