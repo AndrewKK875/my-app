@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#1a1a2e">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#ffffff">
   <title>L'Oréal Memory</title>
   <style>
     *, *::before, *::after {
@@ -20,16 +20,184 @@
     }
 
     body {
-      background: #1a1a2e;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100dvh;
+      background: #fff5f7;
+    }
+
+    /* ── HOME SCREEN ── */
+    #home-screen {
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: calc(env(safe-area-inset-bottom) + 0px);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+      background: #fff;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .home-topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      position: relative;
+      padding: 20px 20px 0;
+    }
+
+    .loreal-logo {
+      text-align: center;
+    }
+
+    .loreal-logo-main {
+      font-size: 1.25rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: #111;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .loreal-logo-sub {
+      font-size: 0.6rem;
+      letter-spacing: 4px;
+      font-weight: 400;
+      color: #111;
+      text-transform: uppercase;
+      display: block;
+      margin-top: 2px;
+    }
+
+    .home-settings {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      font-size: 1.2rem;
+      color: #555;
+      cursor: pointer;
+    }
+
+    .home-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 28px 0;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .home-title {
+      font-size: clamp(2rem, 9vw, 2.8rem);
+      font-weight: 900;
+      color: #e8527a;
+      line-height: 1.05;
+      margin: 0 0 4px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .home-title .sparkles {
+      color: #c9a84c;
+      font-size: 0.65em;
+      letter-spacing: 2px;
+    }
+
+    .home-subtitle {
+      color: #555;
+      font-size: clamp(0.82rem, 3.5vw, 0.95rem);
+      margin: 10px 0 0;
+      max-width: 240px;
+      line-height: 1.5;
+    }
+
+    .home-products-wrap {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .home-pink-bg {
+      position: absolute;
+      bottom: 0;
+      left: -10%;
+      width: 120%;
+      height: 58%;
+      background: linear-gradient(180deg, #fde8ef 0%, #f9c8d8 100%);
+      border-radius: 50% 50% 0 0 / 30% 30% 0 0;
+      z-index: 0;
+    }
+
+    .home-products {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: clamp(6px, 3vw, 16px);
+      padding-bottom: 0;
+      width: 100%;
+      max-width: 340px;
+    }
+
+    .home-products img {
+      object-fit: contain;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.18));
+    }
+
+    .prod-jar   { width: clamp(56px, 15vw, 72px);  height: clamp(56px, 15vw, 72px); }
+    .prod-lip   { width: clamp(24px, 7vw, 32px);   height: clamp(90px, 24vw, 120px); }
+    .prod-elseve{ width: clamp(52px, 14vw, 68px);  height: clamp(120px, 32vw, 160px); }
+    .prod-found { width: clamp(28px, 8vw, 36px);   height: clamp(100px, 28vw, 130px); }
+
+    .home-bottom {
+      background: linear-gradient(180deg, #f9c8d8 0%, #f5a8c0 100%);
+      padding: 20px 28px calc(env(safe-area-inset-bottom) + 28px);
+      width: 100%;
+    }
+
+    #play-btn {
+      display: block;
+      width: 100%;
+      padding: 17px;
+      background: linear-gradient(135deg, #e8527a, #c94070);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(201,64,112,0.4);
+      touch-action: manipulation;
+      min-height: 54px;
+      -webkit-appearance: none;
+    }
+
+    #play-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* ── GAME SCREEN ── */
+    #game-screen {
+      display: none;
+      flex-direction: column;
+      min-height: 100dvh;
       padding-top: env(safe-area-inset-top);
       padding-bottom: calc(env(safe-area-inset-bottom) + 16px);
       padding-left: env(safe-area-inset-left);
       padding-right: env(safe-area-inset-right);
-      min-height: 100dvh;
+      background: #1a1a2e;
     }
 
-    h1 {
+    #game-screen h1 {
       text-align: center;
       color: #c9a84c;
       font-size: clamp(1.2rem, 5vw, 1.8rem);
@@ -53,7 +221,6 @@
       margin: 0 auto;
     }
 
-    /* 4 columns on wider screens (tablets, landscape) */
     @media (min-width: 540px) {
       .grid {
         grid-template-columns: repeat(4, 1fr);
@@ -149,11 +316,48 @@
 </head>
 <body>
 
-  <h1>L'ORÉAL MEMORY</h1>
-  <div id="score">Попыток: <span id="count">0</span> &nbsp;|&nbsp; Совпадений: <span id="matches">0</span> / 6</div>
-  <div id="game" class="grid"></div>
-  <div id="win-message">🎉 Поздравляем! Все пары найдены!</div>
-  <button id="restart">Начать заново</button>
+  <!-- HOME SCREEN -->
+  <div id="home-screen">
+    <div class="home-topbar">
+      <div class="loreal-logo">
+        <div class="loreal-logo-main">L'ORÉAL</div>
+        <span class="loreal-logo-sub">Paris</span>
+      </div>
+      <div class="home-settings">⚙</div>
+    </div>
+
+    <div class="home-content">
+      <h1 class="home-title">
+        Beauty <span class="sparkles">✦ ✦</span><br>
+        Memory<br>
+        Match
+      </h1>
+      <p class="home-subtitle">Match iconic L'Oréal Paris products and win rewards!</p>
+    </div>
+
+    <div class="home-products-wrap">
+      <div class="home-pink-bg"></div>
+      <div class="home-products">
+        <img class="prod-jar" src="https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/consumer-products-division/loreal-paris/2025/2025-loreal-consumer-products-division-brand-revitalift-age-correcting-serum-red-bottle.png" alt="Revitalift">
+        <img class="prod-lip" src="https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/loreal-luxe-division/ysl/2026/2026-luxe-division-brand-ysl-beauty-black-mascara-silver-bottle.png" alt="Lipstick">
+        <img class="prod-elseve" src="https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/professional-products/kerastase/2025/2025-kerastase-loreal-professional-product-exilir-yellow-transparent-bottle-with-black-top.png" alt="Elseve">
+        <img class="prod-found" src="https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/consumer-products-division/loreal-paris/2025/2025-loreal-consumer-products-division-brand-anti-fall-scalp-serum-orange-bottle.png" alt="Foundation">
+      </div>
+    </div>
+
+    <div class="home-bottom">
+      <button id="play-btn">Play Now</button>
+    </div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="game-screen">
+    <h1>L'ORÉAL MEMORY</h1>
+    <div id="score">Попыток: <span id="count">0</span> &nbsp;|&nbsp; Совпадений: <span id="matches">0</span> / 6</div>
+    <div id="game" class="grid"></div>
+    <div id="win-message">🎉 Поздравляем! Все пары найдены!</div>
+    <button id="restart">Начать заново</button>
+  </div>
 
   <script>
     const cardsArray = [
@@ -289,9 +493,17 @@
       busy = false;
     }
 
-    document.getElementById('restart').addEventListener('click', initGame);
+    document.getElementById('play-btn').addEventListener('click', () => {
+      document.getElementById('home-screen').style.display = 'none';
+      const gs = document.getElementById('game-screen');
+      gs.style.display = 'flex';
+      initGame();
+    });
 
-    initGame();
+    document.getElementById('restart').addEventListener('click', () => {
+      document.getElementById('game-screen').style.display = 'none';
+      document.getElementById('home-screen').style.display = 'flex';
+    });
   </script>
 
 </body>
