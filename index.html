@@ -35,7 +35,7 @@
       padding-left: env(safe-area-inset-left);
       padding-right: env(safe-area-inset-right);
       background: #fff;
-      overflow: hidden;
+      overflow-x: clip;
       position: relative;
     }
 
@@ -132,6 +132,7 @@
       background: linear-gradient(180deg, #fde8ef 0%, #f9c8d8 100%);
       border-radius: 50% 50% 0 0 / 30% 30% 0 0;
       z-index: 0;
+      pointer-events: none;
     }
 
     .home-products {
@@ -160,6 +161,8 @@
       background: linear-gradient(180deg, #f9c8d8 0%, #f5a8c0 100%);
       padding: 20px 28px calc(env(safe-area-inset-bottom) + 28px);
       width: 100%;
+      position: relative;
+      z-index: 5;
     }
 
     #play-btn {
@@ -466,7 +469,7 @@
       padding-right: env(safe-area-inset-right);
       background: #fff;
       position: relative;
-      overflow: hidden;
+      overflow-x: clip;
     }
 
     .lobby-bg {
@@ -869,6 +872,10 @@
 
     #score span { color: #e8527a; font-weight: 800; }
 
+    #timer-display { transition: color 0.3s; }
+    #timer-display.danger { color: #e8527a; animation: pulse 0.6s infinite alternate; }
+    @keyframes pulse { from { opacity: 1; } to { opacity: 0.5; } }
+
     .grid {
       display: grid;
       gap: clamp(5px, 1.5vw, 10px);
@@ -877,23 +884,30 @@
       width: 100%;
       max-width: min(95vw, 480px);
       padding-bottom: 16px;
+      perspective: 1000px;
     }
 
     .card {
       position: relative;
       transition: transform 0.4s ease;
       transform-style: preserve-3d;
+      -webkit-transform-style: preserve-3d;
       cursor: pointer;
       aspect-ratio: 1;
       user-select: none;
       -webkit-user-select: none;
+      will-change: transform;
+      touch-action: manipulation;
     }
 
     .card.selected { transform: rotateY(180deg); }
 
     .front, .back {
       position: absolute;
-      inset: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
       border-radius: 10px;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
@@ -1473,7 +1487,7 @@
       <button class="game-back" id="game-back">←</button>
       <span class="game-level-badge" id="game-level-label">Easy</span>
       <div id="score">
-        <span>Попыток: <span id="count">0</span></span>
+        <span id="timer-display">⏱ <span id="game-timer">60</span>s</span>
         <span>Пар: <span id="matches">0</span>/<span id="total-pairs">6</span></span>
       </div>
     </div>
@@ -1724,6 +1738,37 @@
       hard:   { pairs: 20 },
     };
 
+    const TIMER_CONFIG = { easy: 60, medium: 90, hard: 120 };
+    let timerInterval = null;
+    let timeLeft = 60;
+
+    function startTimer(seconds) {
+      clearInterval(timerInterval);
+      timeLeft = seconds;
+      renderTimer();
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        renderTimer();
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          showLose();
+        }
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+    }
+
+    function renderTimer() {
+      const el = document.getElementById('game-timer');
+      const wrap = document.getElementById('timer-display');
+      if (!el) return;
+      el.textContent = timeLeft;
+      if (timeLeft <= 10) wrap.classList.add('danger');
+      else wrap.classList.remove('danger');
+    }
+
     function getResponsiveCols(level) {
       const w = window.innerWidth;
       // desktop 1024+: 4 / 6 / 8 cols
@@ -1858,9 +1903,11 @@
       document.getElementById('game-level-label').textContent = labels[currentLevel];
       showScreen('game-screen');
       initGame();
+      startTimer(TIMER_CONFIG[currentLevel]);
     }
 
     function finishGame() {
+      stopTimer();
       const score = Math.max(0, matchCount * 100 - count * 5);
       if (score > bestScore) {
         bestScore = score;
@@ -1893,7 +1940,7 @@
       });
     });
 
-    document.getElementById('game-back').addEventListener('click', () => showScreen('level-screen'));
+    document.getElementById('game-back').addEventListener('click', () => { stopTimer(); showScreen('level-screen'); });
 
     window.addEventListener('resize', () => {
       if (document.getElementById('game-screen').style.display === 'flex') {
