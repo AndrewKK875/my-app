@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>L'Oréal Memory</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #1a1a2e;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: calc(env(safe-area-inset-bottom) + 16px);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+      min-height: 100dvh;
+    }
+
+    h1 {
+      text-align: center;
+      color: #c9a84c;
+      font-size: clamp(1.2rem, 5vw, 1.8rem);
+      letter-spacing: 3px;
+      margin: 16px 0 6px;
+    }
+
+    #score {
+      text-align: center;
+      color: rgba(255,255,255,0.8);
+      font-size: clamp(0.8rem, 3.5vw, 1rem);
+      margin-bottom: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(6px, 2vw, 12px);
+      padding: 0 clamp(8px, 3vw, 20px);
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* 4 columns on wider screens (tablets, landscape) */
+    @media (min-width: 540px) {
+      .grid {
+        grid-template-columns: repeat(4, 1fr);
+        max-width: 680px;
+      }
+    }
+
+    .card {
+      position: relative;
+      transition: transform 0.4s ease;
+      transform-style: preserve-3d;
+      cursor: pointer;
+      aspect-ratio: 1;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .card.selected {
+      transform: rotateY(180deg);
+    }
+
+    .front, .back {
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    .front {
+      z-index: 2;
+      background: #c9a84c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(1.4rem, 6vw, 2rem);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+    }
+
+    .back {
+      transform: rotateY(180deg);
+      background-color: #fff;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+    }
+
+    .card.match .front {
+      background: #1e4a0e;
+    }
+
+    .card.match .back {
+      box-shadow: 0 0 0 3px #4caf50, 0 3px 10px rgba(0,0,0,0.5);
+    }
+
+    #win-message {
+      display: none;
+      text-align: center;
+      color: #c9a84c;
+      font-size: clamp(1.1rem, 5vw, 1.5rem);
+      margin: 20px 16px 0;
+      animation: pop 0.5s ease;
+    }
+
+    @keyframes pop {
+      0%   { opacity: 0; transform: scale(0.7); }
+      70%  { transform: scale(1.05); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    #restart {
+      display: block;
+      margin: 16px auto 0;
+      padding: 14px 36px;
+      background: #c9a84c;
+      color: #1a1a2e;
+      border: none;
+      border-radius: 50px;
+      font-size: clamp(0.9rem, 4vw, 1rem);
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 1px;
+      touch-action: manipulation;
+      min-height: 48px;
+    }
+
+    #restart:active {
+      background: #e8c96a;
+      transform: scale(0.97);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>L'ORÉAL MEMORY</h1>
+  <div id="score">Попыток: <span id="count">0</span> &nbsp;|&nbsp; Совпадений: <span id="matches">0</span> / 6</div>
+  <div id="game" class="grid"></div>
+  <div id="win-message">🎉 Поздравляем! Все пары найдены!</div>
+  <button id="restart">Начать заново</button>
+
+  <script>
+    const cardsArray = [
+      {
+        name: 'revitalift-serum',
+        img: 'https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/consumer-products-division/loreal-paris/2025/2025-loreal-consumer-products-division-brand-revitalift-age-correcting-serum-red-bottle.png',
+        label: 'Revitalift Serum'
+      },
+      {
+        name: 'anti-fall-serum',
+        img: 'https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/consumer-products-division/loreal-paris/2025/2025-loreal-consumer-products-division-brand-anti-fall-scalp-serum-orange-bottle.png',
+        label: 'Anti-Fall Serum'
+      },
+      {
+        name: 'ysl-perfume',
+        img: 'https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/loreal-luxe-division/ysl/2026/2026-luxe-division-brand-ysl-beauty-perfume-bottle-with-berries-and-flowers.png',
+        label: 'YSL Perfume'
+      },
+      {
+        name: 'ysl-mascara',
+        img: 'https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/loreal-luxe-division/ysl/2026/2026-luxe-division-brand-ysl-beauty-black-mascara-silver-bottle.png',
+        label: 'YSL Mascara'
+      },
+      {
+        name: 'kerastase-elixir',
+        img: 'https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/professional-products/kerastase/2025/2025-kerastase-loreal-professional-product-exilir-yellow-transparent-bottle-with-black-top.png',
+        label: 'Kérastase Elixir'
+      },
+      {
+        name: 'redken-treatment',
+        img: 'https://www.loreal.com/-/media/project/loreal/brand-sites/corp/master/lcorp/4-brands/professional-products/redken/2025/2025-loreal-professional-products-division-all-in-one-multibenefit-treatment-grey-bottle.png',
+        label: 'Redken All-in-One'
+      },
+    ];
+
+    let firstGuess = '';
+    let secondGuess = '';
+    let count = 0;
+    let matchCount = 0;
+    let busy = false;
+    const delay = 1000;
+
+    function shuffle(array) {
+      const arr = [...array, ...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function updateScore() {
+      document.getElementById('count').textContent = count;
+      document.getElementById('matches').textContent = matchCount;
+    }
+
+    function initGame() {
+      firstGuess = '';
+      secondGuess = '';
+      count = 0;
+      matchCount = 0;
+      busy = false;
+      document.getElementById('win-message').style.display = 'none';
+      updateScore();
+
+      const game = document.getElementById('game');
+      game.innerHTML = '';
+
+      shuffle(cardsArray).forEach(item => {
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.dataset.name = item.name;
+
+        const front = document.createElement('div');
+        front.classList.add('front');
+        front.textContent = '✦';
+
+        const back = document.createElement('div');
+        back.classList.add('back');
+        back.style.backgroundImage = `url('${item.img}')`;
+
+        card.appendChild(front);
+        card.appendChild(back);
+        game.appendChild(card);
+
+        card.addEventListener('click', onCardClick);
+      });
+    }
+
+    function onCardClick(e) {
+      const card = e.currentTarget;
+      if (busy) return;
+      if (card.classList.contains('selected')) return;
+      if (card.classList.contains('match')) return;
+
+      card.classList.add('selected');
+
+      if (!firstGuess) {
+        firstGuess = card;
+        count++;
+        updateScore();
+        return;
+      }
+
+      secondGuess = card;
+      count++;
+      updateScore();
+      busy = true;
+
+      if (firstGuess.dataset.name === secondGuess.dataset.name) {
+        matchCount++;
+        updateScore();
+        setTimeout(() => {
+          firstGuess.classList.add('match');
+          secondGuess.classList.add('match');
+          reset();
+          if (matchCount === cardsArray.length) {
+            document.getElementById('win-message').style.display = 'block';
+          }
+        }, delay);
+      } else {
+        setTimeout(() => {
+          firstGuess.classList.remove('selected');
+          secondGuess.classList.remove('selected');
+          reset();
+        }, delay);
+      }
+    }
+
+    function reset() {
+      firstGuess = '';
+      secondGuess = '';
+      busy = false;
+    }
+
+    document.getElementById('restart').addEventListener('click', initGame);
+
+    initGame();
+  </script>
+
+</body>
+</html>
