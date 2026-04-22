@@ -894,10 +894,15 @@
     .card {
       position: relative;
       cursor: pointer;
-      aspect-ratio: 1;
       user-select: none;
       -webkit-user-select: none;
       touch-action: manipulation;
+    }
+
+    .card::before {
+      content: '';
+      display: block;
+      padding-top: 100%;
     }
 
     .front, .back {
