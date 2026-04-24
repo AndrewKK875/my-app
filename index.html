@@ -1,26 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Crossy Road Clone</title>
+  <!-- viewport-fit=cover: safe area for iPhone notch / Dynamic Island -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#87CEEB">
+  <title>HAVAL Tank 300 — Road Rush</title>
   <link rel="stylesheet" href="style.css">
   <script type="importmap">
   {
     "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
     }
   }
   </script>
 </head>
 <body>
 
+  <!-- Portrait hint for landscape phones -->
+  <div id="rotate-hint">↩ Поверни телефон<br>вертикально</div>
+
   <div id="score-display">0</div>
 
   <div id="gameover">
     <h1>GAME OVER</h1>
-    <p>Score: <span id="final-score">0</span></p>
-    <button onclick="location.reload()">PLAY AGAIN</button>
+    <p>Счёт: <span id="final-score">0</span></p>
+    <button onclick="location.reload()">ЕЩЁ РАЗ</button>
   </div>
 
   <div id="controls">
