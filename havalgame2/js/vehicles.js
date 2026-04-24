@@ -1,7 +1,52 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { TILE_SIZE, BOARD_HALF } from './player.js';
 
 export const vehicles = [];
+
+// GLB модель SUV — загружается один раз, клонируется для каждого экземпляра
+let suvTemplate = null;
+
+export function preloadSUV() {
+  return new Promise((resolve) => {
+    const loader = new GLTFLoader();
+    loader.load(
+      'assets/models/player.glb',
+      (gltf) => {
+        const model = gltf.scene;
+        // Нормализуем размер под ширину ~1.1 юнита (как обычная машина)
+        const box = new THREE.Box3().setFromObject(model);
+        const size = box.getSize(new THREE.Vector3());
+        const scale = 1.1 / Math.max(size.x, size.z);
+        model.scale.setScalar(scale);
+        // Центрируем по X/Z, ставим на y=0
+        box.setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        model.position.x -= center.x;
+        model.position.z -= center.z;
+        model.position.y -= box.min.y;
+        model.traverse(c => {
+          if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; }
+        });
+        suvTemplate = model;
+        resolve();
+      },
+      null,
+      (err) => {
+        console.warn('SUV GLB load error:', err);
+        resolve(); // продолжаем без GLB
+      }
+    );
+  });
+}
+
+function createSUV() {
+  if (!suvTemplate) return createCar(0xC4A862); // fallback
+  const clone = suvTemplate.clone(true);
+  // Разворачиваем по направлению движения (модель смотрит +X по умолчанию)
+  clone.rotation.y = -Math.PI / 2;
+  return clone;
+}
 
 // Tank 300 реальные цвета: пустынный бежевый, оливковый, серебро, чёрный, белый, хаки
 const CAR_COLORS   = [0xC4A862, 0x4A5E3A, 0xA8A8A8, 0x222222, 0xF0EFE8, 0x7B8B6F];
@@ -37,7 +82,7 @@ export function spawnVehiclesForRow(scene, rowData) {
 
     const mesh = type === 'truck' ? createTruck(color)
                : type === 'bus'   ? createBus(color)
-               : createCar(color);
+               : createSUV();
     mesh.position.set(x, 0, z);
     if (rowData.direction === -1) mesh.rotation.y = Math.PI;
     scene.add(mesh);

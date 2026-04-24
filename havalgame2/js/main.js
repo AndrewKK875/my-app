@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { createPlayer, updatePlayer } from './player.js';
 import { createInitialRows, generateRowsAhead, isTreeAt } from './world.js';
-import { updateVehicles } from './vehicles.js';
+import { updateVehicles, preloadSUV } from './vehicles.js';
 import { checkCollision } from './collision.js';
 import { initControls } from './controls.js';
 
@@ -61,8 +61,11 @@ scene.add(new THREE.HemisphereLight(0x87CEEB, 0x8B7355, 0.8));
 
 // ── Game setup ────────────────────────────────────────────────────────────────
 const player = createPlayer(scene);
-createInitialRows(scene);
 initControls();
+
+// Загружаем GLB SUV, потом генерируем мир
+await preloadSUV();
+createInitialRows(scene);
 
 const scoreEl     = document.getElementById('score-display');
 const gameoverEl  = document.getElementById('gameover');
