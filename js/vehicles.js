@@ -5,24 +5,38 @@ export const vehicles = [];
 
 const CAR_COLORS   = [0xE53935, 0x1E88E5, 0xFDD835, 0x43A047, 0x8E24AA, 0xF06292];
 const TRUCK_COLORS = [0xFB8C00, 0x00ACC1, 0x6D4C41];
+const BUS_COLORS   = [0xFFEB3B, 0xFF7043, 0x26C6DA];
 
 const HALF_WIDTH = (BOARD_HALF + 3) * TILE_SIZE;
 
+const VEHICLE_WIDTHS = { car: 1.0, truck: 1.5, bus: 2.0 };
+
+function pickType() {
+  const r = Math.random();
+  if (r < 0.55) return 'car';
+  if (r < 0.80) return 'truck';
+  return 'bus';
+}
+
+function pickColor(type) {
+  const map = { car: CAR_COLORS, truck: TRUCK_COLORS, bus: BUS_COLORS };
+  const arr = map[type];
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
 export function spawnVehiclesForRow(scene, rowData) {
-  const count = 2 + Math.floor(Math.random() * 3);
-  const isTruck = Math.random() < 0.3;
+  const type    = pickType();
+  const count   = type === 'bus' ? 1 + Math.floor(Math.random() * 2) : 2 + Math.floor(Math.random() * 3);
   const spacing = (HALF_WIDTH * 2) / count;
 
   for (let i = 0; i < count; i++) {
-    const type  = isTruck ? 'truck' : 'car';
-    const color = type === 'truck'
-      ? TRUCK_COLORS[Math.floor(Math.random() * TRUCK_COLORS.length)]
-      : CAR_COLORS[Math.floor(Math.random() * CAR_COLORS.length)];
-
+    const color = pickColor(type);
     const x = -HALF_WIDTH + i * spacing + Math.random() * spacing * 0.6;
-    const z = -rowData.index * 1.5; // ROW_SIZE = 1.5
+    const z = -rowData.index * 1.5;
 
-    const mesh = type === 'truck' ? createTruck(color) : createCar(color);
+    const mesh = type === 'truck' ? createTruck(color)
+               : type === 'bus'   ? createBus(color)
+               : createCar(color);
     mesh.position.set(x, 0, z);
     if (rowData.direction === -1) mesh.rotation.y = Math.PI;
     scene.add(mesh);
@@ -32,7 +46,7 @@ export function spawnVehiclesForRow(scene, rowData) {
       row:       rowData.index,
       speed:     rowData.speed,
       direction: rowData.direction,
-      width:     type === 'truck' ? 1.5 : 1.0,
+      width:     VEHICLE_WIDTHS[type],
     });
   }
 }
@@ -101,6 +115,37 @@ function createTruck(color) {
   group.add(cabin);
 
   addWheels(group, 1.4, 0.55);
+  return group;
+}
+
+function createBus(color) {
+  const group = new THREE.Group();
+
+  const body = new THREE.Mesh(
+    new THREE.BoxGeometry(1.9, 0.55, 0.6),
+    new THREE.MeshLambertMaterial({ color })
+  );
+  body.position.y = 0.32;
+  body.castShadow = true;
+  group.add(body);
+
+  // Windows strip
+  const windows = new THREE.Mesh(
+    new THREE.BoxGeometry(1.5, 0.2, 0.61),
+    new THREE.MeshLambertMaterial({ color: 0xADD8E6 })
+  );
+  windows.position.set(0, 0.52, 0);
+  group.add(windows);
+
+  // Front face
+  const front = new THREE.Mesh(
+    new THREE.BoxGeometry(0.05, 0.55, 0.6),
+    new THREE.MeshLambertMaterial({ color: 0x333333 })
+  );
+  front.position.set(0.97, 0.32, 0);
+  group.add(front);
+
+  addWheels(group, 1.8, 0.6);
   return group;
 }
 
