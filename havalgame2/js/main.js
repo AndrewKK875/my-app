@@ -11,12 +11,23 @@ const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
 const renderer = new THREE.WebGLRenderer({
   antialias: !isMobile,
   powerPreference: 'high-performance',
+  // Needed for correct alpha on iOS Safari
+  alpha: false,
 });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
+
+// WebGL context loss — critical for iOS Safari background/foreground
+renderer.domElement.addEventListener('webglcontextlost', (e) => {
+  e.preventDefault();
+  running = false;
+}, false);
+renderer.domElement.addEventListener('webglcontextrestored', () => {
+  running = true;
+}, false);
 
 // ── Scene ─────────────────────────────────────────────────────────────────────
 const scene = new THREE.Scene();
@@ -97,11 +108,26 @@ function animate(time) {
 
 animate(0);
 
-// ── Resize ────────────────────────────────────────────────────────────────────
+// ── Resize (debounced — prevents iOS resize storm) ────────────────────────────
+let resizeTimer;
 window.addEventListener('resize', () => {
-  aspect = window.innerWidth / window.innerHeight;
-  camera.left  = -viewSize * aspect;
-  camera.right =  viewSize * aspect;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    aspect = window.innerWidth / window.innerHeight;
+    camera.left  = -viewSize * aspect;
+    camera.right =  viewSize * aspect;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  }, 100);
+});
+
+// Orientation change — iOS fires resize late
+window.addEventListener('orientationchange', () => {
+  setTimeout(() => {
+    aspect = window.innerWidth / window.innerHeight;
+    camera.left  = -viewSize * aspect;
+    camera.right =  viewSize * aspect;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  }, 300);
 });
