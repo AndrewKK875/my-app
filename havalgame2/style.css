@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  touch-action: none;
+  font-family: 'Press Start 2P', monospace;
+  background: #87CEEB;
+}
+
+canvas {
+  display: block;
+  touch-action: none;
+}
+
+#score-display {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 28px;
+  text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
+  z-index: 10;
+  pointer-events: none;
+}
+
+#gameover {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  gap: 24px;
+}
+
+#gameover h1 {
+  color: white;
+  font-size: 28px;
+  text-shadow: 3px 3px 0 #c00;
+}
+
+#gameover p {
+  color: white;
+  font-size: 14px;
+}
+
+#gameover button {
+  background: #ff6b00;
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+#gameover button:hover { background: #ff8c00; }
+
+#controls {
+  position: fixed;
+  bottom: 30px;
+  right: 20px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.controls-row {
+  display: flex;
+  gap: 6px;
+}
+
+.btn {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  border-radius: 10px;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  backdrop-filter: blur(6px);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active {
+  background: rgba(255, 255, 255, 0.5);
+  transform: scale(0.92);
+}
