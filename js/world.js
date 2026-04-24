@@ -74,6 +74,29 @@ function pickType(index) {
   return 'grass';
 }
 
+// Создаём текстуру с надписью один раз и переиспользуем
+const havalTexture = createHavalTexture();
+
+function createHavalTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width  = 512;
+  canvas.height = 128;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, 512, 128);
+  ctx.font = 'bold 72px Arial Black, Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  // Обводка
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+  ctx.lineWidth = 6;
+  ctx.strokeText('HAVAL', 256, 64);
+  // Заливка
+  ctx.fillStyle = 'rgba(255,255,255,0.22)';
+  ctx.fillText('HAVAL', 256, 64);
+  const tex = new THREE.CanvasTexture(canvas);
+  return tex;
+}
+
 function addRoadMarkings(group, z, width) {
   const mat = new THREE.MeshLambertMaterial({ color: 0xCCCCCC });
   const dashCount = Math.floor(width / 1.2);
@@ -83,6 +106,15 @@ function addRoadMarkings(group, z, width) {
     dash.position.set(-width / 2 + i * 1.2 + 0.6, 0.01, z);
     group.add(dash);
   }
+
+  // Надпись HAVAL на дороге
+  const plane = new THREE.Mesh(
+    new THREE.PlaneGeometry(width * 0.7, ROW_SIZE * 0.7),
+    new THREE.MeshBasicMaterial({ map: havalTexture, transparent: true, depthWrite: false })
+  );
+  plane.rotation.x = -Math.PI / 2;
+  plane.position.set(0, 0.02, z);
+  group.add(plane);
 }
 
 function placeForestTrees(group, rowData, z) {
