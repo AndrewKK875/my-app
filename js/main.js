@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { createPlayer, updatePlayer } from './player.js';
-import { createInitialRows, generateRowsAhead, isTreeAt } from './world.js';
+import { createInitialRows, generateRowsAhead, isTreeAt, updateLogs } from './world.js';
 import { updateVehicles, preloadSUV } from './vehicles.js';
 import { checkCollision } from './collision.js';
 import { initControls } from './controls.js';
@@ -31,8 +31,8 @@ renderer.domElement.addEventListener('webglcontextrestored', () => {
 
 // ── Scene ─────────────────────────────────────────────────────────────────────
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x87CEEB);
-scene.fog = new THREE.Fog(0x87CEEB, 28, 52);
+scene.background = new THREE.Color(0x6EC6F5);
+scene.fog = new THREE.Fog(0x6EC6F5, 28, 52);
 
 // ── Camera (orthographic) ─────────────────────────────────────────────────────
 const viewSize = 8;
@@ -86,6 +86,7 @@ function animate(time) {
 
   updatePlayer(player, delta, isTreeAt);
   updateVehicles(delta);
+  updateLogs(delta);
   generateRowsAhead(scene, player.row);
 
   if (player.row > score) {

@@ -8,9 +8,14 @@ const ROWS_AHEAD  = 25;
 const ROWS_BEHIND = 6;
 let nextRowIndex  = 0;
 
-const GRASS_COLORS = [0x5DBB63, 0x4CAF50];
-const ROAD_COLOR   = 0x607060;
+// Яркая voxel палитра как в референсе
+const GRASS_COLORS = [0x5BBF4E, 0x4CAF50];
+const ROAD_COLOR   = 0x546E7A;
+const WATER_COLORS = [0x1E88E5, 0x1976D2];
 const ROW_WIDTH    = (BOARD_HALF * 2 + 3) * TILE_SIZE;
+
+// Брёвна на воде
+export const logs = [];
 
 export function createInitialRows(scene) {
   for (let i = 0; i < ROWS_AHEAD; i++) addRow(scene, i);
@@ -23,7 +28,8 @@ export function generateRowsAhead(scene, currentRow) {
   }
   while (rows.length > 0 && rows[0].index < currentRow - ROWS_BEHIND) {
     const old = rows.shift();
-    if (old.type === 'road') removeVehiclesForRow(scene, old.index);
+    if (old.type === 'road')  removeVehiclesForRow(scene, old.index);
+    if (old.type === 'water') removeLogsForRow(scene, old.index);
     scene.remove(old.group);
   }
 }
@@ -33,15 +39,35 @@ export function isTreeAt(rowIndex, tile) {
   return row ? row.trees.has(tile) : false;
 }
 
+export function updateLogs(delta) {
+  for (const log of logs) {
+    log.mesh.position.x += log.speed * log.direction * delta;
+    const hw = ROW_WIDTH / 2 + log.length / 2;
+    if (log.direction > 0 && log.mesh.position.x >  hw) log.mesh.position.x = -hw;
+    if (log.direction < 0 && log.mesh.position.x < -hw) log.mesh.position.x =  hw;
+  }
+}
+
+function removeLogsForRow(scene, rowIndex) {
+  for (let i = logs.length - 1; i >= 0; i--) {
+    if (logs[i].row === rowIndex) {
+      scene.remove(logs[i].mesh);
+      logs.splice(i, 1);
+    }
+  }
+}
+
 function addRow(scene, index) {
   const type = pickType(index);
   const group = new THREE.Group();
   const z = -index * ROW_SIZE;
   const rowData = { index, type, group, trees: new Set() };
 
-  const groundColor = type === 'road'
-    ? ROAD_COLOR
-    : GRASS_COLORS[index % 2];
+  // Земля / вода
+  let groundColor;
+  if (type === 'road')  groundColor = ROAD_COLOR;
+  else if (type === 'water') groundColor = WATER_COLORS[index % 2];
+  else groundColor = GRASS_COLORS[index % 2];
 
   const ground = new THREE.Mesh(
     new THREE.BoxGeometry(ROW_WIDTH, 0.2, ROW_SIZE),
@@ -62,6 +88,10 @@ function addRow(scene, index) {
     placeForestTrees(group, rowData, z);
   }
 
+  if (type === 'water') {
+    spawnLogsForRow(scene, rowData, z);
+  }
+
   scene.add(group);
   rows.push(rowData);
 }
@@ -69,15 +99,17 @@ function addRow(scene, index) {
 function pickType(index) {
   if (index < 3) return 'grass';
   const r = Math.random();
-  if (r < 0.35) return 'forest';
-  if (r < 0.70) return 'road';
+  if (r < 0.28) return 'forest';
+  if (r < 0.55) return 'road';
+  if (r < 0.75) return 'water';
   return 'grass';
 }
 
+// ── Дорожная разметка ─────────────────────────────────────────────────────────
 function addRoadMarkings(group, z, width) {
-  const mat = new THREE.MeshLambertMaterial({ color: 0xCCCCCC });
+  const mat      = new THREE.MeshLambertMaterial({ color: 0xEEEEEE });
+  const dashGeo  = new THREE.BoxGeometry(0.45, 0.01, 0.12);
   const dashCount = Math.floor(width / 1.2);
-  const dashGeo = new THREE.BoxGeometry(0.5, 0.01, 0.1);
   for (let i = 0; i < dashCount; i++) {
     const dash = new THREE.Mesh(dashGeo, mat);
     dash.position.set(-width / 2 + i * 1.2 + 0.6, 0.01, z);
@@ -85,6 +117,54 @@ function addRoadMarkings(group, z, width) {
   }
 }
 
+// ── Брёвна на воде ────────────────────────────────────────────────────────────
+const LOG_MAT   = new THREE.MeshLambertMaterial({ color: 0x8D6E63 });
+const LOG_DARK  = new THREE.MeshLambertMaterial({ color: 0x6D4C41 });
+
+function spawnLogsForRow(scene, rowData, z) {
+  const direction = Math.random() < 0.5 ? 1 : -1;
+  const speed     = 1.2 + Math.random() * 1.8;
+  const count     = 2 + Math.floor(Math.random() * 2);
+  const spacing   = ROW_WIDTH / count;
+
+  for (let i = 0; i < count; i++) {
+    const logLen  = 1.8 + Math.random() * 1.4;
+    const x       = -ROW_WIDTH / 2 + i * spacing + spacing * 0.3 + Math.random() * spacing * 0.4;
+
+    const logMesh = new THREE.Group();
+
+    // Основное бревно
+    const body = new THREE.Mesh(
+      new THREE.BoxGeometry(logLen, 0.28, 0.55),
+      LOG_MAT
+    );
+    body.castShadow = true;
+    logMesh.add(body);
+
+    // Торцы
+    [-logLen / 2, logLen / 2].forEach(dx => {
+      const cap = new THREE.Mesh(
+        new THREE.BoxGeometry(0.1, 0.28, 0.55),
+        LOG_DARK
+      );
+      cap.position.x = dx;
+      logMesh.add(cap);
+    });
+
+    logMesh.position.set(x, 0.12, z);
+    scene.add(logMesh);
+
+    logs.push({
+      mesh:      logMesh,
+      row:       rowData.index,
+      speed,
+      direction,
+      length:    logLen,
+    });
+  }
+}
+
+// ── Деревья ───────────────────────────────────────────────────────────────────
 function placeForestTrees(group, rowData, z) {
   const tiles = [];
   for (let t = -BOARD_HALF; t <= BOARD_HALF; t++) tiles.push(t);
@@ -101,21 +181,24 @@ function placeForestTrees(group, rowData, z) {
 
 function createTree() {
   const group = new THREE.Group();
-  const h = 0.9 + Math.random() * 0.5;
+  const h = 0.85 + Math.random() * 0.45;
 
+  // Ствол — узкий вoxel блок
   const trunk = new THREE.Mesh(
-    new THREE.BoxGeometry(0.22, h * 0.4, 0.22),
-    new THREE.MeshLambertMaterial({ color: 0x8B5E3C })
+    new THREE.BoxGeometry(0.2, h * 0.38, 0.2),
+    new THREE.MeshLambertMaterial({ color: 0x795548 })
   );
-  trunk.position.y = h * 0.2;
+  trunk.position.y = h * 0.19;
   trunk.castShadow = true;
   group.add(trunk);
 
+  // Крона — яркий куб (voxel стиль)
+  const shade = Math.random() > 0.5 ? 0x388E3C : 0x43A047;
   const foliage = new THREE.Mesh(
-    new THREE.BoxGeometry(0.7, h * 0.75, 0.7),
-    new THREE.MeshLambertMaterial({ color: 0x2D7A27 })
+    new THREE.BoxGeometry(0.72, h * 0.72, 0.72),
+    new THREE.MeshLambertMaterial({ color: shade })
   );
-  foliage.position.y = h * 0.62;
+  foliage.position.y = h * 0.6;
   foliage.castShadow = true;
   group.add(foliage);
 
