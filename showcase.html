@@ -81,10 +81,16 @@
 <div id="dir-controls">
   <div style="color:#aaa; font-size:11px; text-align:center;">Направление</div>
   <button class="dir-btn" id="btn-right">→ +1 (вправо)</button>
-  <button class="dir-btn" id="btn-left" >← -1 (влево)</button>
-  <div style="color:#aaa; font-size:11px; text-align:center; margin-top:4px;">Вращение SUV</div>
-  <button class="dir-btn" id="btn-suv-plus" >SUV +90°</button>
-  <button class="dir-btn" id="btn-suv-minus">SUV -90°</button>
+  <button class="dir-btn" id="btn-left">← -1 (влево)</button>
+  <div style="color:#aaa; font-size:11px; text-align:center; margin-top:4px;">Базовый поворот</div>
+  <button class="dir-btn" id="btn-tank300-plus">Tank 300 +90°</button>
+  <button class="dir-btn" id="btn-tank300-minus">Tank 300 −90°</button>
+  <button class="dir-btn" id="btn-f7-plus">F7 +90°</button>
+  <button class="dir-btn" id="btn-f7-minus">F7 −90°</button>
+  <button class="dir-btn" id="btn-dargo-plus">Dargo +90°</button>
+  <button class="dir-btn" id="btn-dargo-minus">Dargo −90°</button>
+  <button class="dir-btn" id="btn-jolion-plus">Jolion +90°</button>
+  <button class="dir-btn" id="btn-jolion-minus">Jolion −90°</button>
 </div>
 
 <div id="labels">
@@ -202,88 +208,28 @@ function makeNumLabel(num, name, x) {
   scene.add(mesh);
 }
 
-// ── Shared geo/mat ────────────────────────────────────────────────────────────
-const GEO = {
-  carBody:    new THREE.BoxGeometry(1.0,  0.38, 0.62),
-  carRoof:    new THREE.BoxGeometry(0.62, 0.26, 0.58),
-  carGlass:   new THREE.BoxGeometry(0.05, 0.22, 0.52),
-  carGrille:  new THREE.BoxGeometry(0.05, 0.20, 0.52),
-  carBumper:  new THREE.BoxGeometry(0.06, 0.10, 0.62),
-  carLight:   new THREE.BoxGeometry(0.05, 0.08, 0.14),
-  truckCargo: new THREE.BoxGeometry(1.10, 0.48, 0.56),
-  truckCabin: new THREE.BoxGeometry(0.46, 0.44, 0.52),
-  busBody:    new THREE.BoxGeometry(1.85, 0.52, 0.60),
-  busWindows: new THREE.BoxGeometry(1.45, 0.18, 0.62),
-  busFront:   new THREE.BoxGeometry(0.06, 0.52, 0.60),
-  wheel:      new THREE.BoxGeometry(0.14, 0.24, 0.24),
-};
-const MAT = {
-  dark:  new THREE.MeshLambertMaterial({ color: 0x1a1a1a }),
-  glass: new THREE.MeshLambertMaterial({ color: 0x7EC8E3, transparent: true, opacity: 0.80 }),
-  light: new THREE.MeshLambertMaterial({ color: 0xFFFDE7 }),
-  wheel: new THREE.MeshLambertMaterial({ color: 0x212121 }),
-  chrome:new THREE.MeshLambertMaterial({ color: 0xCCCCCC }),
-};
-
-function addVoxelWheels(g, len, dep) {
-  const aw = dep / 2 + 0.08;
-  [[-len*.3,aw],[-len*.3,-aw],[len*.3,aw],[len*.3,-aw]].forEach(([x,z])=>{
-    const w = new THREE.Mesh(GEO.wheel, MAT.wheel);
-    w.position.set(x, 0.12, z); g.add(w);
-  });
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function normalizeModel(model, targetSize = 1.8) {
+  const box  = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const scale = targetSize / maxDim;
+  model.scale.setScalar(scale);
+  box.setFromObject(model);
+  const center = box.getCenter(new THREE.Vector3());
+  model.position.x -= center.x;
+  model.position.z -= center.z;
+  model.position.y -= box.min.y;
+  model.traverse(c => { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; } });
+  console.log(`[normalize] size=${size.x.toFixed(2)}x${size.y.toFixed(2)}x${size.z.toFixed(2)} → scale=${scale.toFixed(4)}, minY=${box.min.y.toFixed(3)}`);
 }
 
-// Стрелка "перед" машины (зелёная)
 function addFrontArrow(group, offsetX = 0.7) {
-  const arr = new THREE.ArrowHelper(
-    new THREE.Vector3(1,0,0),
+  group.add(new THREE.ArrowHelper(
+    new THREE.Vector3(1, 0, 0),
     new THREE.Vector3(offsetX, 0.6, 0),
     0.6, 0x76ff03, 0.18, 0.12
-  );
-  group.add(arr);
-}
-
-// ── Box Car ───────────────────────────────────────────────────────────────────
-function buildCar(color) {
-  const g = new THREE.Group();
-  const mat = new THREE.MeshLambertMaterial({ color });
-  const body = new THREE.Mesh(GEO.carBody, mat); body.position.y=0.28; body.castShadow=true; g.add(body);
-  const roof = new THREE.Mesh(GEO.carRoof, mat); roof.position.set(-0.05,0.56,0); roof.castShadow=true; g.add(roof);
-  const ws = new THREE.Mesh(GEO.carGlass, MAT.glass); ws.position.set(0.30,0.54,0); g.add(ws);
-  const rs = new THREE.Mesh(GEO.carGlass, MAT.glass); rs.position.set(-0.36,0.54,0); g.add(rs);
-  const gr = new THREE.Mesh(GEO.carGrille, MAT.dark); gr.position.set(0.52,0.22,0); g.add(gr);
-  [-0.20,0.20].forEach(dz=>{ const lt=new THREE.Mesh(GEO.carLight,MAT.light); lt.position.set(0.52,0.34,dz); g.add(lt); });
-  const bp = new THREE.Mesh(GEO.carBumper, MAT.chrome); bp.position.set(0.51,0.08,0); g.add(bp);
-  addVoxelWheels(g, 0.90, 0.60);
-  addFrontArrow(g, 0.7);
-  return g;
-}
-
-// ── Truck ─────────────────────────────────────────────────────────────────────
-function buildTruck(color) {
-  const g = new THREE.Group();
-  const cargo = new THREE.Mesh(GEO.truckCargo, new THREE.MeshLambertMaterial({color}));
-  cargo.position.set(-0.28,0.30,0); cargo.castShadow=true; g.add(cargo);
-  const cabin = new THREE.Mesh(GEO.truckCabin, new THREE.MeshLambertMaterial({color:0x78909C}));
-  cabin.position.set(0.60,0.28,0); cabin.castShadow=true; g.add(cabin);
-  const cg = new THREE.Mesh(new THREE.BoxGeometry(0.05,0.20,0.46), MAT.glass);
-  cg.position.set(0.83,0.34,0); g.add(cg);
-  addVoxelWheels(g, 1.55, 0.56);
-  addFrontArrow(g, 0.95);
-  return g;
-}
-
-// ── Bus ───────────────────────────────────────────────────────────────────────
-function buildBus(color) {
-  const g = new THREE.Group();
-  const body = new THREE.Mesh(GEO.busBody, new THREE.MeshLambertMaterial({color}));
-  body.position.y=0.32; body.castShadow=true; g.add(body);
-  const wins = new THREE.Mesh(GEO.busWindows, MAT.glass); wins.position.set(0,0.50,0); g.add(wins);
-  const front = new THREE.Mesh(GEO.busFront, MAT.dark); front.position.set(0.94,0.32,0); g.add(front);
-  [-0.22,0.22].forEach(dz=>{ const lt=new THREE.Mesh(GEO.carLight,MAT.light); lt.position.set(0.94,0.44,dz); g.add(lt); });
-  addVoxelWheels(g, 1.80, 0.60);
-  addFrontArrow(g, 1.1);
-  return g;
+  ));
 }
 
 // ── Разместить машины ─────────────────────────────────────────────────────────
@@ -294,88 +240,85 @@ makeNumLabel(2, 'F7',      POS[1]);
 makeNumLabel(3, 'Dargo',   POS[2]);
 makeNumLabel(4, 'Jolion',  POS[3]);
 
-const car   = buildCar(0xE53935);   car.position.set(POS[1], 0, 0);   scene.add(car);
-const truck = buildTruck(0xFB8C00); truck.position.set(POS[2], 0, 0); scene.add(truck);
-const bus   = buildBus(0xFFEB3B);   bus.position.set(POS[3], 0, 0);   scene.add(bus);
-
-// GLB SUV pivot
-const suvPivot = new THREE.Group();
-suvPivot.position.set(POS[0], 0, 0);
-scene.add(suvPivot);
-
-let suvModel = null;
-let suvRotY  = Math.PI / 2; // начальное значение — подбираем здесь
+// ── GLB модели — данные и состояние ──────────────────────────────────────────
+const MODELS = {
+  tank300: { file: 'tank300.glb', pos: POS[0], rotY: Math.PI,     pivot: null, model: null },
+  f7:      { file: 'F7.glb',      pos: POS[1], rotY: Math.PI, pivot: null, model: null },
+  dargo:   { file: 'Dargo.glb',   pos: POS[2], rotY: Math.PI, pivot: null, model: null },
+  jolion:  { file: 'Jolion.glb',  pos: POS[3], rotY: Math.PI, pivot: null, model: null },
+};
 
 const loader = new GLTFLoader();
-loader.load('assets/models/player.glb', (gltf) => {
-  const model = gltf.scene;
-  const box = new THREE.Box3().setFromObject(model);
-  const size = box.getSize(new THREE.Vector3());
-  model.scale.setScalar(0.9 / Math.max(size.x, size.z));
-  box.setFromObject(model);
-  const center = box.getCenter(new THREE.Vector3());
-  model.position.x -= center.x;
-  model.position.z -= center.z;
-  model.position.y -= box.min.y;
-  model.traverse(c => { if (c.isMesh) c.castShadow = true; });
-  model.rotation.y = suvRotY;
-  suvModel = model;
-  suvPivot.add(model);
+Object.entries(MODELS).forEach(([key, cfg]) => {
+  cfg.pivot = new THREE.Group();
+  cfg.pivot.position.set(cfg.pos, 0, 0);
+  scene.add(cfg.pivot);
 
-  // Стрелка на SUV
-  addFrontArrow(suvPivot, 0.7);
-  updateLabels();
+  loader.load(`assets/models/${cfg.file}`, (gltf) => {
+    const model = gltf.scene;
+    normalizeModel(model);
+    model.rotation.y = cfg.rotY;
+    cfg.model = model;
+    cfg.pivot.add(model);
+    addFrontArrow(cfg.pivot, 0.7);
+    console.log(`[loaded] ${cfg.file} → pivot.y=${cfg.pivot.position.y.toFixed(2)}`);
+    updateLabels();
+  }, undefined, (err) => {
+    console.error(`[error] ${cfg.file}:`, err);
+  });
 });
 
-// ── Направление движения (поворот всех машин) ─────────────────────────────────
+// ── Направление движения ──────────────────────────────────────────────────────
 let currentDir = 1;
 
 function applyDirection(dir) {
   currentDir = dir;
-  car.rotation.y   = dir === -1 ? Math.PI : 0;
-  truck.rotation.y = dir === -1 ? Math.PI : 0;
-  bus.rotation.y   = dir === -1 ? Math.PI : 0;
-  suvPivot.rotation.y = dir === -1 ? Math.PI : 0;
+  Object.values(MODELS).forEach(cfg => {
+    if (cfg.pivot) cfg.pivot.rotation.y = dir === -1 ? Math.PI : 0;
+  });
   updateLabels();
 }
 
 document.getElementById('btn-right').onclick = () => applyDirection(1);
 document.getElementById('btn-left').onclick  = () => applyDirection(-1);
 
-// Вращение модели SUV (подбор правильного базового угла)
-document.getElementById('btn-suv-plus').onclick = () => {
-  if (!suvModel) return;
-  suvRotY += Math.PI / 2;
-  suvModel.rotation.y = suvRotY;
-  updateLabels();
-};
-document.getElementById('btn-suv-minus').onclick = () => {
-  if (!suvModel) return;
-  suvRotY -= Math.PI / 2;
-  suvModel.rotation.y = suvRotY;
-  updateLabels();
-};
+// ── Кнопки базового поворота для каждой модели ────────────────────────────────
+Object.entries(MODELS).forEach(([key, cfg]) => {
+  const btnP = document.getElementById(`btn-${key}-plus`);
+  const btnM = document.getElementById(`btn-${key}-minus`);
+  if (btnP) btnP.onclick = () => { if (!cfg.model) return; cfg.rotY += Math.PI / 2; cfg.model.rotation.y = cfg.rotY; updateLabels(); };
+  if (btnM) btnM.onclick = () => { if (!cfg.model) return; cfg.rotY -= Math.PI / 2; cfg.model.rotation.y = cfg.rotY; updateLabels(); };
+});
 
+// ── Labels ────────────────────────────────────────────────────────────────────
 function fmtRot(r) {
-  const steps = { 0:'0', [Math.PI/2]:'π/2', [Math.PI]:'π', [-Math.PI/2]:'-π/2', [-Math.PI]:'-π',
-                  [3*Math.PI/2]:'3π/2', [-3*Math.PI/2]:'-3π/2' };
+  const map = { 0:'0', [Math.PI/2]:'π/2', [Math.PI]:'π', [-Math.PI/2]:'-π/2',
+                [-Math.PI]:'-π', [3*Math.PI/2]:'3π/2', [-3*Math.PI/2]:'-3π/2' };
+  for (const [k,v] of Object.entries(map)) {
+    if (Math.abs(parseFloat(k) - r) < 0.01) return v;
+  }
   const norm = ((r % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
-  for (const [k,v] of Object.entries(steps)) {
-    if (Math.abs(parseFloat(k) - r) < 0.01 || Math.abs(norm - parseFloat(k)) < 0.01) return v;
+  for (const [k,v] of Object.entries(map)) {
+    if (Math.abs(norm - parseFloat(k)) < 0.01) return v;
   }
   return r.toFixed(2);
 }
 
+const LABEL_IDS = {
+  tank300: { panel: 'r-suv',   bottom: 'lbl-suv'   },
+  f7:      { panel: 'r-car',   bottom: 'lbl-car'   },
+  dargo:   { panel: 'r-truck', bottom: 'lbl-truck' },
+  jolion:  { panel: 'r-bus',   bottom: 'lbl-bus'   },
+};
+
 function updateLabels() {
   const dirStr = currentDir === 1 ? '→ dir=+1' : '← dir=-1';
-  document.getElementById('lbl-suv').textContent   = `model.rot.y=${fmtRot(suvRotY)}  pivot.rot.y=${fmtRot(suvPivot.rotation.y)}`;
-  document.getElementById('lbl-car').textContent   = `rotation.y=${fmtRot(car.rotation.y)}  ${dirStr}`;
-  document.getElementById('lbl-truck').textContent = `rotation.y=${fmtRot(truck.rotation.y)}  ${dirStr}`;
-  document.getElementById('lbl-bus').textContent   = `rotation.y=${fmtRot(bus.rotation.y)}  ${dirStr}`;
-  document.getElementById('r-suv').textContent     = `model=${fmtRot(suvRotY)}, pivot=${fmtRot(suvPivot.rotation.y)}`;
-  document.getElementById('r-car').textContent     = `rotation.y = ${fmtRot(car.rotation.y)}`;
-  document.getElementById('r-truck').textContent   = `rotation.y = ${fmtRot(truck.rotation.y)}`;
-  document.getElementById('r-bus').textContent     = `rotation.y = ${fmtRot(bus.rotation.y)}`;
+  Object.entries(MODELS).forEach(([key, cfg]) => {
+    const ids = LABEL_IDS[key];
+    const pivotRot = cfg.pivot?.rotation.y ?? 0;
+    document.getElementById(ids.panel).textContent  = `model=${fmtRot(cfg.rotY)}, pivot=${fmtRot(pivotRot)}`;
+    document.getElementById(ids.bottom).textContent = `model.rot.y=${fmtRot(cfg.rotY)}  pivot=${fmtRot(pivotRot)}  ${dirStr}`;
+  });
 }
 updateLabels();
 

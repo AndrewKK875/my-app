@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { createPlayer, updatePlayer } from './player.js';
 import { createInitialRows, generateRowsAhead, isTreeAt, updateLogs } from './world.js';
-import { updateVehicles, preloadSUV } from './vehicles.js';
+import { updateVehicles, preloadModels } from './vehicles.js';
 import { checkCollision } from './collision.js';
 import { initControls } from './controls.js';
 
@@ -64,7 +64,7 @@ const player = createPlayer(scene);
 initControls();
 
 // Загружаем GLB SUV, потом генерируем мир
-await preloadSUV();
+await preloadModels();
 createInitialRows(scene);
 
 const scoreEl     = document.getElementById('score-display');
