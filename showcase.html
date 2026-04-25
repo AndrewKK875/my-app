@@ -71,10 +71,10 @@
   <div class="row"><span class="key">← -X</span><span class="dir">direction = -1 (влево)</span></div>
   <div class="row"><span class="key">↑ +Z</span><span class="key">в экран</span></div>
   <div style="margin-top:8px; border-top:1px solid rgba(255,255,255,0.1); padding-top:8px;">
-    <div class="row"><span class="key">GLB SUV</span>   <span class="val" id="r-suv">rotation.y = ?</span></div>
-    <div class="row"><span class="key">Box Car</span>   <span class="val" id="r-car">rotation.y = 0</span></div>
-    <div class="row"><span class="key">Truck</span>     <span class="val" id="r-truck">rotation.y = 0</span></div>
-    <div class="row"><span class="key">Bus</span>       <span class="val" id="r-bus">rotation.y = 0</span></div>
+    <div class="row"><span class="key">Tank 300</span>  <span class="val" id="r-suv">rotation.y = ?</span></div>
+    <div class="row"><span class="key">F7</span>        <span class="val" id="r-car">rotation.y = 0</span></div>
+    <div class="row"><span class="key">Dargo</span>    <span class="val" id="r-truck">rotation.y = 0</span></div>
+    <div class="row"><span class="key">Jolion</span>   <span class="val" id="r-bus">rotation.y = 0</span></div>
   </div>
 </div>
 
@@ -88,10 +88,10 @@
 </div>
 
 <div id="labels">
-  <div class="label"><div class="name">#1 GLB SUV</div><div class="rot" id="lbl-suv"></div></div>
-  <div class="label"><div class="name">#2 Box Car</div><div class="rot" id="lbl-car"></div></div>
-  <div class="label"><div class="name">#3 Truck</div>  <div class="rot" id="lbl-truck"></div></div>
-  <div class="label"><div class="name">#4 Bus</div>    <div class="rot" id="lbl-bus"></div></div>
+  <div class="label"><div class="name">#1 Tank 300</div><div class="rot" id="lbl-suv"></div></div>
+  <div class="label"><div class="name">#2 F7</div>      <div class="rot" id="lbl-car"></div></div>
+  <div class="label"><div class="name">#3 Dargo</div>   <div class="rot" id="lbl-truck"></div></div>
+  <div class="label"><div class="name">#4 Jolion</div>  <div class="rot" id="lbl-bus"></div></div>
 </div>
 
 <div id="hint">Перетащи мышью для вращения · Колесо — зум · Кнопки справа — тест направления</div>
@@ -289,10 +289,10 @@ function buildBus(color) {
 // ── Разместить машины ─────────────────────────────────────────────────────────
 const POS = [-4.8, -1.6, 1.6, 4.8];
 
-makeNumLabel(1, 'GLB SUV', POS[0]);
-makeNumLabel(2, 'Box Car', POS[1]);
-makeNumLabel(3, 'Truck',   POS[2]);
-makeNumLabel(4, 'Bus',     POS[3]);
+makeNumLabel(1, 'Tank 300', POS[0]);
+makeNumLabel(2, 'F7',      POS[1]);
+makeNumLabel(3, 'Dargo',   POS[2]);
+makeNumLabel(4, 'Jolion',  POS[3]);
 
 const car   = buildCar(0xE53935);   car.position.set(POS[1], 0, 0);   scene.add(car);
 const truck = buildTruck(0xFB8C00); truck.position.set(POS[2], 0, 0); scene.add(truck);
