@@ -160,7 +160,7 @@ function buildSUV(direction) {
   const pivot = new THREE.Group();
   const clone = suvTemplate.clone(true);
   // Модель смотрит по +Z — разворачиваем чтобы ехала по +X
-  clone.rotation.y = Math.PI / 2;
+  clone.rotation.y = Math.PI;
   pivot.add(clone);
   if (direction === -1) pivot.rotation.y = Math.PI;
   return pivot;
