@@ -88,10 +88,10 @@
 </div>
 
 <div id="labels">
-  <div class="label"><div class="name">GLB SUV</div><div class="rot" id="lbl-suv"></div></div>
-  <div class="label"><div class="name">Box Car</div><div class="rot" id="lbl-car"></div></div>
-  <div class="label"><div class="name">Truck</div>  <div class="rot" id="lbl-truck"></div></div>
-  <div class="label"><div class="name">Bus</div>    <div class="rot" id="lbl-bus"></div></div>
+  <div class="label"><div class="name">#1 GLB SUV</div><div class="rot" id="lbl-suv"></div></div>
+  <div class="label"><div class="name">#2 Box Car</div><div class="rot" id="lbl-car"></div></div>
+  <div class="label"><div class="name">#3 Truck</div>  <div class="rot" id="lbl-truck"></div></div>
+  <div class="label"><div class="name">#4 Bus</div>    <div class="rot" id="lbl-bus"></div></div>
 </div>
 
 <div id="hint">Перетащи мышью для вращения · Колесо — зум · Кнопки справа — тест направления</div>
@@ -180,6 +180,28 @@ function makeAxisLabel(text, pos, color) {
 makeAxisLabel('+X  dir=+1', new THREE.Vector3(-3.5, 0.02, 2.4), '#ff1744');
 makeAxisLabel('-X  dir=-1', new THREE.Vector3( 3.5, 0.02, 2.4), '#29b6f6');
 
+// ── Номера над машинами ───────────────────────────────────────────────────────
+function makeNumLabel(num, name, x) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256; canvas.height = 96;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#FF6B00';
+  ctx.font = 'bold 56px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(`#${num}`, 80, 48);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 28px Arial';
+  ctx.fillText(name, 176, 48);
+  const tex = new THREE.CanvasTexture(canvas);
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(2.0, 0.75),
+    new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, side: THREE.DoubleSide })
+  );
+  mesh.position.set(x, 1.6, 0);
+  scene.add(mesh);
+}
+
 // ── Shared geo/mat ────────────────────────────────────────────────────────────
 const GEO = {
   carBody:    new THREE.BoxGeometry(1.0,  0.38, 0.62),
@@ -266,6 +288,11 @@ function buildBus(color) {
 
 // ── Разместить машины ─────────────────────────────────────────────────────────
 const POS = [-4.8, -1.6, 1.6, 4.8];
+
+makeNumLabel(1, 'GLB SUV', POS[0]);
+makeNumLabel(2, 'Box Car', POS[1]);
+makeNumLabel(3, 'Truck',   POS[2]);
+makeNumLabel(4, 'Bus',     POS[3]);
 
 const car   = buildCar(0xE53935);   car.position.set(POS[1], 0, 0);   scene.add(car);
 const truck = buildTruck(0xFB8C00); truck.position.set(POS[2], 0, 0); scene.add(truck);
