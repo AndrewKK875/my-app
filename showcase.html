@@ -105,6 +105,7 @@
 <script type="module">
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // ── Renderer ──────────────────────────────────────────────────────────────────
@@ -248,7 +249,10 @@ const MODELS = {
   jolion:  { file: 'Jolion.glb',  pos: POS[3], rotY: Math.PI, pivot: null, model: null },
 };
 
+const draco = new DRACOLoader();
+draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/');
 const loader = new GLTFLoader();
+loader.setDRACOLoader(draco);
 Object.entries(MODELS).forEach(([key, cfg]) => {
   cfg.pivot = new THREE.Group();
   cfg.pivot.position.set(cfg.pos, 0, 0);

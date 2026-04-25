@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { TILE_SIZE, BOARD_HALF } from './player.js';
 
 export const vehicles = [];
@@ -33,7 +34,10 @@ function normalizeTemplate(model) {
 }
 
 export function preloadModels() {
+  const draco = new DRACOLoader();
+  draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/');
   const loader = new GLTFLoader();
+  loader.setDRACOLoader(draco);
   const promises = Object.entries(MODEL_FILES).map(([key, file]) =>
     new Promise(resolve => {
       loader.load(file, (gltf) => {
