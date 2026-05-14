@@ -1,0 +1,46 @@
+name: Brand Analytics — обновление данных
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 * * * *'   # каждый час
+  workflow_dispatch:        # ручной запуск из GitHub
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout репозитория
+        uses: actions/checkout@v4
+
+      - name: Установить Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Проверить подключение к Brand Analytics API
+        env:
+          BA_API_KEY: ${{ secrets.BA_API_KEY }}
+        run: |
+          echo "Проверяю подключение к BA API..."
+          node -e "
+          const https = require('https');
+          const TOKEN = process.env.BA_API_KEY;
+          if (!TOKEN) { console.error('ОШИБКА: секрет BA_API_KEY не найден!'); process.exit(1); }
+          console.log('Ключ найден, длина:', TOKEN.length);
+          https.get('https://brandanalytics.ru/v1/dictionary/langs?token=' + TOKEN, { headers: { Accept: 'application/json' } }, (res) => {
+            let body = '';
+            res.on('data', c => body += c);
+            res.on('end', () => {
+              const d = JSON.parse(body);
+              if (d.status) {
+                console.log('Подключение OK! Языков в справочнике:', d.data.length);
+              } else {
+                console.error('Ошибка API:', JSON.stringify(d));
+                process.exit(1);
+              }
+            });
+          }).on('error', e => { console.error('Сетевая ошибка:', e.message); process.exit(1); });
+          "
