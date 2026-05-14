@@ -1,3 +1,14 @@
 .DS_Store
 **/.DS_Store
 node_modules/
+**/node_modules/
+
+# Служебные файлы Claude
+.claude/
+
+# Лишние папки
+Usersandremy-appmy-appba-linni/
+
+# Локальные переменные окружения
+.env
+.env.local
