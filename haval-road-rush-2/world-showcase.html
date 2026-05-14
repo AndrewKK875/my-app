@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>World Showcase — Haval Road Rush 2</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0a0a14; overflow: hidden; font-family: 'Courier New', monospace; color: #fff; }
+    canvas { display: block; }
+
+    /* ── Panel ── */
+    #panel {
+      position: fixed; top: 0; left: 0; bottom: 0; width: 240px;
+      background: rgba(0,0,0,0.85);
+      border-right: 1px solid rgba(255,255,255,0.08);
+      padding: 16px 14px;
+      display: flex; flex-direction: column; gap: 10px;
+      overflow-y: auto; z-index: 10;
+    }
+    #panel h1 { color: #FF6B00; font-size: 11px; letter-spacing: 3px; margin-bottom: 4px; }
+
+    .section { border-top: 1px solid rgba(255,255,255,0.07); padding-top: 10px; }
+    .section h2 { color: #29b6f6; font-size: 9px; letter-spacing: 2px; margin-bottom: 8px; }
+
+    .row { display: flex; justify-content: space-between; align-items: center; margin: 5px 0; }
+    .row label { color: #888; font-size: 10px; }
+    input[type=color] { width: 36px; height: 22px; border: none; border-radius: 3px; cursor: pointer; background: none; }
+    input[type=range] { width: 100px; accent-color: #FF6B00; }
+    input[type=text]  { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 6px 8px; border-radius: 4px; font-family: inherit; font-size: 11px; margin-top: 4px; }
+    select { background: #111; border: 1px solid #333; color: #fff; padding: 4px 6px; border-radius: 4px; font-size: 10px; }
+
+    .btn { width: 100%; padding: 8px; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 10px; letter-spacing: 2px; border: none; margin-top: 4px; }
+    .btn-add   { background: rgba(255,107,0,0.25); border: 1px solid #FF6B00 !important; color: #FF6B00; border: none; }
+    .btn-add:hover { background: rgba(255,107,0,0.4); }
+    .btn-save  { background: rgba(118,255,3,0.15); border: 1px solid #76ff03 !important; color: #76ff03; border: none; }
+    .btn-save:hover { background: rgba(118,255,3,0.25); }
+    .btn-clear { background: rgba(255,255,255,0.05); border: 1px solid #444 !important; color: #666; border: none; }
+    .btn-clear:hover { background: rgba(255,0,0,0.1); color: #f55; }
+    .btn-export { background: rgba(41,182,246,0.1); border: 1px solid #29b6f6 !important; color: #29b6f6; border: none; }
+
+    /* Selected label controls */
+    #sel-panel { display: none; }
+    #sel-panel.active { display: block; }
+    .sel-name { color: #FF6B00; font-size: 10px; margin-bottom: 6px; }
+
+    /* Label list */
+    #label-list { display: flex; flex-direction: column; gap: 4px; max-height: 160px; overflow-y: auto; }
+    .lbl-item {
+      display: flex; justify-content: space-between; align-items: center;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 4px; padding: 5px 8px; cursor: pointer; font-size: 9px;
+    }
+    .lbl-item:hover { border-color: #FF6B00; }
+    .lbl-item.selected { border-color: #FF6B00; background: rgba(255,107,0,0.1); }
+    .lbl-item .lbl-text { color: #ddd; flex: 1; }
+    .lbl-item .lbl-del  { color: #555; cursor: pointer; padding: 0 4px; }
+    .lbl-item .lbl-del:hover { color: #f55; }
+
+    /* Hint */
+    #hint {
+      position: fixed; bottom: 14px; left: 250px; right: 14px;
+      color: rgba(255,255,255,0.25); font-size: 9px; letter-spacing: 1px; text-align: center;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+      background: rgba(118,255,3,0.2); border: 1px solid #76ff03;
+      color: #76ff03; padding: 8px 20px; border-radius: 4px; font-size: 10px;
+      letter-spacing: 2px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 100;
+    }
+  </style>
+  <script type="importmap">
+  { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  } }
+  </script>
+</head>
+<body>
+
+<div id="panel">
+  <h1>WORLD SHOWCASE</h1>
+
+  <div class="section">
+    <h2>✏️ НОВАЯ НАДПИСЬ</h2>
+    <input type="text" id="lbl-text" value="HAVAL" placeholder="Текст надписи">
+    <div class="row" style="margin-top:8px">
+      <label>Цвет</label><input type="color" id="lbl-color" value="#FFFFFF">
+    </div>
+    <div class="row">
+      <label>Размер</label><input type="range" id="lbl-size" min="14" max="80" value="36">
+    </div>
+    <div class="row">
+      <label>Поверхность</label>
+      <select id="lbl-surface">
+        <option value="0">Трава</option>
+        <option value="1">Лес</option>
+        <option value="2" selected>Дорога</option>
+        <option value="3">Вода</option>
+      </select>
+    </div>
+    <button class="btn btn-add" onclick="addLabel()">+ ДОБАВИТЬ</button>
+  </div>
+
+  <div class="section" id="sel-panel">
+    <h2>🎯 ВЫБРАННАЯ НАДПИСЬ</h2>
+    <div class="sel-name" id="sel-name">—</div>
+    <div class="row"><label>← X →</label><input type="range" id="sel-x" min="-60" max="60" value="0" step="1" oninput="updateSelected()"></div>
+    <div class="row"><label>↑ Z ↓</label><input type="range" id="sel-z" min="-30" max="30" value="0" step="1" oninput="updateSelected()"></div>
+    <div class="row"><label>Поворот</label><input type="range" id="sel-rot" min="-180" max="180" value="0" step="1" oninput="updateSelected()"></div>
+    <div class="row"><label>Масштаб</label><input type="range" id="sel-scale" min="20" max="200" value="100" step="5" oninput="updateSelected()"></div>
+  </div>
+
+  <div class="section">
+    <h2>📋 НАДПИСИ</h2>
+    <div id="label-list"></div>
+  </div>
+
+  <div class="section">
+    <h2>💾 ДЕЙСТВИЯ</h2>
+    <button class="btn btn-save"   onclick="saveLabels()">СОХРАНИТЬ</button>
+    <button class="btn btn-export" onclick="exportJSON()">ЭКСПОРТ JSON</button>
+    <button class="btn btn-clear"  onclick="clearAll()">ОЧИСТИТЬ ВСЁ</button>
+  </div>
+</div>
+
+<div id="hint">
+  Левая кнопка мыши — перетащить надпись · Правая — выбрать · Колесо — зум · Средняя — вращение сцены
+</div>
+<div id="toast">СОХРАНЕНО</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ── Renderer ──────────────────────────────────────────────────────────────────
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth - 240, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.domElement.style.position = 'fixed';
+renderer.domElement.style.left = '240px';
+renderer.domElement.style.top  = '0';
+document.body.appendChild(renderer.domElement);
+
+// ── Scene ─────────────────────────────────────────────────────────────────────
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x87CEEB);
+
+const camera = new THREE.PerspectiveCamera(50, (window.innerWidth - 240) / window.innerHeight, 0.1, 300);
+camera.position.set(0, 24, 28);
+camera.lookAt(0, 0, -4);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 0, -4);
+controls.enablePan  = true;
+controls.minDistance = 6;
+controls.maxDistance = 80;
+controls.maxPolarAngle = Math.PI / 2.1;
+controls.update();
+
+// ── Lighting ──────────────────────────────────────────────────────────────────
+const sun = new THREE.DirectionalLight(0xFFF5D0, 2.0);
+sun.position.set(8, 20, 10); sun.castShadow = true;
+sun.shadow.mapSize.set(1024,1024);
+sun.shadow.camera.left=-25; sun.shadow.camera.right=25;
+sun.shadow.camera.top=25;   sun.shadow.camera.bottom=-25;
+scene.add(sun);
+scene.add(new THREE.HemisphereLight(0x87CEEB, 0x5D8A3C, 0.8));
+
+// ── Constants ─────────────────────────────────────────────────────────────────
+const TILE=1.2, ROW_H=1.5, HALF=4, ROW_W=(HALF*2+3)*TILE;
+const SECTION_X = [-15, -5, 5, 15];
+const ROWS_PER  = 3;
+const TYPES     = ['grass','forest','road','water'];
+
+// ── Materials ─────────────────────────────────────────────────────────────────
+const M = {
+  grass:  [new THREE.MeshLambertMaterial({color:0x5BBF4E}), new THREE.MeshLambertMaterial({color:0x4CAF50})],
+  road:   [new THREE.MeshLambertMaterial({color:0x546E7A}), new THREE.MeshLambertMaterial({color:0x4A6070})],
+  water:  [new THREE.MeshLambertMaterial({color:0x1E88E5}), new THREE.MeshLambertMaterial({color:0x1565C0})],
+  curb:   new THREE.MeshLambertMaterial({color:0x78909C}),
+  dash:   new THREE.MeshLambertMaterial({color:0xEEEEEE}),
+  trunk:  new THREE.MeshLambertMaterial({color:0x795548}),
+  leaf:   new THREE.MeshLambertMaterial({color:0x388E3C}),
+  log:    new THREE.MeshLambertMaterial({color:0x8D6E63}),
+};
+const GR = new THREE.BoxGeometry(ROW_W, 0.2, ROW_H);
+
+// ── World ─────────────────────────────────────────────────────────────────────
+function buildSection(type, sx) {
+  for (let r = 0; r < ROWS_PER; r++) {
+    const z = -r * ROW_H - ROW_H/2;
+    const g = new THREE.Group();
+
+    if (type === 'grass' || type === 'forest') {
+      const m = new THREE.Mesh(GR, M.grass[r%2]); m.position.set(sx,-0.1,z); m.receiveShadow=true; scene.add(m);
+      if (type === 'forest') addTrees(sx, z);
+    } else if (type === 'road') {
+      const m = new THREE.Mesh(GR, M.road[r%2]); m.position.set(sx,-0.1,z); m.receiveShadow=true; scene.add(m);
+      addRoadDetails(sx, z);
+    } else {
+      const m = new THREE.Mesh(GR, M.water[r%2]); m.position.set(sx,-0.1,z); m.receiveShadow=true; scene.add(m);
+      addLogs(sx, z);
+    }
+  }
+  // Подпись
+  addSectionLabel(type.toUpperCase(), sx);
+}
+
+function addTrees(sx, z) {
+  const count = 3 + Math.floor(Math.random()*3);
+  for (let i=0; i<count; i++) {
+    const ox = (Math.random()-0.5)*(ROW_W-2);
+    const tr = new THREE.Group();
+    const tk = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.5,0.2), M.trunk);
+    tk.position.y=0.25; tk.castShadow=true; tr.add(tk);
+    const lf = new THREE.Mesh(new THREE.BoxGeometry(0.72,0.72,0.72), M.leaf);
+    lf.position.y=0.75; lf.castShadow=true; tr.add(lf);
+    tr.position.set(sx+ox, 0, z);
+    scene.add(tr);
+  }
+}
+function addRoadDetails(sx, z) {
+  for (const ox of [-ROW_W/2+0.25, ROW_W/2-0.25]) {
+    const c=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.22,ROW_H),M.curb);
+    c.position.set(sx+ox,-0.09,z); scene.add(c);
+  }
+  const dc=Math.floor(ROW_W/1.2);
+  for (let i=0;i<dc;i++){
+    const d=new THREE.Mesh(new THREE.BoxGeometry(0.45,0.01,0.12),M.dash);
+    d.position.set(sx-ROW_W/2+i*1.2+0.6,0.01,z); scene.add(d);
+  }
+}
+function addLogs(sx, z) {
+  for (let i=0;i<2;i++){
+    const len=2+Math.random()*1.5;
+    const lg=new THREE.Mesh(new THREE.BoxGeometry(len,0.28,0.55),M.log);
+    lg.position.set(sx+(i-0.5)*4, 0.12, z);
+    lg.castShadow=true; scene.add(lg);
+  }
+}
+function addSectionLabel(text, sx) {
+  const cv=document.createElement('canvas'); cv.width=256; cv.height=64;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle='#FF6B00'; ctx.font='bold 32px Arial';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(text,128,32);
+  const mesh=new THREE.Mesh(
+    new THREE.PlaneGeometry(3.2,0.8),
+    new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false,side:THREE.DoubleSide})
+  );
+  mesh.position.set(sx,2.0,0.8); mesh.rotation.x=-Math.PI/6;
+  scene.add(mesh);
+}
+
+TYPES.forEach((t,i) => buildSection(t, SECTION_X[i]));
+
+// ── Ground plane for raycasting ───────────────────────────────────────────────
+const groundPlane = new THREE.Plane(new THREE.Vector3(0,1,0), 0);
+const raycaster   = new THREE.Raycaster();
+const mouseNDC    = new THREE.Vector2();
+const hitPoint    = new THREE.Vector3();
+
+// ── Label system ──────────────────────────────────────────────────────────────
+const labelMeshes = []; // { mesh, data }
+let selectedLabel = null;
+let isDragging    = false;
+let dragOffsetX   = 0, dragOffsetZ = 0;
+
+function makeCanvasTexture(text, color, size) {
+  const cv  = document.createElement('canvas');
+  cv.width  = 512; cv.height = 128;
+  const ctx = cv.getContext('2d');
+  ctx.clearRect(0, 0, 512, 128);
+  ctx.fillStyle   = color;
+  ctx.font        = `bold ${size*2}px Arial Black, Arial`;
+  ctx.textAlign   = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, 256, 64);
+  return new THREE.CanvasTexture(cv);
+}
+
+window.addLabel = function() {
+  const text    = document.getElementById('lbl-text').value.trim() || 'HAVAL';
+  const color   = document.getElementById('lbl-color').value;
+  const size    = parseInt(document.getElementById('lbl-size').value);
+  const secIdx  = parseInt(document.getElementById('lbl-surface').value);
+  const sx      = SECTION_X[secIdx];
+  const baseZ   = -ROW_H;
+
+  const data = { text, color, size, x: sx, z: baseZ, rot: 0, scale: 1.0, section: secIdx };
+
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(ROW_W * 0.8, ROW_H * 0.65),
+    new THREE.MeshBasicMaterial({
+      map: makeCanvasTexture(text, color, size),
+      transparent: true, depthWrite: false, side: THREE.DoubleSide,
+    })
+  );
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.set(sx, 0.03, baseZ);
+  scene.add(mesh);
+
+  const entry = { mesh, data };
+  labelMeshes.push(entry);
+  updateLabelList();
+  selectLabel(entry);
+
+  // Сбросить слайдеры
+  document.getElementById('sel-x').value   = 0;
+  document.getElementById('sel-z').value   = 0;
+  document.getElementById('sel-rot').value = 0;
+  document.getElementById('sel-scale').value = 100;
+};
+
+function selectLabel(entry) {
+  labelMeshes.forEach(e => {
+    if (e.mesh.material.color) e.mesh.material.color.set(0xffffff);
+  });
+  selectedLabel = entry;
+  document.getElementById('sel-panel').classList.add('active');
+  document.getElementById('sel-name').textContent = `"${entry.data.text}"`;
+  renderLabelList();
+}
+
+function deselectLabel() {
+  selectedLabel = null;
+  document.getElementById('sel-panel').classList.remove('active');
+  renderLabelList();
+}
+
+window.updateSelected = function() {
+  if (!selectedLabel) return;
+  const dx  = parseFloat(document.getElementById('sel-x').value) * 0.15;
+  const dz  = parseFloat(document.getElementById('sel-z').value) * 0.15;
+  const rot = parseFloat(document.getElementById('sel-rot').value) * Math.PI / 180;
+  const sc  = parseFloat(document.getElementById('sel-scale').value) / 100;
+
+  const { data } = selectedLabel;
+  selectedLabel.mesh.position.x = data.x + dx;
+  selectedLabel.mesh.position.z = data.z + dz;
+  selectedLabel.mesh.rotation.z = rot;
+  selectedLabel.mesh.scale.setScalar(sc);
+
+  // Сохранить в data
+  data.savedX   = data.x + dx;
+  data.savedZ   = data.z + dz;
+  data.rot      = rot;
+  data.scale    = sc;
+};
+
+// ── Drag labels with mouse ────────────────────────────────────────────────────
+function getNDC(e) {
+  const rect = renderer.domElement.getBoundingClientRect();
+  return new THREE.Vector2(
+    ((e.clientX - rect.left) / rect.width)  * 2 - 1,
+    -((e.clientY - rect.top)  / rect.height) * 2 + 1
+  );
+}
+
+function getRayHit(ndc) {
+  raycaster.setFromCamera(ndc, camera);
+  return raycaster.ray.intersectPlane(groundPlane, hitPoint) ? hitPoint.clone() : null;
+}
+
+function getLabelAtMouse(ndc) {
+  raycaster.setFromCamera(ndc, camera);
+  const meshes = labelMeshes.map(e => e.mesh);
+  const hits   = raycaster.intersectObjects(meshes, false);
+  if (!hits.length) return null;
+  return labelMeshes.find(e => e.mesh === hits[0].object) || null;
+}
+
+renderer.domElement.addEventListener('mousedown', e => {
+  if (e.button === 2) { // Правая кнопка — выбрать
+    const ndc   = getNDC(e);
+    const entry = getLabelAtMouse(ndc);
+    if (entry) selectLabel(entry);
+    else deselectLabel();
+    return;
+  }
+  if (e.button === 0) { // Левая — начать тащить
+    const ndc   = getNDC(e);
+    const entry = getLabelAtMouse(ndc);
+    if (entry) {
+      isDragging = true;
+      controls.enabled = false;
+      selectLabel(entry);
+      const hit = getRayHit(ndc);
+      if (hit) {
+        dragOffsetX = entry.mesh.position.x - hit.x;
+        dragOffsetZ = entry.mesh.position.z - hit.z;
+      }
+      e.stopPropagation();
+    }
+  }
+});
+
+renderer.domElement.addEventListener('mousemove', e => {
+  if (!isDragging || !selectedLabel) return;
+  const ndc = getNDC(e);
+  const hit = getRayHit(ndc);
+  if (hit) {
+    selectedLabel.mesh.position.x = hit.x + dragOffsetX;
+    selectedLabel.mesh.position.z = hit.z + dragOffsetZ;
+    selectedLabel.data.savedX     = selectedLabel.mesh.position.x;
+    selectedLabel.data.savedZ     = selectedLabel.mesh.position.z;
+  }
+});
+
+renderer.domElement.addEventListener('mouseup', e => {
+  if (e.button === 0 && isDragging) {
+    isDragging = false;
+    controls.enabled = true;
+  }
+});
+
+renderer.domElement.addEventListener('contextmenu', e => e.preventDefault());
+
+// ── Save / Export / Clear ─────────────────────────────────────────────────────
+window.saveLabels = function() {
+  const data = labelMeshes.map(e => ({
+    text:  e.data.text,
+    color: e.data.color,
+    size:  e.data.size,
+    x:     parseFloat((e.data.savedX ?? e.mesh.position.x).toFixed(3)),
+    z:     parseFloat((e.data.savedZ ?? e.mesh.position.z).toFixed(3)),
+    rot:   parseFloat((e.data.rot ?? 0).toFixed(3)),
+    scale: parseFloat((e.data.scale ?? 1.0).toFixed(2)),
+  }));
+  localStorage.setItem('ws2_labels', JSON.stringify(data));
+  showToast('СОХРАНЕНО');
+};
+
+window.exportJSON = function() {
+  const data = labelMeshes.map(e => ({
+    text:  e.data.text,
+    color: e.data.color,
+    size:  e.data.size,
+    x:     parseFloat((e.data.savedX ?? e.mesh.position.x).toFixed(3)),
+    z:     parseFloat((e.data.savedZ ?? e.mesh.position.z).toFixed(3)),
+    rot:   parseFloat((e.data.rot ?? 0).toFixed(3)),
+    scale: parseFloat((e.data.scale ?? 1.0).toFixed(2)),
+  }));
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a    = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'world-labels.json';
+  a.click();
+  showToast('ЭКСПОРТ ГОТОВ');
+};
+
+window.clearAll = function() {
+  labelMeshes.forEach(e => scene.remove(e.mesh));
+  labelMeshes.length = 0;
+  selectedLabel = null;
+  document.getElementById('sel-panel').classList.remove('active');
+  localStorage.removeItem('ws2_labels');
+  updateLabelList();
+  showToast('ОЧИЩЕНО');
+};
+
+// ── Spawn label from data object ──────────────────────────────────────────────
+function spawnLabel(d) {
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(ROW_W * 0.8, ROW_H * 0.65),
+    new THREE.MeshBasicMaterial({
+      map: makeCanvasTexture(d.text, d.color, d.size),
+      transparent: true, depthWrite: false, side: THREE.DoubleSide,
+    })
+  );
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.rotation.z = d.rot || 0;
+  mesh.position.set(d.x, 0.03, d.z);
+  mesh.scale.setScalar(d.scale || 1.0);
+  scene.add(mesh);
+  labelMeshes.push({ mesh, data: { ...d, savedX: d.x, savedZ: d.z } });
+}
+
+// ── Load: сначала JSON-файл, потом localStorage ───────────────────────────────
+async function loadSaved() {
+  // 1. Пробуем загрузить js/world-labels.json
+  try {
+    const res  = await fetch('js/world-labels.json');
+    if (res.ok) {
+      const data = await res.json();
+      data.forEach(spawnLabel);
+      updateLabelList();
+      showToast('ЗАГРУЖЕНО ИЗ ФАЙЛА');
+      return; // файл найден — localStorage не используем
+    }
+  } catch(e) {}
+
+  // 2. Fallback — localStorage
+  const raw = localStorage.getItem('ws2_labels');
+  if (!raw) return;
+  try {
+    JSON.parse(raw).forEach(spawnLabel);
+    updateLabelList();
+    showToast('ЗАГРУЖЕНО ИЗ ПАМЯТИ');
+  } catch(e) {}
+}
+
+// ── Label list UI ─────────────────────────────────────────────────────────────
+function renderLabelList() {
+  const list = document.getElementById('label-list');
+  list.innerHTML = '';
+  labelMeshes.forEach((entry, i) => {
+    const div = document.createElement('div');
+    div.className = 'lbl-item' + (entry === selectedLabel ? ' selected' : '');
+    div.innerHTML = `
+      <span class="lbl-text">"${entry.data.text}"</span>
+      <span class="lbl-del" onclick="deleteLabel(${i})">✕</span>
+    `;
+    div.addEventListener('click', e => { if (!e.target.classList.contains('lbl-del')) selectLabel(entry); });
+    list.appendChild(div);
+  });
+}
+function updateLabelList() { renderLabelList(); }
+
+window.deleteLabel = function(i) {
+  const entry = labelMeshes[i];
+  scene.remove(entry.mesh);
+  labelMeshes.splice(i, 1);
+  if (selectedLabel === entry) deselectLabel();
+  else renderLabelList();
+};
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = '1';
+  setTimeout(() => t.style.opacity = '0', 1800);
+}
+
+// ── Resize ────────────────────────────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  const w = window.innerWidth - 240, h = window.innerHeight;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+});
+
+// ── Loop ──────────────────────────────────────────────────────────────────────
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+loadSaved();
+</script>
+</body>
+</html>

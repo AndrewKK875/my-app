@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>HAVAL Road Rush 2</title>
+  <!-- Preload critical assets -->
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" as="script" crossorigin>
+  <link rel="preload" href="assets/models/tank300.glb" as="fetch" crossorigin>
+  <link rel="preload" href="assets/models/F7.glb"      as="fetch" crossorigin>
+  <link rel="dns-prefetch" href="https://www.gstatic.com">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { overflow: hidden; background: #000; touch-action: none; font-family: 'Arial Black', Arial, sans-serif; }
+    canvas { display: block; }
+
+    /* ── Loading ── */
+    #loading {
+      position: fixed; inset: 0; background: #0a0a14;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 200;
+      transition: opacity 0.5s;
+    }
+    #loading .brand { color: #FF6B00; font-size: 11px; letter-spacing: 6px; }
+    #loading .title { color: #fff; font-size: 28px; letter-spacing: 4px; font-weight: 900; }
+    #load-bar-bg { width: 160px; height: 2px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 20px; overflow: hidden; }
+    #load-bar    { height: 100%; width: 0%; background: #FF6B00; border-radius: 2px; transition: width 0.3s; }
+
+    /* ── HUD ── */
+    #hud { position: fixed; inset: 0; pointer-events: none; }
+    #score-wrap {
+      position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center;
+    }
+    #score { color: #fff; font-size: 36px; font-weight: 900; letter-spacing: 2px; text-shadow: 0 2px 8px rgba(0,0,0,0.7); }
+    #best  { color: rgba(255,255,255,0.4); font-size: 10px; letter-spacing: 3px; }
+    #brand { position: absolute; top: 16px; left: 16px; color: #FF6B00; font-size: 11px; letter-spacing: 4px; }
+    #back  { position: absolute; top: 16px; right: 16px; color: rgba(255,255,255,0.3); font-size: 10px; letter-spacing: 2px; pointer-events: all; text-decoration: none; }
+    #back:hover { color: #FF6B00; }
+
+    /* ── Controls ── */
+    #controls {
+      position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      pointer-events: all;
+    }
+    .ctrl-row { display: flex; gap: 6px; }
+    .btn {
+      width: 56px; height: 56px; border-radius: 14px;
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+      color: #fff; font-size: 20px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+      transition: background 0.1s;
+    }
+    .btn:active { background: rgba(255,107,0,0.3); border-color: #FF6B00; }
+
+    /* ── Game Over ── */
+    #gameover {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+      display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+      z-index: 100; backdrop-filter: blur(6px);
+    }
+    #gameover h1 { color: #fff; font-size: 40px; letter-spacing: 6px; font-weight: 900; }
+    #gameover .score-label { color: rgba(255,255,255,0.5); font-size: 11px; letter-spacing: 3px; }
+    #gameover .score-val   { color: #FF6B00; font-size: 52px; font-weight: 900; letter-spacing: 2px; }
+    #gameover .best-row    { color: rgba(255,255,255,0.35); font-size: 11px; letter-spacing: 2px; }
+    .btn-restart {
+      margin-top: 8px; background: #FF6B00; color: #000; border: none;
+      font-family: inherit; font-size: 16px; font-weight: 900; letter-spacing: 4px;
+      padding: 16px 48px; border-radius: 4px; cursor: pointer;
+      box-shadow: 0 4px 24px rgba(255,107,0,0.4);
+    }
+    .btn-restart:hover { filter: brightness(1.1); }
+    .btn-menu { background: none; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.5); font-family: inherit; font-size: 11px; letter-spacing: 3px; padding: 10px 32px; border-radius: 4px; cursor: pointer; }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+<div id="loading">
+  <div class="brand">HAVAL</div>
+  <div class="title">ROAD RUSH 2</div>
+  <div id="load-bar-bg"><div id="load-bar"></div></div>
+</div>
+
+<div id="hud">
+  <div id="brand">HAVAL</div>
+  <div id="score-wrap">
+    <div id="score">0</div>
+    <div id="best">РЕКОРД: <span id="best-val">0</span></div>
+  </div>
+  <a id="back" href="index.html">← МЕНЮ</a>
+
+  <div id="controls">
+    <div class="ctrl-row"><div class="btn" id="btn-up">▲</div></div>
+    <div class="ctrl-row">
+      <div class="btn" id="btn-left">◄</div>
+      <div class="btn" id="btn-down">▼</div>
+      <div class="btn" id="btn-right">►</div>
+    </div>
+  </div>
+</div>
+
+<div id="gameover">
+  <h1>GAME OVER</h1>
+  <div class="score-label">СЧЁТ</div>
+  <div class="score-val" id="go-score">0</div>
+  <div class="best-row">РЕКОРД: <span id="go-best">0</span></div>
+  <button class="btn-restart" onclick="restartGame()">ЕЩЁ РАЗ</button>
+  <button class="btn-menu" onclick="location.href='index.html'">МЕНЮ</button>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader }  from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+
+// ── Progress ──────────────────────────────────────────────────────────────────
+const loadBarEl = document.getElementById('load-bar');
+function setProgress(p) { loadBarEl.style.width = p + '%'; }
+function hideLoading() {
+  setProgress(100);
+  setTimeout(() => {
+    const el = document.getElementById('loading');
+    el.style.opacity = '0';
+    setTimeout(() => el.remove(), 500);
+  }, 400);
+}
+setProgress(5);
+
+// ── Constants ─────────────────────────────────────────────────────────────────
+const TILE      = 1.2;
+const ROW_H     = 1.5;
+const HALF      = 4;          // tiles left/right
+const ROW_W     = (HALF * 2 + 3) * TILE; // 13.2
+const AHEAD     = 22;
+const BEHIND    = 6;
+const TARGET_SZ = 1.0;       // GLB normalize target
+const HALF_ROAD = (HALF + 3) * TILE;
+
+// ── Best score ────────────────────────────────────────────────────────────────
+let bestScore = parseInt(localStorage.getItem('hrr2_best') || '0');
+document.getElementById('best-val').textContent = bestScore;
+document.getElementById('go-best').textContent  = bestScore;
+
+// ── Renderer ──────────────────────────────────────────────────────────────────
+const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
+const renderer = new THREE.WebGLRenderer({ antialias: !isMobile, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
+renderer.shadowMap.autoUpdate = false;
+document.body.appendChild(renderer.domElement);
+
+// ── Scene ─────────────────────────────────────────────────────────────────────
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x87CEEB);
+scene.fog = new THREE.Fog(0x87CEEB, 28, 52);
+
+// ── Camera (orthographic isometric) ──────────────────────────────────────────
+const VIEW = 7.65;
+let aspect  = window.innerWidth / window.innerHeight;
+const camera = new THREE.OrthographicCamera(
+  -VIEW * aspect, VIEW * aspect, VIEW, -VIEW, 0.1, 200
+);
+const CAM_OFF = new THREE.Vector3(0, 14, 14);
+camera.position.copy(CAM_OFF);
+camera.lookAt(0, 0, 0);
+
+// ── Lighting ──────────────────────────────────────────────────────────────────
+const sun = new THREE.DirectionalLight(0xFFF5D0, 2.0);
+sun.position.set(8, 20, 10);
+sun.castShadow = true;
+sun.shadow.mapSize.set(512, 512);
+sun.shadow.camera.left = -20; sun.shadow.camera.right  =  20;
+sun.shadow.camera.top  =  20; sun.shadow.camera.bottom = -20;
+sun.shadow.camera.near = 0.1; sun.shadow.camera.far    = 80;
+scene.add(sun);
+scene.add(new THREE.HemisphereLight(0x87CEEB, 0x8B7355, 0.8));
+
+setProgress(15);
+
+// ── Shared mats & geos ────────────────────────────────────────────────────────
+const MATS = {
+  grass:  [new THREE.MeshLambertMaterial({color:0x5BBF4E}), new THREE.MeshLambertMaterial({color:0x4CAF50})],
+  road:   [new THREE.MeshLambertMaterial({color:0x546E7A}), new THREE.MeshLambertMaterial({color:0x4A6070})],
+  water:  [new THREE.MeshLambertMaterial({color:0x1E88E5}), new THREE.MeshLambertMaterial({color:0x1565C0})],
+  curb:   new THREE.MeshLambertMaterial({color:0x78909C}),
+  dash:   new THREE.MeshLambertMaterial({color:0xEEEEEE}),
+  trunk:  new THREE.MeshLambertMaterial({color:0x795548}),
+  leaf1:  new THREE.MeshLambertMaterial({color:0x388E3C}),
+  leaf2:  new THREE.MeshLambertMaterial({color:0x43A047}),
+  log:    new THREE.MeshLambertMaterial({color:0x8D6E63}),
+  logcap: new THREE.MeshLambertMaterial({color:0x6D4C41}),
+  player: new THREE.MeshLambertMaterial({color:0xFFFDE7}),
+  pTop:   new THREE.MeshLambertMaterial({color:0xFF6B00}),
+};
+const GEO = {
+  ground: new THREE.BoxGeometry(ROW_W, 0.2, ROW_H),
+  curb:   new THREE.BoxGeometry(0.5, 0.22, ROW_H),
+  dash:   new THREE.BoxGeometry(0.45, 0.01, 0.12),
+  trunk:  new THREE.BoxGeometry(0.22, 0.5, 0.22),
+  leaf:   new THREE.BoxGeometry(0.72, 0.72, 0.72),
+  wheel:  new THREE.BoxGeometry(0.14, 0.24, 0.24),
+};
+
+// ── GLB Models ────────────────────────────────────────────────────────────────
+const TEMPLATES = {};
+const MODEL_FILES = {
+  tank300: 'assets/models/tank300.glb',
+  f7:      'assets/models/F7.glb',
+  dargo:   'assets/models/Dargo.glb',
+  jolion:  'assets/models/Jolion.glb',
+  poer:    'assets/models/poer.glb',
+};
+const MODEL_KEYS = Object.keys(MODEL_FILES);
+
+function normalizeGLB(model) {
+  const box  = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  model.scale.setScalar(TARGET_SZ / Math.max(size.x, size.y, size.z));
+  box.setFromObject(model);
+  const c = box.getCenter(new THREE.Vector3());
+  model.position.x -= c.x;
+  model.position.z -= c.z;
+  model.position.y -= box.min.y;
+  model.traverse(child => { if (child.isMesh) { child.castShadow = true; child.receiveShadow = true; } });
+  model.rotation.y = Math.PI;
+}
+
+// Вокселевая заглушка машины (пока GLB не загружен)
+function buildVoxelVehicle() {
+  const g    = new THREE.Group();
+  const matB = new THREE.MeshLambertMaterial({ color: 0x607D8B });
+  const matR = new THREE.MeshLambertMaterial({ color: 0x455A64 });
+  const body = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.38, 0.56), matB);
+  body.position.y = 0.22; body.castShadow = true; g.add(body);
+  const roof = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.24, 0.52), matR);
+  roof.position.set(-0.05, 0.51, 0); g.add(roof);
+  return g;
+}
+
+// Подменяем воксель на GLB у всех машин этого типа
+function swapVehiclesGLB(key) {
+  vehicles.filter(v => v.key === key).forEach(v => {
+    while (v.mesh.children.length) v.mesh.remove(v.mesh.children[0]);
+    const clone = TEMPLATES[key].clone(true);
+    if (v.direction === -1) clone.rotation.y = Math.PI; else clone.rotation.y = 0;
+    v.mesh.add(clone);
+  });
+}
+
+// Фоновая загрузка GLB — игра не ждёт
+function loadModelsBackground() {
+  const draco = new DRACOLoader();
+  // Google CDN — кешируется в браузере между сайтами
+  draco.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+  draco.preload(); // инициализируем WASM заранее
+  const loader = new GLTFLoader();
+  loader.setDRACOLoader(draco);
+
+  MODEL_KEYS.forEach(key => {
+    loader.load(MODEL_FILES[key], gltf => {
+      normalizeGLB(gltf.scene);
+      TEMPLATES[key] = gltf.scene;
+      swapVehiclesGLB(key); // заменяем воксели сразу
+    }, null, () => {});
+  });
+}
+
+// ── World state ───────────────────────────────────────────────────────────────
+const rows     = [];
+const vehicles = [];
+const logs     = [];
+let nextRow    = 0;
+
+// ── Row builders ──────────────────────────────────────────────────────────────
+function addGround(group, mat) {
+  const m = new THREE.Mesh(GEO.ground, mat);
+  m.position.y = -0.1; m.receiveShadow = true; group.add(m);
+}
+
+function buildGrassRow(idx) {
+  const g = new THREE.Group();
+  addGround(g, MATS.grass[idx % 2]);
+  return { group: g, type: 'grass', trees: new Set() };
+}
+
+function buildForestRow(idx) {
+  const g = new THREE.Group();
+  addGround(g, MATS.grass[idx % 2]);
+  const trees = new Set();
+  const tiles  = [];
+  for (let t = -HALF; t <= HALF; t++) tiles.push(t);
+  shuffle(tiles);
+  const count = 2 + Math.floor(Math.random() * 3);
+  for (let i = 0; i < Math.min(count, tiles.length); i++) {
+    const t = tiles[i];
+    trees.add(t);
+    const tree = makeTree();
+    tree.position.set(t * TILE, 0, 0);
+    g.add(tree);
+  }
+  return { group: g, type: 'forest', trees };
+}
+
+function makeTree() {
+  const g = new THREE.Group();
+  const h = 0.8 + Math.random() * 0.5;
+  const trunk = new THREE.Mesh(GEO.trunk, MATS.trunk);
+  trunk.position.y = 0.25; trunk.castShadow = true; g.add(trunk);
+  const leaf = new THREE.Mesh(GEO.leaf, Math.random() > 0.5 ? MATS.leaf1 : MATS.leaf2);
+  leaf.position.y = 0.5 + h * 0.4;
+  leaf.scale.setScalar(0.7 + Math.random() * 0.5);
+  leaf.castShadow = true; g.add(leaf);
+  return g;
+}
+
+function buildRoadRow(idx) {
+  const g = new THREE.Group();
+  addGround(g, MATS.road[idx % 2]);
+  // Обочины
+  for (const ox of [-ROW_W/2 + 0.25, ROW_W/2 - 0.25]) {
+    const c = new THREE.Mesh(GEO.curb, MATS.curb);
+    c.position.set(ox, -0.09, 0); g.add(c);
+  }
+  // Разметка
+  const dc = Math.floor(ROW_W / 1.2);
+  for (let i = 0; i < dc; i++) {
+    const d = new THREE.Mesh(GEO.dash, MATS.dash);
+    d.position.set(-ROW_W/2 + i*1.2 + 0.6, 0.01, 0); g.add(d);
+  }
+  return { group: g, type: 'road', trees: new Set() };
+}
+
+function buildWaterRow(idx) {
+  const g = new THREE.Group();
+  addGround(g, MATS.water[idx % 2]);
+  return { group: g, type: 'water', trees: new Set() };
+}
+
+function pickType(idx) {
+  if (idx < 3)  return 'grass';
+  const r = Math.random();
+  if (r < 0.25) return 'forest';
+  if (r < 0.52) return 'road';
+  if (r < 0.72) return 'water';
+  return 'grass';
+}
+
+function addRow(idx) {
+  const type = pickType(idx);
+  let   row;
+  if      (type === 'road')   row = buildRoadRow(idx);
+  else if (type === 'water')  row = buildWaterRow(idx);
+  else if (type === 'forest') row = buildForestRow(idx);
+  else                        row = buildGrassRow(idx);
+
+  row.index = idx;
+  row.group.position.z = -idx * ROW_H;
+  scene.add(row.group);
+  rows.push(row);
+
+  if (type === 'road') {
+    const dir   = Math.random() > 0.5 ? 1 : -1;
+    const speed = 2.5 + Math.random() * 3.5;
+    const count = 2 + Math.floor(Math.random() * 3);
+    const slotW = (HALF_ROAD * 2) / count;
+
+    for (let i = 0; i < count; i++) {
+      const key   = MODEL_KEYS[Math.floor(Math.random() * MODEL_KEYS.length)];
+      const pivot = new THREE.Group();
+      const tmpl  = TEMPLATES[key];
+      if (tmpl) {
+        const clone = tmpl.clone(true);
+        if (dir === -1) clone.rotation.y = Math.PI; else clone.rotation.y = 0;
+        pivot.add(clone);
+      } else {
+        // Воксель пока GLB не загружен
+        const vox = buildVoxelVehicle();
+        if (dir === -1) vox.rotation.y = Math.PI;
+        pivot.add(vox);
+      }
+
+      const x = -HALF_ROAD + i * slotW + slotW * 0.3 + Math.random() * slotW * 0.4;
+      pivot.position.set(x, 0, -idx * ROW_H);
+      scene.add(pivot);
+      vehicles.push({ mesh: pivot, row: idx, speed, direction: dir, width: 1.0, key });
+    }
+  }
+
+  if (type === 'water') {
+    const dir   = Math.random() > 0.5 ? 1 : -1;
+    const speed = 1.2 + Math.random() * 1.8;
+    const count = 2 + Math.floor(Math.random() * 2);
+    const sp    = ROW_W / count;
+    for (let i = 0; i < count; i++) {
+      const len  = 1.8 + Math.random() * 1.4;
+      const x    = -ROW_W/2 + i * sp + sp*0.2 + Math.random()*sp*0.5;
+      const lg   = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.BoxGeometry(len, 0.28, 0.55), MATS.log);
+      body.castShadow = true; lg.add(body);
+      for (const dx of [-len/2, len/2]) {
+        const cap = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.28,0.55), MATS.logcap);
+        cap.position.x = dx; lg.add(cap);
+      }
+      lg.position.set(x, 0.12, -idx * ROW_H);
+      scene.add(lg);
+      logs.push({ mesh: lg, row: idx, speed, direction: dir, length: len });
+    }
+  }
+  renderer.shadowMap.needsUpdate = true;
+}
+
+function removeRow(row) {
+  scene.remove(row.group);
+  for (let i = vehicles.length - 1; i >= 0; i--) {
+    if (vehicles[i].row === row.index) { scene.remove(vehicles[i].mesh); vehicles.splice(i, 1); }
+  }
+  for (let i = logs.length - 1; i >= 0; i--) {
+    if (logs[i].row === row.index) { scene.remove(logs[i].mesh); logs.splice(i, 1); }
+  }
+}
+
+function generateWorld() {
+  while (rows.length < AHEAD) { addRow(nextRow++); }
+}
+
+function trimWorld(playerRow) {
+  while (rows.length > 0 && rows[0].index < playerRow - BEHIND) {
+    removeRow(rows.shift());
+  }
+  while (nextRow < playerRow + AHEAD) { addRow(nextRow++); }
+}
+
+// ── Player ────────────────────────────────────────────────────────────────────
+const playerGroup = new THREE.Group();
+const pBody = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.55, 0.5), MATS.player);
+pBody.position.y = 0.28; pBody.castShadow = true; playerGroup.add(pBody);
+const pTop  = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.1, 0.5), MATS.pTop);
+pTop.position.y = 0.6; playerGroup.add(pTop);
+scene.add(playerGroup);
+
+const P = {
+  tile: 0, row: 0,
+  worldX: 0, worldZ: 0,
+  targetX: 0, targetZ: 0,
+  moving: false, alive: true,
+  ridingLog: null, ridingOffset: 0,
+  score: 0,
+};
+
+function playerWorldPos(tile, row) {
+  return { x: tile * TILE, z: -row * ROW_H };
+}
+
+function movePlayer(dTile, dRow) {
+  if (!P.alive || P.moving) return;
+  const newTile = P.tile + dTile;
+  const newRow  = P.row  + dRow;
+
+  if (newTile < -HALF || newTile > HALF) return;
+
+  // Проверка дерева
+  const targetRowData = rows.find(r => r.index === newRow);
+  if (targetRowData && targetRowData.trees.has(newTile)) return;
+
+  P.tile = newTile; P.row = newRow;
+  P.moving = true;
+  P.ridingLog = null;
+
+  const wp = playerWorldPos(P.tile, P.row);
+  P.targetX = wp.x; P.targetZ = wp.z;
+
+  if (newRow > P.score) {
+    P.score = newRow;
+    document.getElementById('score').textContent = P.score;
+    if (P.score > bestScore) {
+      bestScore = P.score;
+      localStorage.setItem('hrr2_best', bestScore);
+      document.getElementById('best-val').textContent = bestScore;
+    }
+  }
+  trimWorld(P.row);
+}
+
+// ── Camera target ─────────────────────────────────────────────────────────────
+const camTarget = new THREE.Vector3();
+
+// ── Game Over ─────────────────────────────────────────────────────────────────
+function triggerGameOver() {
+  if (!P.alive) return;
+  P.alive = false;
+  pBody.material = new THREE.MeshLambertMaterial({ color: 0xff2222 });
+  setTimeout(() => {
+    document.getElementById('go-score').textContent = P.score;
+    document.getElementById('go-best').textContent  = bestScore;
+    document.getElementById('gameover').style.display = 'flex';
+  }, 600);
+}
+
+window.restartGame = function() {
+  // Очищаем мир (без перезагрузки страницы)
+  [...rows].forEach(r => removeRow(r));
+  rows.length = 0;
+  vehicles.length = 0;
+  logs.length = 0;
+  nextRow = 0;
+
+  // Сбрасываем игрока
+  P.tile = 0; P.row = 0;
+  P.worldX = P.targetX = 0;
+  P.worldZ = P.targetZ = 0;
+  P.moving = false; P.alive = true;
+  P.ridingLog = null; P.score = 0;
+  pBody.material = MATS.player;
+  playerGroup.position.set(0, 0, 0);
+
+  // Сбрасываем камеру
+  camera.position.copy(CAM_OFF);
+  camera.lookAt(0, 0, 0);
+
+  // Сбрасываем UI
+  document.getElementById('score').textContent = 0;
+  document.getElementById('gameover').style.display = 'none';
+
+  // Генерируем новый мир
+  generateWorld();
+};
+
+// ── Controls (keyboard) ───────────────────────────────────────────────────────
+const keys = {};
+window.addEventListener('keydown', e => {
+  if (keys[e.code]) return;
+  keys[e.code] = true;
+  if (e.code === 'ArrowUp'    || e.code === 'KeyW') movePlayer(0,  1);
+  if (e.code === 'ArrowDown'  || e.code === 'KeyS') movePlayer(0, -1);
+  if (e.code === 'ArrowLeft'  || e.code === 'KeyA') movePlayer(-1, 0);
+  if (e.code === 'ArrowRight' || e.code === 'KeyD') movePlayer( 1, 0);
+  e.preventDefault();
+});
+window.addEventListener('keyup', e => { keys[e.code] = false; });
+
+// ── Controls (buttons) ────────────────────────────────────────────────────────
+document.getElementById('btn-up').addEventListener('click',    () => movePlayer(0, 1));
+document.getElementById('btn-down').addEventListener('click',  () => movePlayer(0, -1));
+document.getElementById('btn-left').addEventListener('click',  () => movePlayer(-1, 0));
+document.getElementById('btn-right').addEventListener('click', () => movePlayer(1, 0));
+
+// ── Controls (swipe) ─────────────────────────────────────────────────────────
+let swipeX = 0, swipeY = 0;
+renderer.domElement.addEventListener('touchstart', e => {
+  swipeX = e.touches[0].clientX;
+  swipeY = e.touches[0].clientY;
+}, { passive: true });
+renderer.domElement.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - swipeX;
+  const dy = e.changedTouches[0].clientY - swipeY;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 20) return;
+  if (Math.abs(dx) > Math.abs(dy)) movePlayer(dx > 0 ? 1 : -1, 0);
+  else                             movePlayer(0, dy < 0 ? 1 : -1);
+}, { passive: true });
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+// ── Resize ────────────────────────────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  aspect = window.innerWidth / window.innerHeight;
+  camera.left  = -VIEW * aspect; camera.right = VIEW * aspect;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ── Game Loop ─────────────────────────────────────────────────────────────────
+let last = 0;
+
+function loop(time) {
+  requestAnimationFrame(loop);
+  const dt = Math.min((time - last) / 1000, 0.05);
+  last = time;
+
+  if (!P.alive) { renderer.render(scene, camera); return; }
+
+  // Движение игрока (lerp)
+  const lerpSpeed = 12;
+  P.worldX += (P.targetX - P.worldX) * lerpSpeed * dt;
+  P.worldZ += (P.targetZ - P.worldZ) * lerpSpeed * dt;
+  if (P.moving && Math.abs(P.worldX - P.targetX) < 0.01 && Math.abs(P.worldZ - P.targetZ) < 0.01) {
+    P.worldX = P.targetX; P.worldZ = P.targetZ; P.moving = false;
+  }
+
+  // Прыжок (синус)
+  const jumpH = P.moving ? Math.sin(Math.PI * Math.min(
+    Math.max(Math.abs(P.worldZ - P.targetZ), Math.abs(P.worldX - P.targetX)) / ROW_H, 1
+  )) * 0.6 : 0;
+
+  // Движение брёвен
+  for (const log of logs) {
+    log.mesh.position.x += log.speed * log.direction * dt;
+    const hw = HALF_ROAD + log.length / 2;
+    if (log.direction > 0 && log.mesh.position.x >  hw) log.mesh.position.x = -hw;
+    if (log.direction < 0 && log.mesh.position.x < -hw) log.mesh.position.x =  hw;
+  }
+
+  // Движение машин
+  for (const v of vehicles) {
+    v.mesh.position.x += v.speed * v.direction * dt;
+    const edge = HALF_ROAD + v.width;
+    if (v.direction > 0 && v.mesh.position.x >  edge) v.mesh.position.x = -edge;
+    if (v.direction < 0 && v.mesh.position.x < -edge) v.mesh.position.x =  edge;
+  }
+
+  // Ездим на бревне
+  const rowData = rows.find(r => r.index === P.row);
+  if (rowData && rowData.type === 'water' && !P.moving) {
+    const rowLogs = logs.filter(l => l.row === P.row);
+    let onLog = null;
+    for (const lg of rowLogs) {
+      if (Math.abs(P.worldX - lg.mesh.position.x) < lg.length / 2 + 0.1) { onLog = lg; break; }
+    }
+    if (onLog) {
+      P.worldX  += onLog.speed * onLog.direction * dt;
+      P.targetX  = P.worldX;
+    } else if (!P.moving) {
+      triggerGameOver();
+    }
+    // Ограничение по краям воды
+    if (P.worldX < -HALF_ROAD || P.worldX > HALF_ROAD) triggerGameOver();
+  }
+
+  // Позиция игрока
+  playerGroup.position.set(P.worldX, jumpH, P.worldZ);
+
+  // Коллизия с машинами
+  if (!P.moving || rowData?.type === 'road') {
+    for (const v of vehicles) {
+      if (v.row !== P.row) continue;
+      if (Math.abs(P.worldX - v.mesh.position.x) < v.width * 0.45 + 0.25) {
+        triggerGameOver(); break;
+      }
+    }
+  }
+
+  // Игрок упал за камеру
+  const camZ = camera.position.z - CAM_OFF.z;
+  if (P.worldZ > -P.row * ROW_H + ROW_H * 3 + 3) triggerGameOver();
+
+  // Камера следует за игроком
+  camTarget.set(P.worldX * 0.3, 0, P.worldZ);
+  camera.position.lerp(new THREE.Vector3(
+    camTarget.x + CAM_OFF.x,
+    CAM_OFF.y,
+    camTarget.z + CAM_OFF.z
+  ), 8 * dt);
+  camera.lookAt(camTarget.x, 0, camTarget.z);
+  sun.position.set(P.worldX + 8, 20, P.worldZ + 10);
+  sun.target.position.set(P.worldX, 0, P.worldZ);
+  sun.target.updateMatrixWorld();
+  renderer.shadowMap.needsUpdate = true;
+
+  renderer.render(scene, camera);
+}
+
+// ── World labels from js/world-labels.json ────────────────────────────────────
+async function loadWorldLabels() {
+  try {
+    const res = await fetch('js/world-labels.json');
+    if (!res.ok) return;
+    const labels = await res.json();
+    labels.forEach(d => {
+      const cv  = document.createElement('canvas');
+      cv.width  = 512; cv.height = 128;
+      const ctx = cv.getContext('2d');
+      ctx.clearRect(0, 0, 512, 128);
+      ctx.fillStyle    = d.color || '#fff';
+      ctx.font         = `bold ${(d.size || 36) * 2}px Arial Black, Arial`;
+      ctx.textAlign    = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(d.text, 256, 64);
+      const mesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(ROW_W * 0.8, ROW_H * 0.65),
+        new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false })
+      );
+      mesh.rotation.x = -Math.PI / 2;
+      mesh.rotation.z = d.rot || 0;
+      mesh.position.set(d.x, 0.03, d.z);
+      mesh.scale.setScalar(d.scale || 1.0);
+      scene.add(mesh);
+    });
+  } catch(e) {}
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+async function init() {
+  setProgress(40);
+
+  // Генерируем мир сразу — без ожидания GLB
+  generateWorld();
+  setProgress(80);
+  await loadWorldLabels();
+  const wp = playerWorldPos(0, 0);
+  P.worldX = P.targetX = wp.x;
+  P.worldZ = P.targetZ = wp.z;
+  playerGroup.position.set(P.worldX, 0, P.worldZ);
+
+  setProgress(95);
+  hideLoading();
+  requestAnimationFrame(loop);
+
+  // GLB грузятся в фоне — не блокируют игру
+  loadModelsBackground();
+}
+
+init();
+</script>
+</body>
+</html>

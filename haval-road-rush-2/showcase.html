@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Vehicle Showcase — Canonical Coords</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #1a1a2e; overflow: hidden; font-family: 'Courier New', monospace; }
+    canvas { display: block; }
+
+    /* Info panel */
+    #panel {
+      position: fixed; top: 16px; left: 16px;
+      background: rgba(0,0,0,0.75);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      padding: 14px 18px;
+      color: #fff;
+      font-size: 12px;
+      line-height: 2;
+      min-width: 240px;
+    }
+    #panel h2 { color: #FF6B00; font-size: 13px; margin-bottom: 8px; letter-spacing: 1px; }
+    .row { display: flex; justify-content: space-between; gap: 16px; }
+    .key { color: #aaa; }
+    .val { color: #76ff03; font-weight: bold; }
+    .dir { color: #29b6f6; }
+
+    /* Vehicle labels */
+    #labels {
+      position: fixed; bottom: 80px; left: 0; right: 0;
+      display: flex; justify-content: center; gap: 56px;
+      pointer-events: none;
+    }
+    .label { color: #fff; text-align: center; }
+    .label .name { font-weight: bold; font-size: 14px; color: #FF6B00; }
+    .label .rot  { font-size: 11px; color: #76ff03; margin-top: 2px; }
+
+    /* Controls hint */
+    #hint {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      color: rgba(255,255,255,0.4); font-size: 11px; text-align: center;
+    }
+
+    /* Direction buttons */
+    #dir-controls {
+      position: fixed; top: 16px; right: 16px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .dir-btn {
+      background: rgba(255,107,0,0.2); border: 1px solid #FF6B00;
+      color: #FF6B00; padding: 8px 14px; border-radius: 6px;
+      cursor: pointer; font-size: 12px; font-family: 'Courier New', monospace;
+    }
+    .dir-btn:hover { background: rgba(255,107,0,0.4); }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+<div id="panel">
+  <h2>COORDINATE SYSTEM</h2>
+  <div class="row"><span class="key">→ +X</span><span class="dir">direction = +1 (вправо)</span></div>
+  <div class="row"><span class="key">← -X</span><span class="dir">direction = -1 (влево)</span></div>
+  <div class="row"><span class="key">↑ +Z</span><span class="key">в экран</span></div>
+  <div style="margin-top:8px; border-top:1px solid rgba(255,255,255,0.1); padding-top:8px;">
+    <div class="row"><span class="key">Tank 300</span>  <span class="val" id="r-suv">rotation.y = ?</span></div>
+    <div class="row"><span class="key">F7</span>        <span class="val" id="r-car">rotation.y = 0</span></div>
+    <div class="row"><span class="key">Dargo</span>    <span class="val" id="r-truck">rotation.y = 0</span></div>
+    <div class="row"><span class="key">Jolion</span>   <span class="val" id="r-bus">rotation.y = 0</span></div>
+    <div class="row"><span class="key">Poer</span>     <span class="val" id="r-poer">rotation.y = 0</span></div>
+  </div>
+</div>
+
+<div id="dir-controls">
+  <div style="color:#aaa; font-size:11px; text-align:center;">Направление</div>
+  <button class="dir-btn" id="btn-right">→ +1 (вправо)</button>
+  <button class="dir-btn" id="btn-left">← -1 (влево)</button>
+  <div style="color:#aaa; font-size:11px; text-align:center; margin-top:4px;">Базовый поворот</div>
+  <button class="dir-btn" id="btn-tank300-plus">Tank 300 +90°</button>
+  <button class="dir-btn" id="btn-tank300-minus">Tank 300 −90°</button>
+  <button class="dir-btn" id="btn-f7-plus">F7 +90°</button>
+  <button class="dir-btn" id="btn-f7-minus">F7 −90°</button>
+  <button class="dir-btn" id="btn-dargo-plus">Dargo +90°</button>
+  <button class="dir-btn" id="btn-dargo-minus">Dargo −90°</button>
+  <button class="dir-btn" id="btn-jolion-plus">Jolion +90°</button>
+  <button class="dir-btn" id="btn-jolion-minus">Jolion −90°</button>
+  <button class="dir-btn" id="btn-poer-plus">Poer +90°</button>
+  <button class="dir-btn" id="btn-poer-minus">Poer −90°</button>
+</div>
+
+<div id="labels">
+  <div class="label"><div class="name">#1 Tank 300</div><div class="rot" id="lbl-suv"></div></div>
+  <div class="label"><div class="name">#2 F7</div>      <div class="rot" id="lbl-car"></div></div>
+  <div class="label"><div class="name">#3 Dargo</div>   <div class="rot" id="lbl-truck"></div></div>
+  <div class="label"><div class="name">#4 Jolion</div>  <div class="rot" id="lbl-bus"></div></div>
+  <div class="label"><div class="name">#5 Poer</div>    <div class="rot" id="lbl-poer"></div></div>
+</div>
+
+<div id="hint">Перетащи мышью для вращения · Колесо — зум · Кнопки справа — тест направления</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ── Renderer ──────────────────────────────────────────────────────────────────
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+document.body.appendChild(renderer.domElement);
+
+// ── Scene / Camera ────────────────────────────────────────────────────────────
+const scene  = new THREE.Scene();
+scene.background = new THREE.Color(0x1a1a2e);
+
+const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 100);
+camera.position.set(0, 4, 9);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 0.5, 0);
+controls.enablePan = false;
+controls.minDistance = 4;
+controls.maxDistance = 16;
+controls.maxPolarAngle = Math.PI / 2.1;
+controls.update();
+
+// ── Lighting ──────────────────────────────────────────────────────────────────
+const sun = new THREE.DirectionalLight(0xffffff, 2.2);
+sun.position.set(5, 10, 6);
+sun.castShadow = true;
+sun.shadow.mapSize.set(1024, 1024);
+scene.add(sun, new THREE.HemisphereLight(0x6EC6F5, 0x3a3a3a, 0.9));
+
+// ── Ground / Road ─────────────────────────────────────────────────────────────
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(28, 5),
+  new THREE.MeshLambertMaterial({ color: 0x546E7A })
+);
+ground.rotation.x = -Math.PI / 2;
+ground.receiveShadow = true;
+scene.add(ground);
+
+// Road dashes
+const dashMat = new THREE.MeshLambertMaterial({ color: 0xdddddd });
+const dashGeo = new THREE.BoxGeometry(0.55, 0.01, 0.10);
+for (let x = -10; x <= 10; x += 1.4) {
+  const d = new THREE.Mesh(dashGeo, dashMat);
+  d.position.set(x, 0.005, 0);
+  scene.add(d);
+}
+
+// ── World axes ────────────────────────────────────────────────────────────────
+// +X красная стрелка (направление движения direction=+1)
+scene.add(new THREE.ArrowHelper(
+  new THREE.Vector3(1, 0, 0), new THREE.Vector3(-6, 0.05, 1.8), 3.5, 0xff1744, 0.3, 0.2
+));
+// -X синяя стрелка (direction=-1)
+scene.add(new THREE.ArrowHelper(
+  new THREE.Vector3(-1, 0, 0), new THREE.Vector3(6, 0.05, 1.8), 3.5, 0x29b6f6, 0.3, 0.2
+));
+
+// Подписи осей (маленькие плашки)
+function makeAxisLabel(text, pos, color) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 128; canvas.height = 48;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = color;
+  ctx.font = 'bold 28px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, 64, 24);
+  const tex = new THREE.CanvasTexture(canvas);
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.9, 0.34),
+    new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })
+  );
+  mesh.position.copy(pos);
+  mesh.rotation.x = -Math.PI / 2;
+  scene.add(mesh);
+}
+makeAxisLabel('+X  dir=+1', new THREE.Vector3(-3.5, 0.02, 2.4), '#ff1744');
+makeAxisLabel('-X  dir=-1', new THREE.Vector3( 3.5, 0.02, 2.4), '#29b6f6');
+
+// ── Номера над машинами ───────────────────────────────────────────────────────
+function makeNumLabel(num, name, x) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256; canvas.height = 96;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#FF6B00';
+  ctx.font = 'bold 56px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(`#${num}`, 80, 48);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 28px Arial';
+  ctx.fillText(name, 176, 48);
+  const tex = new THREE.CanvasTexture(canvas);
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(2.0, 0.75),
+    new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, side: THREE.DoubleSide })
+  );
+  mesh.position.set(x, 1.6, 0);
+  scene.add(mesh);
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function normalizeModel(model, targetSize = 1.8) {
+  const box  = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const maxDim = Math.max(size.x, size.y, size.z);
+  const scale = targetSize / maxDim;
+  model.scale.setScalar(scale);
+  box.setFromObject(model);
+  const center = box.getCenter(new THREE.Vector3());
+  model.position.x -= center.x;
+  model.position.z -= center.z;
+  model.position.y -= box.min.y;
+  model.traverse(c => { if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; } });
+  console.log(`[normalize] size=${size.x.toFixed(2)}x${size.y.toFixed(2)}x${size.z.toFixed(2)} → scale=${scale.toFixed(4)}, minY=${box.min.y.toFixed(3)}`);
+}
+
+function addFrontArrow(group, offsetX = 0.7) {
+  group.add(new THREE.ArrowHelper(
+    new THREE.Vector3(1, 0, 0),
+    new THREE.Vector3(offsetX, 0.6, 0),
+    0.6, 0x76ff03, 0.18, 0.12
+  ));
+}
+
+// ── Разместить машины ─────────────────────────────────────────────────────────
+const POS = [-6.4, -3.2, 0, 3.2, 6.4];
+
+makeNumLabel(1, 'Tank 300', POS[0]);
+makeNumLabel(2, 'F7',      POS[1]);
+makeNumLabel(3, 'Dargo',   POS[2]);
+makeNumLabel(4, 'Jolion',  POS[3]);
+makeNumLabel(5, 'Poer',    POS[4]);
+
+// ── GLB модели — данные и состояние ──────────────────────────────────────────
+const MODELS = {
+  tank300: { file: 'tank300.glb', pos: POS[0], rotY: Math.PI, pivot: null, model: null },
+  f7:      { file: 'F7.glb',      pos: POS[1], rotY: Math.PI, pivot: null, model: null },
+  dargo:   { file: 'Dargo.glb',   pos: POS[2], rotY: Math.PI, pivot: null, model: null },
+  jolion:  { file: 'Jolion.glb',  pos: POS[3], rotY: Math.PI, pivot: null, model: null },
+  poer:    { file: 'poer.glb',    pos: POS[4], rotY: Math.PI, pivot: null, model: null },
+};
+
+const draco = new DRACOLoader();
+draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/draco/');
+const loader = new GLTFLoader();
+loader.setDRACOLoader(draco);
+Object.entries(MODELS).forEach(([key, cfg]) => {
+  cfg.pivot = new THREE.Group();
+  cfg.pivot.position.set(cfg.pos, 0, 0);
+  scene.add(cfg.pivot);
+
+  loader.load(`assets/models/${cfg.file}`, (gltf) => {
+    const model = gltf.scene;
+    normalizeModel(model);
+    model.rotation.y = cfg.rotY;
+    cfg.model = model;
+    cfg.pivot.add(model);
+    addFrontArrow(cfg.pivot, 0.7);
+    console.log(`[loaded] ${cfg.file} → pivot.y=${cfg.pivot.position.y.toFixed(2)}`);
+    updateLabels();
+  }, undefined, (err) => {
+    console.error(`[error] ${cfg.file}:`, err);
+  });
+});
+
+// ── Направление движения ──────────────────────────────────────────────────────
+let currentDir = 1;
+
+function applyDirection(dir) {
+  currentDir = dir;
+  Object.values(MODELS).forEach(cfg => {
+    if (cfg.pivot) cfg.pivot.rotation.y = dir === -1 ? Math.PI : 0;
+  });
+  updateLabels();
+}
+
+document.getElementById('btn-right').onclick = () => applyDirection(1);
+document.getElementById('btn-left').onclick  = () => applyDirection(-1);
+
+// ── Кнопки базового поворота для каждой модели ────────────────────────────────
+Object.entries(MODELS).forEach(([key, cfg]) => {
+  const btnP = document.getElementById(`btn-${key}-plus`);
+  const btnM = document.getElementById(`btn-${key}-minus`);
+  if (btnP) btnP.onclick = () => { if (!cfg.model) return; cfg.rotY += Math.PI / 2; cfg.model.rotation.y = cfg.rotY; updateLabels(); };
+  if (btnM) btnM.onclick = () => { if (!cfg.model) return; cfg.rotY -= Math.PI / 2; cfg.model.rotation.y = cfg.rotY; updateLabels(); };
+});
+
+// ── Labels ────────────────────────────────────────────────────────────────────
+function fmtRot(r) {
+  const map = { 0:'0', [Math.PI/2]:'π/2', [Math.PI]:'π', [-Math.PI/2]:'-π/2',
+                [-Math.PI]:'-π', [3*Math.PI/2]:'3π/2', [-3*Math.PI/2]:'-3π/2' };
+  for (const [k,v] of Object.entries(map)) {
+    if (Math.abs(parseFloat(k) - r) < 0.01) return v;
+  }
+  const norm = ((r % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+  for (const [k,v] of Object.entries(map)) {
+    if (Math.abs(norm - parseFloat(k)) < 0.01) return v;
+  }
+  return r.toFixed(2);
+}
+
+const LABEL_IDS = {
+  tank300: { panel: 'r-suv',   bottom: 'lbl-suv'   },
+  f7:      { panel: 'r-car',   bottom: 'lbl-car'   },
+  dargo:   { panel: 'r-truck', bottom: 'lbl-truck' },
+  jolion:  { panel: 'r-bus',   bottom: 'lbl-bus'   },
+  poer:    { panel: 'r-poer',  bottom: 'lbl-poer'  },
+};
+
+function updateLabels() {
+  const dirStr = currentDir === 1 ? '→ dir=+1' : '← dir=-1';
+  Object.entries(MODELS).forEach(([key, cfg]) => {
+    const ids = LABEL_IDS[key];
+    const pivotRot = cfg.pivot?.rotation.y ?? 0;
+    document.getElementById(ids.panel).textContent  = `model=${fmtRot(cfg.rotY)}, pivot=${fmtRot(pivotRot)}`;
+    document.getElementById(ids.bottom).textContent = `model.rot.y=${fmtRot(cfg.rotY)}  pivot=${fmtRot(pivotRot)}  ${dirStr}`;
+  });
+}
+updateLabels();
+
+// ── Loop ──────────────────────────────────────────────────────────────────────
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>

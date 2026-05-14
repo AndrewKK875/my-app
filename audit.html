@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Downloads Audit</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0d1117;
+    color: #e6edf3;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    padding: 32px 24px;
+  }
+
+  header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+
+  h1 span {
+    color: #58a6ff;
+  }
+
+  .timestamp {
+    font-size: 13px;
+    color: #6e7681;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .stat-card .label {
+    font-size: 12px;
+    color: #8b949e;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+  }
+
+  .stat-card .value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+  }
+
+  .stat-card .sub {
+    font-size: 12px;
+    color: #6e7681;
+  }
+
+  .stat-card.accent .value { color: #58a6ff; }
+  .stat-card.green .value  { color: #3fb950; }
+  .stat-card.orange .value { color: #d29922; }
+  .stat-card.purple .value { color: #bc8cff; }
+
+  .charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: 780px) {
+    .charts-row { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .card h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #c9d1d9;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card h2::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 16px;
+    background: #58a6ff;
+    border-radius: 2px;
+  }
+
+  .chart-wrap {
+    position: relative;
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Table */
+  .files-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .files-table thead th {
+    text-align: left;
+    padding: 8px 12px;
+    color: #8b949e;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    border-bottom: 1px solid #30363d;
+  }
+
+  .files-table tbody tr {
+    border-bottom: 1px solid #21262d;
+    transition: background 0.15s;
+  }
+
+  .files-table tbody tr:last-child { border-bottom: none; }
+  .files-table tbody tr:hover { background: #1c2128; }
+
+  .files-table td {
+    padding: 12px 12px;
+    vertical-align: middle;
+  }
+
+  .rank {
+    width: 32px;
+    color: #6e7681;
+    font-weight: 700;
+    font-size: 12px;
+  }
+
+  .file-name {
+    font-weight: 500;
+    color: #e6edf3;
+    word-break: break-word;
+  }
+
+  .file-path {
+    font-size: 11px;
+    color: #6e7681;
+    margin-top: 2px;
+  }
+
+  .file-size {
+    text-align: right;
+    white-space: nowrap;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ext-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .size-bar-wrap {
+    width: 80px;
+    height: 4px;
+    background: #30363d;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-left: auto;
+    margin-top: 4px;
+  }
+
+  .size-bar {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #58a6ff, #bc8cff);
+  }
+
+  /* Types breakdown bar */
+  .type-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid #21262d;
+    font-size: 13px;
+  }
+
+  .type-row:last-child { border-bottom: none; }
+
+  .type-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .type-name {
+    width: 70px;
+    font-weight: 600;
+    color: #c9d1d9;
+    text-transform: uppercase;
+    font-size: 11px;
+  }
+
+  .type-bar-bg {
+    flex: 1;
+    height: 6px;
+    background: #21262d;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .type-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.8s ease;
+  }
+
+  .type-count {
+    width: 40px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: #8b949e;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Downloads <span>Audit</span></h1>
+  <div class="timestamp">Последнее обновление: 14 мая 2026</div>
+</header>
+
+<!-- Stat cards -->
+<div class="stats-grid">
+  <div class="stat-card accent">
+    <div class="label">Всего файлов</div>
+    <div class="value">1 667</div>
+    <div class="sub">в папке ~/Downloads</div>
+  </div>
+  <div class="stat-card green">
+    <div class="label">Занято места</div>
+    <div class="value">4.6</div>
+    <div class="sub">ГБ на диске</div>
+  </div>
+  <div class="stat-card orange">
+    <div class="label">Типов файлов</div>
+    <div class="value">30+</div>
+    <div class="sub">уникальных расширений</div>
+  </div>
+  <div class="stat-card purple">
+    <div class="label">Самый большой</div>
+    <div class="value">305</div>
+    <div class="sub">МБ — jazz-mac.dmg</div>
+  </div>
+</div>
+
+<!-- Charts row -->
+<div class="charts-row">
+  <div class="card">
+    <h2>Типы файлов — доля</h2>
+    <div class="chart-wrap">
+      <canvas id="donutChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Топ типов по количеству</h2>
+    <div style="padding-top: 4px;">
+      <div class="type-row">
+        <div class="type-dot" style="background:#58a6ff"></div>
+        <div class="type-name">PDF</div>
+        <div class="type-bar-bg"><div class="type-bar-fill" style="width:100%;background:#58a6ff"></div></div>
+        <div class="type-count">922</div>
+      </div>
+      <div class="type-row">
+        <div class="type-dot" style="background:#3fb950"></div>
+        <div class="type-name">TXT</div>
+        <div class="type-bar-bg"><div class="type-bar-fill" style="width:18%;background:#3fb950"></div></div>
+        <div class="type-count">166</div>
+      </div>
+      <div class="type-row">
+        <div class="type-dot" style="background:#d29922"></div>
+        <div class="type-name">STRINGS</div>
+        <div class="type-bar-bg"><div class="type-bar-fill" style="width:10.2%;background:#d29922"></div></div>
+        <div class="type-count">94</div>
+      </div>
+      <div class="type-row">
+        <div class="type-dot" style="background:#bc8cff"></div>
+        <div class="type-name">DOCX</div>
+        <div class="type-bar-bg"><div class="type-bar-fill" style="width:8.3%;background:#bc8cff"></div></div>
+        <div class="type-count">77</div>
+      </div>
+      <div class="type-row">
+        <div class="type-dot" style="background:#ff7b72"></div>
+        <div class="type-name">PNG</div>
+        <div class="type-bar-bg"><div class="type-bar-fill" style="width:7.4%;background:#ff7b72"></div></div>
+        <div class="type-count">68</div>
+      </div>
+      <div class="type-row">
+        <div class="type-dot" style="background:#ffa657"></div>
+        <div class="type-name">XLSX</div>
+        <div class="type-bar-bg"><div class="type-bar-fill" style="width:7.2%;background:#ffa657"></div></div>
+        <div class="type-count">66</div>
+      </div>
+      <div class="type-row">
+        <div class="type-dot" style="background:#39d353"></div>
+        <div class="type-name">RTF</div>
+        <div class="type-bar-bg"><div class="type-bar-fill" style="width:3.4%;background:#39d353"></div></div>
+        <div class="type-count">31</div>
+      </div>
+      <div class="type-row">
+        <div class="type-dot" style="background:#79c0ff"></div>
+        <div class="type-name">JPG</div>
+        <div class="type-bar-bg"><div class="type-bar-fill" style="width:3.3%;background:#79c0ff"></div></div>
+        <div class="type-count">30</div>
+      </div>
+      <div class="type-row">
+        <div class="type-dot" style="background:#e3b341"></div>
+        <div class="type-name">DOC</div>
+        <div class="type-bar-bg"><div class="type-bar-fill" style="width:3.3%;background:#e3b341"></div></div>
+        <div class="type-count">30</div>
+      </div>
+      <div class="type-row">
+        <div class="type-dot" style="background:#a5d6ff"></div>
+        <div class="type-name">ДРУГИЕ</div>
+        <div class="type-bar-bg"><div class="type-bar-fill" style="width:19%;background:#a5d6ff"></div></div>
+        <div class="type-count">183</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bar chart -->
+<div class="card" style="margin-bottom: 24px;">
+  <h2>Топ-10 самых больших файлов (МБ)</h2>
+  <div class="chart-wrap" style="height: 260px;">
+    <canvas id="barChart"></canvas>
+  </div>
+</div>
+
+<!-- Files table -->
+<div class="card">
+  <h2>Топ-10 файлов — подробно</h2>
+  <table class="files-table">
+    <thead>
+      <tr>
+        <th class="rank">#</th>
+        <th>Файл</th>
+        <th>Тип</th>
+        <th style="text-align:right">Размер</th>
+      </tr>
+    </thead>
+    <tbody id="fileTableBody"></tbody>
+  </table>
+</div>
+
+<script>
+const files = [
+  { name: "jazz-mac-1.44.17.dmg",           path: "Май 2024",      size: 305,  ext: "dmg"  },
+  { name: "Claude.dmg",                      path: "Апрель 2026",   size: 284,  ext: "dmg"  },
+  { name: "VSCode-darwin-universal.dmg",     path: "Апрель 2026",   size: 274,  ext: "dmg"  },
+  { name: "Арт_C_медиа_Цифровые_комм.pdf",  path: "Январь 2024",   size: 194,  ext: "pdf"  },
+  { name: "Codex.dmg",                       path: "Апрель 2026",   size: 180,  ext: "dmg"  },
+  { name: "портфолио 4K video 2024.pdf",     path: "Июнь 2024",     size: 153,  ext: "pdf"  },
+  { name: "Meeting Yandex.Telemost.webm",    path: "Ноябрь 2024",   size: 146,  ext: "webm" },
+  { name: "YandexTelemost.dmg",              path: "Май 2025",      size: 122,  ext: "dmg"  },
+  { name: "эфирная_справка_аудио.pdf",       path: "Октябрь 2023",  size: 113,  ext: "pdf"  },
+  { name: "WhatsApp-2.23.21.79.dmg",         path: "Ноябрь 2023",   size: 102,  ext: "dmg"  },
+];
+
+const extColors = {
+  dmg:  { bg: "#bc8cff22", color: "#bc8cff" },
+  pdf:  { bg: "#ff7b7222", color: "#ff7b72" },
+  webm: { bg: "#3fb95022", color: "#3fb950" },
+  mp4:  { bg: "#d2992222", color: "#d29922" },
+  avi:  { bg: "#ffa65722", color: "#ffa657" },
+};
+
+const maxSize = files[0].size;
+const tbody = document.getElementById("fileTableBody");
+
+files.forEach((f, i) => {
+  const c = extColors[f.ext] || { bg: "#58a6ff22", color: "#58a6ff" };
+  const pct = (f.size / maxSize * 100).toFixed(0);
+  tbody.innerHTML += `
+    <tr>
+      <td class="rank">${i + 1}</td>
+      <td>
+        <div class="file-name">${f.name}</div>
+        <div class="file-path">~/Downloads/${f.path}/</div>
+        <div class="size-bar-wrap"><div class="size-bar" style="width:${pct}%"></div></div>
+      </td>
+      <td>
+        <span class="ext-badge" style="background:${c.bg};color:${c.color}">${f.ext}</span>
+      </td>
+      <td class="file-size" style="color:${c.color}">${f.size} MB</td>
+    </tr>`;
+});
+
+// Donut chart
+const donutCtx = document.getElementById("donutChart").getContext("2d");
+new Chart(donutCtx, {
+  type: "doughnut",
+  data: {
+    labels: ["PDF", "TXT", "STRINGS", "DOCX", "PNG", "XLSX", "RTF", "JPG", "DOC", "Другие"],
+    datasets: [{
+      data: [922, 166, 94, 77, 68, 66, 31, 30, 30, 183],
+      backgroundColor: [
+        "#58a6ff","#3fb950","#d29922","#bc8cff","#ff7b72",
+        "#ffa657","#39d353","#79c0ff","#e3b341","#a5d6ff"
+      ],
+      borderWidth: 0,
+      hoverOffset: 6,
+    }]
+  },
+  options: {
+    cutout: "68%",
+    plugins: {
+      legend: {
+        position: "right",
+        labels: {
+          color: "#8b949e",
+          boxWidth: 10,
+          boxHeight: 10,
+          borderRadius: 5,
+          padding: 10,
+          font: { size: 11 }
+        }
+      },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.label}: ${ctx.parsed} файлов`
+        }
+      }
+    }
+  }
+});
+
+// Bar chart
+const barCtx = document.getElementById("barChart").getContext("2d");
+new Chart(barCtx, {
+  type: "bar",
+  data: {
+    labels: files.map(f => f.name.length > 28 ? f.name.slice(0, 27) + "…" : f.name),
+    datasets: [{
+      label: "Размер (МБ)",
+      data: files.map(f => f.size),
+      backgroundColor: [
+        "#bc8cff","#bc8cff","#bc8cff","#ff7b72","#bc8cff",
+        "#ff7b72","#3fb950","#bc8cff","#ff7b72","#bc8cff"
+      ],
+      borderRadius: 6,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    indexAxis: "y",
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.parsed.x} МБ`
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { color: "#21262d" },
+        ticks: { color: "#8b949e", font: { size: 11 } },
+        border: { color: "#30363d" }
+      },
+      y: {
+        grid: { display: false },
+        ticks: { color: "#c9d1d9", font: { size: 11 } },
+        border: { color: "#30363d" }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

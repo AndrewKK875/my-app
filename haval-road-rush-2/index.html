@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>HAVAL Road Rush 2</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --orange: #FF6B00;
+      --orange-dim: rgba(255, 107, 0, 0.15);
+      --white: #ffffff;
+      --bg: #0a0a14;
+      --bg2: #0f0f1e;
+    }
+
+    body {
+      background: var(--bg);
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Barlow Condensed', 'Arial Black', Arial, sans-serif;
+      touch-action: none;
+    }
+
+    /* ── Animated background grid ── */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,107,0,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,107,0,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      animation: gridMove 8s linear infinite;
+    }
+    @keyframes gridMove {
+      from { background-position: 0 0; }
+      to   { background-position: 48px 48px; }
+    }
+
+    /* ── Glow blob ── */
+    .glow {
+      position: fixed;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,107,0,0.12) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      animation: pulse 4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+      50%       { opacity: 1;   transform: translate(-50%, -50%) scale(1.15); }
+    }
+
+    /* ── Content ── */
+    .content {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      animation: fadeUp 0.8s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Brand */
+    .brand {
+      color: var(--orange);
+      font-size: 13px;
+      letter-spacing: 8px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      animation: fadeUp 0.8s 0.1s ease both;
+    }
+
+    /* Title */
+    .title {
+      color: var(--white);
+      font-size: clamp(52px, 12vw, 88px);
+      font-weight: 900;
+      line-height: 0.9;
+      letter-spacing: -1px;
+      text-align: center;
+      text-transform: uppercase;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+    .title span {
+      color: var(--orange);
+      display: block;
+    }
+
+    /* Badge */
+    .badge {
+      margin-top: 12px;
+      background: var(--orange);
+      color: #000;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      padding: 4px 14px;
+      border-radius: 2px;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+
+    /* Road strip decoration */
+    .road-strip {
+      width: 280px;
+      height: 28px;
+      background: #2a3340;
+      border-radius: 4px;
+      margin: 32px 0;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.8s 0.4s ease both;
+    }
+    .road-strip::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: -80px;
+      transform: translateY(-50%);
+      height: 4px;
+      width: 200%;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent 0px, transparent 24px,
+        #fff 24px, #fff 48px
+      );
+      animation: roadAnim 1s linear infinite;
+    }
+    @keyframes roadAnim {
+      from { left: -80px; }
+      to   { left: -32px; }
+    }
+
+    /* Play button */
+    .btn-play {
+      position: relative;
+      background: var(--orange);
+      color: #000;
+      font-family: inherit;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 5px;
+      padding: 18px 56px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: transform 0.12s, box-shadow 0.12s;
+      box-shadow: 0 6px 32px rgba(255,107,0,0.4), 0 2px 0 rgba(0,0,0,0.3);
+      animation: fadeUp 0.8s 0.5s ease both;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-play:hover  { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(255,107,0,0.55); }
+    .btn-play:active { transform: translateY(1px);  box-shadow: 0 3px 16px rgba(255,107,0,0.4); }
+
+    /* Bottom hint */
+    .hint {
+      position: fixed;
+      bottom: 24px;
+      color: rgba(255,255,255,0.2);
+      font-size: 10px;
+      letter-spacing: 3px;
+      animation: fadeUp 1s 0.9s ease both;
+    }
+
+    /* Version */
+    .version {
+      position: fixed;
+      top: 16px; right: 16px;
+      color: rgba(255,255,255,0.15);
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+
+    /* ── Play transition ── */
+    .overlay {
+      position: fixed; inset: 0;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      z-index: 100;
+    }
+    .overlay.active { opacity: 1; pointer-events: all; }
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="glow"></div>
+
+<div class="version">v2.0</div>
+
+<div class="content">
+  <div class="brand">HAVAL</div>
+  <div class="title">
+    ROAD<br>
+    <span>RUSH</span>
+  </div>
+  <div class="badge">СЕЗОН 2</div>
+
+  <div class="road-strip"></div>
+
+  <button class="btn-play" id="btn-play" onclick="startGame()">
+    ИГРАТЬ
+  </button>
+</div>
+
+<div class="hint">НАЖМИ ЧТОБЫ НАЧАТЬ</div>
+<div class="overlay" id="overlay"></div>
+
+<script>
+  function startGame() {
+    const overlay = document.getElementById('overlay');
+    const btn     = document.getElementById('btn-play');
+    btn.textContent = 'ЗАГРУЗКА...';
+    btn.style.opacity = '0.6';
+    btn.disabled = true;
+    overlay.classList.add('active');
+    // Переход на игру (пока заглушка)
+    setTimeout(() => {
+      window.location.href = 'game.html';
+    }, 600);
+  }
+
+  // Пробел / Enter тоже запускают
+  document.addEventListener('keydown', e => {
+    if (e.code === 'Space' || e.code === 'Enter') startGame();
+  });
+
+  // Тап по экрану (кроме кнопки) тоже запускает
+  document.body.addEventListener('click', e => {
+    if (e.target.id !== 'btn-play') startGame();
+  });
+</script>
+</body>
+</html>
