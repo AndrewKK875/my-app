@@ -1,4 +1,4 @@
-﻿const https = require('https');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
@@ -6,7 +6,7 @@ const TOKEN = process.env.BA_API_KEY;
 const THEME_ID = 14078430;
 const DATA_DIR = path.join(__dirname, 'data');
 
-if (!TOKEN) { console.error('BA_API_KEY РЅРµ Р·Р°РґР°РЅ'); process.exit(1); }
+if (!TOKEN) { console.error('BA_API_KEY не задан'); process.exit(1); }
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
 function apiGet(urlPath, params) {
@@ -33,10 +33,10 @@ function sumTone(histogram) {
   return { positive, neutral, negative };
 }
 
-// Р’СЃРµ РјРµСЃСЏС†С‹ СЃ РґРµРєР°Р±СЂСЏ 2025 РґРѕ С‚РµРєСѓС‰РµРіРѕ
+// Все месяцы с декабря 2025 до текущего
 function getMonths() {
   const months = [];
-  const start = new Date(2025, 11, 1); // РґРµРєР°Р±СЂСЊ 2025
+  const start = new Date(2025, 11, 1); // декабрь 2025
   const now = new Date();
   let cur = new Date(start);
   while (cur <= now) {
@@ -46,7 +46,7 @@ function getMonths() {
     const to = (year === now.getFullYear() && month === now.getMonth())
       ? new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59)
       : new Date(year, month + 1, 0, 23, 59, 59);
-    const names = ['РЇРЅРІР°СЂСЊ','Р¤РµРІСЂР°Р»СЊ','РњР°СЂС‚','РђРїСЂРµР»СЊ','РњР°Р№','РСЋРЅСЊ','РСЋР»СЊ','РђРІРіСѓСЃС‚','РЎРµРЅС‚СЏР±СЂСЊ','РћРєС‚СЏР±СЂСЊ','РќРѕСЏР±СЂСЊ','Р”РµРєР°Р±СЂСЊ'];
+    const names = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
     months.push({
       key: `${year}-${String(month + 1).padStart(2, '0')}`,
       label: `${names[month]} ${year}`,
@@ -59,7 +59,7 @@ function getMonths() {
 }
 
 async function fetchMonth(month) {
-  console.log(`Р—Р°РіСЂСѓР¶Р°СЋ: ${month.label}...`);
+  console.log(`Загружаю: ${month.label}...`);
   const params = { timeFrom: month.timeFrom, timeTo: month.timeTo };
 
   const [msgResp, tonResp, hubsResp, hubtypesResp] = await Promise.all([
@@ -69,7 +69,6 @@ async function fetchMonth(month) {
     apiGet('/v1/statistic/hubtypes/', params),
   ]);
 
-  // РЎРѕРѕР±С‰РµРЅРёСЏ Рё РіРёСЃС‚РѕРіСЂР°РјРјР° РїРѕ РґРЅСЏРј
   const msgCurrent = msgResp.data?.current || msgResp.data?.previous;
   const histogram = msgCurrent?.histogram || {};
   let totalMsgs = 0;
@@ -80,11 +79,9 @@ async function fetchMonth(month) {
     daily[date] = (daily[date] || 0) + (v.msgs || 0);
   }
 
-  // РўРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ РѕР±С‰Р°СЏ
   const tonCurrent = tonResp.data?.current || tonResp.data?.previous;
   const tone = sumTone(tonCurrent?.histogram);
 
-  // РўРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ РїРѕ РґРЅСЏРј
   const dailyTone = {};
   for (const [ts, v] of Object.entries(tonCurrent?.histogram || {})) {
     const date = new Date(Number(ts) * 1000).toISOString().slice(0, 10);
@@ -95,13 +92,11 @@ async function fetchMonth(month) {
     dailyTone[date].negative += v.tone?.negative || 0;
   }
 
-  // РџР»РѕС‰Р°РґРєРё
   const hubs = (hubsResp.data?.top_hubs || []).map(h => {
     const t = sumTone(h.histogram);
     return { name: h.name, msgs: h.msgs, percent: +h.percent.toFixed(2), ...t };
   });
 
-  // РўРёРїС‹ РїР»РѕС‰Р°РґРѕРє
   const hubtypes = (hubtypesResp.data?.hubtypes || []).map(t => ({
     name: t.hubtypeName,
     msgs: t.msgs,
@@ -133,9 +128,9 @@ async function fetchMonth(month) {
       const data = await fetchMonth(month);
       fs.writeFileSync(path.join(DATA_DIR, `${month.key}.json`), JSON.stringify(data, null, 2));
       index.push({ key: month.key, label: month.label });
-      console.log(`  вњ“ ${month.label}: ${data.summary.totalMsgs} СЃРѕРѕР±С‰РµРЅРёР№`);
+      console.log(`  ok ${month.label}: ${data.summary.totalMsgs}`);
     } catch (e) {
-      console.error(`  вњ— ${month.label}:`, e.message);
+      console.error(`  err ${month.label}:`, e.message);
     }
   }
 
@@ -145,5 +140,5 @@ async function fetchMonth(month) {
     months: index,
   }, null, 2));
 
-  console.log('\nР“РѕС‚РѕРІРѕ! Р¤Р°Р№Р»РѕРІ:', months.length + 1);
+  console.log('Done:', months.length + 1, 'files');
 })();
