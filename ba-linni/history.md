@@ -81,9 +81,7 @@ brandanalytics.ru/topics/[THEME_ID]/dashboard
 ```
 
 ### 2. Скопировать папку
-```
-Скопировать ba-tikk/ → ba-[название]/
-```
+Скопировать `ba-tikk/` → `ba-[название]/` через **Write-инструмент** (не PowerShell — иначе BOM).
 
 ### 3. Заменить THEME_ID
 В трёх файлах заменить `14078430` на новый ID:
@@ -112,7 +110,7 @@ brandanalytics.ru/topics/[THEME_ID]/dashboard
           ref: main
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
       - name: Загрузить данные
         env:
           BA_API_KEY: ${{ secrets.BA_API_KEY }}
@@ -121,9 +119,10 @@ brandanalytics.ru/topics/[THEME_ID]/dashboard
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git pull origin main
           git add ba-[название]/dashboard/data/
-          git diff --cached --quiet || git commit -m "chore: [Бренд] — обновление данных $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git diff --cached --quiet && echo "Нет изменений" && exit 0
+          git commit -m "chore: [Бренд] — обновление данных $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git pull origin main --no-rebase -X ours
           git push
 ```
 
@@ -148,10 +147,22 @@ git push origin main
 
 ---
 
-## Важные замечания
+## Известные проблемы и решения
+
+| Проблема | Причина | Решение |
+|---|---|---|
+| Кракозябры в дашборде | BOM в файле (PowerShell добавляет) | Создавать/редактировать файлы только через Write-инструмент |
+| `rejected (fetch first)` в Actions | Конфликт двух параллельных push | `git pull --no-rebase -X ours` перед `git push` |
+| `local changes overwritten` в Actions | pull до commit | Всегда: `add` → `commit` → `pull` → `push` |
+| `tophubs` отдаёт 1 площадку | Default size=1 в API | Передавать `params[size]=100` |
+| Node.js 20 deprecated в Actions | GitHub переходит на Node 24 | Использовать `node-version: '24'` |
+
+---
+
+## Безопасность
 
 - API-ключ хранится **только** в GitHub Secrets (`BA_API_KEY`) — никогда не коммитить в код
 - В скриптах использовать `process.env.BA_API_KEY`
-- Файлы `index.html` писать/копировать **только через Write-инструмент** (не через PowerShell) — иначе BOM-кодировка ломает кириллицу
-- `node_modules/` в `.gitignore` — устанавливать локально через `npm install` в нужной папке
-- Данные начинаются с даты создания темы в BA (не раньше)
+- `node_modules/` в `.gitignore`
+- `.claude/` в `.gitignore`
+- `.env` в `.gitignore`
