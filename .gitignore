@@ -12,6 +12,3 @@ Usersandremy-appmy-appba-linni/
 # Локальные переменные окружения
 .env
 .env.local
-
-# API-документация (большой файл, легко перегенерируется)
-**/doc.json
