@@ -35,6 +35,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add ba-linni/dashboard/data/
           git diff --cached --quiet || git commit -m "chore: Линнимакс — обновление данных $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git pull --rebase origin main
           git push
 
   tikkurila:
@@ -64,7 +65,8 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git pull origin main
+          git pull --rebase origin main
           git add ba-tikk/dashboard/data/
           git diff --cached --quiet || git commit -m "chore: Тиккурила — обновление данных $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git pull --rebase origin main
           git push
