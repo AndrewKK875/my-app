@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>World Showcase — Haval Road Rush</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #1a1a2e; overflow: hidden; font-family: 'Courier New', monospace; }
+    canvas { display: block; }
+
+    #panel {
+      position: fixed; top: 16px; left: 16px;
+      background: rgba(0,0,0,0.8);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      padding: 14px 16px;
+      color: #fff;
+      font-size: 11px;
+      line-height: 1.8;
+      width: 220px;
+      max-height: calc(100vh - 32px);
+      overflow-y: auto;
+    }
+    #panel h2 { color: #FF6B00; font-size: 12px; margin-bottom: 10px; letter-spacing: 1px; }
+    .section { margin-bottom: 12px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; }
+    .section h3 { color: #29b6f6; font-size: 10px; letter-spacing: 1px; margin-bottom: 6px; }
+    .row-ctrl { display: flex; justify-content: space-between; align-items: center; margin: 4px 0; }
+    .row-ctrl label { color: #aaa; }
+    .row-ctrl input[type=color] { width: 36px; height: 20px; border: none; border-radius: 3px; cursor: pointer; background: none; }
+    .row-ctrl input[type=range] { width: 80px; accent-color: #FF6B00; }
+
+    #hint {
+      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+      color: rgba(255,255,255,0.35); font-size: 10px; text-align: center;
+    }
+
+    /* Section labels rendered via CSS over canvas */
+    #section-labels {
+      position: fixed; top: 16px;
+      left: 50%; transform: translateX(-50%);
+      display: flex; gap: 40px;
+      pointer-events: none;
+    }
+    .slabel {
+      color: #FF6B00; font-size: 12px; font-weight: bold;
+      letter-spacing: 1px; text-align: center;
+      text-shadow: 0 1px 4px #000;
+    }
+    .slabel .sub { color: rgba(255,255,255,0.4); font-size: 9px; font-weight: normal; margin-top: 2px; }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+<div id="panel">
+  <h2>WORLD PALETTE</h2>
+
+  <div class="section">
+    <h3>🌿 ТРАВА</h3>
+    <div class="row-ctrl"><label>Цвет 1</label><input type="color" id="c-grass1" value="#5BBF4E"></div>
+    <div class="row-ctrl"><label>Цвет 2</label><input type="color" id="c-grass2" value="#4CAF50"></div>
+  </div>
+
+  <div class="section">
+    <h3>🌲 ЛЕС</h3>
+    <div class="row-ctrl"><label>Земля</label><input type="color" id="c-forest-ground" value="#5BBF4E"></div>
+    <div class="row-ctrl"><label>Ствол</label><input type="color" id="c-trunk" value="#795548"></div>
+    <div class="row-ctrl"><label>Крона 1</label><input type="color" id="c-foliage1" value="#388E3C"></div>
+    <div class="row-ctrl"><label>Крона 2</label><input type="color" id="c-foliage2" value="#43A047"></div>
+    <div class="row-ctrl"><label>Кустов</label><input type="color" id="c-bush" value="#2E7D32"></div>
+  </div>
+
+  <div class="section">
+    <h3>🛣 ДОРОГА</h3>
+    <div class="row-ctrl"><label>Асфальт</label><input type="color" id="c-road" value="#546E7A"></div>
+    <div class="row-ctrl"><label>Разметка</label><input type="color" id="c-dash" value="#EEEEEE"></div>
+    <div class="row-ctrl"><label>Обочина</label><input type="color" id="c-curb" value="#78909C"></div>
+  </div>
+
+  <div class="section">
+    <h3>✏️ НАДПИСИ НА ПОВЕРХНОСТИ</h3>
+    <div class="row-ctrl"><label>Текст</label></div>
+    <input id="lbl-text" type="text" value="HAVAL"
+      style="width:100%;background:#111;border:1px solid #444;color:#fff;padding:4px 6px;border-radius:4px;font-family:inherit;font-size:11px;margin-bottom:6px">
+    <div class="row-ctrl"><label>Размер</label><input type="range" id="lbl-size" min="12" max="72" value="36"></div>
+    <div class="row-ctrl"><label>Цвет</label><input type="color" id="lbl-color" value="#FFFFFF"></div>
+    <div class="row-ctrl"><label>Поверхность</label>
+      <select id="lbl-surface" style="background:#111;border:1px solid #444;color:#fff;padding:2px 4px;border-radius:4px;font-size:10px">
+        <option value="0">Трава</option>
+        <option value="1">Лес</option>
+        <option value="2" selected>Дорога</option>
+        <option value="3">Вода</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:6px">
+      <button onclick="addLabel()" style="flex:1;background:rgba(255,107,0,0.3);border:1px solid #FF6B00;color:#FF6B00;padding:5px;border-radius:4px;cursor:pointer;font-size:10px">+ Добавить</button>
+      <button onclick="clearLabels()" style="flex:1;background:rgba(255,255,255,0.05);border:1px solid #555;color:#aaa;padding:5px;border-radius:4px;cursor:pointer;font-size:10px">Очистить</button>
+    </div>
+    <div id="lbl-move" style="display:none;margin-top:8px;border-top:1px solid #333;padding-top:8px">
+      <div style="color:#76ff03;font-size:9px;margin-bottom:4px;letter-spacing:1px">ПЕРЕМЕЩЕНИЕ</div>
+      <div class="row-ctrl"><label>← X →</label><input type="range" id="lbl-x" min="-60" max="60" value="0" step="1" oninput="moveLabel()"></div>
+      <div class="row-ctrl"><label>↑ Z ↓</label><input type="range" id="lbl-z" min="-40" max="40" value="0" step="1" oninput="moveLabel()"></div>
+      <div class="row-ctrl"><label>Поворот</label><input type="range" id="lbl-rot" min="-180" max="180" value="0" step="1" oninput="moveLabel()"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>💧 ВОДА</h3>
+    <div class="row-ctrl"><label>Вода 1</label><input type="color" id="c-water1" value="#1E88E5"></div>
+    <div class="row-ctrl"><label>Вода 2</label><input type="color" id="c-water2" value="#1976D2"></div>
+    <div class="row-ctrl"><label>Бревно</label><input type="color" id="c-log" value="#8D6E63"></div>
+    <div class="row-ctrl"><label>Торец</label><input type="color" id="c-logcap" value="#6D4C41"></div>
+    <div class="row-ctrl"><label>Кувшинки</label><input type="color" id="c-lily" value="#2E7D32"></div>
+  </div>
+</div>
+
+<div id="section-labels">
+  <div class="slabel">ТРАВА<div class="sub">grass</div></div>
+  <div class="slabel">ЛЕС<div class="sub">forest</div></div>
+  <div class="slabel">ДОРОГА<div class="sub">road</div></div>
+  <div class="slabel">ВОДА<div class="sub">water</div></div>
+</div>
+
+<div id="hint">Перетащи — вращение · Колесо — зум · Меняй цвета слева — сцена обновится</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ── Renderer ──────────────────────────────────────────────────────────────────
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(renderer.domElement);
+
+// ── Scene ─────────────────────────────────────────────────────────────────────
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x6EC6F5);
+
+// ── Camera ────────────────────────────────────────────────────────────────────
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 300);
+camera.position.set(0, 20, 24);
+camera.lookAt(0, 0, -4);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 0, -4);
+controls.enablePan = true;
+controls.minDistance = 6;
+controls.maxDistance = 80;
+controls.maxPolarAngle = Math.PI / 2.1;
+controls.update();
+
+// ── Lighting ──────────────────────────────────────────────────────────────────
+const sun = new THREE.DirectionalLight(0xfff5e0, 2.0);
+sun.position.set(8, 20, 10);
+sun.castShadow = true;
+sun.shadow.mapSize.set(1024, 1024);
+sun.shadow.camera.left = -25; sun.shadow.camera.right = 25;
+sun.shadow.camera.top  =  25; sun.shadow.camera.bottom = -25;
+scene.add(sun);
+scene.add(new THREE.HemisphereLight(0x87CEEB, 0x5D8A3C, 0.8));
+
+// ── Game constants ────────────────────────────────────────────────────────────
+const TILE_SIZE  = 1.2;
+const ROW_SIZE   = 1.5;
+const BOARD_HALF = 4;
+const ROW_WIDTH  = (BOARD_HALF * 2 + 3) * TILE_SIZE; // 13.2
+
+// ── Color palette (live) ──────────────────────────────────────────────────────
+const C = {
+  grass1:        0x5BBF4E,
+  grass2:        0x4CAF50,
+  forestGround:  0x5BBF4E,
+  trunk:         0x795548,
+  foliage1:      0x388E3C,
+  foliage2:      0x43A047,
+  bush:          0x2E7D32,
+  road:          0x546E7A,
+  dash:          0xEEEEEE,
+  curb:          0x78909C,
+  water1:        0x1E88E5,
+  water2:        0x1976D2,
+  log:           0x8D6E63,
+  logcap:        0x6D4C41,
+  lily:          0x2E7D32,
+};
+
+function hexToInt(hex) { return parseInt(hex.replace('#',''), 16); }
+
+// ── Sections: 4 types × 3 rows each ──────────────────────────────────────────
+// Layout: sections side by side along X, rows along Z
+// Section X offsets: -19.8, -6.6, 6.6, 19.8 (spacing = ROW_WIDTH + 2)
+
+const SECTION_X   = [-15.0, -5.0, 5.0, 15.0];
+const ROWS_PER_SEC = 3;
+
+// All meshes grouped by section for easy rebuild
+const sections = { grass: [], forest: [], road: [], water: [] };
+
+// ── Material cache ────────────────────────────────────────────────────────────
+const mats = {};
+function mat(key, color) {
+  if (!mats[key]) mats[key] = new THREE.MeshLambertMaterial({ color });
+  else mats[key].color.set(color);
+  return mats[key];
+}
+
+// ── Builders ──────────────────────────────────────────────────────────────────
+
+function makeGround(w, d, color) {
+  return new THREE.Mesh(
+    new THREE.BoxGeometry(w, 0.2, d),
+    new THREE.MeshLambertMaterial({ color })
+  );
+}
+
+// Grass row
+function buildGrassRow(sx, z, rowIdx) {
+  const g = new THREE.Group();
+  const ground = makeGround(ROW_WIDTH, ROW_SIZE, rowIdx % 2 === 0 ? C.grass1 : C.grass2);
+  ground.position.set(sx, -0.1, z);
+  ground.receiveShadow = true;
+  g.add(ground);
+
+  // Цветочки
+  const flowerColors = [0xFF5252, 0xFFEB3B, 0xFF80AB, 0xE040FB];
+  const count = 4 + Math.floor(Math.random() * 4);
+  for (let i = 0; i < count; i++) {
+    const fc = new THREE.Mesh(
+      new THREE.BoxGeometry(0.12, 0.18, 0.12),
+      new THREE.MeshLambertMaterial({ color: flowerColors[i % flowerColors.length] })
+    );
+    const ox = (Math.random() - 0.5) * (ROW_WIDTH - 1);
+    const oz = (Math.random() - 0.5) * (ROW_SIZE - 0.3);
+    fc.position.set(sx + ox, 0.09, z + oz);
+    g.add(fc);
+  }
+  return g;
+}
+
+// Forest row
+function buildForestRow(sx, z, rowIdx) {
+  const g = new THREE.Group();
+  const ground = makeGround(ROW_WIDTH, ROW_SIZE, C.forestGround);
+  ground.position.set(sx, -0.1, z);
+  ground.receiveShadow = true;
+  g.add(ground);
+
+  // Деревья
+  const tileCount = BOARD_HALF * 2 + 1; // 9 тайлов
+  const treeCount = 3 + Math.floor(Math.random() * 3);
+  const tiles = [...Array(tileCount).keys()].map(i => i - BOARD_HALF);
+  for (let i = 0; i < Math.min(treeCount, tiles.length); i++) {
+    const swap = Math.floor(Math.random() * (tiles.length - i)) + i;
+    [tiles[i], tiles[swap]] = [tiles[swap], tiles[i]];
+    const t = tiles[i];
+    const tree = createTree();
+    tree.position.set(sx + t * TILE_SIZE, 0, z);
+    g.add(tree);
+  }
+
+  // Кусты
+  const bushCount = 2;
+  for (let i = 0; i < bushCount; i++) {
+    const bx = sx + (Math.random() - 0.5) * ROW_WIDTH * 0.8;
+    const bz = z + (Math.random() - 0.5) * 0.6;
+    const bush = new THREE.Mesh(
+      new THREE.BoxGeometry(0.45, 0.3, 0.45),
+      mat('bush', C.bush)
+    );
+    bush.position.set(bx, 0.15, bz);
+    bush.castShadow = true;
+    g.add(bush);
+  }
+  return g;
+}
+
+function createTree() {
+  const g = new THREE.Group();
+  const h = 0.85 + Math.random() * 0.45;
+  const trunk = new THREE.Mesh(
+    new THREE.BoxGeometry(0.2, h * 0.38, 0.2),
+    mat('trunk', C.trunk)
+  );
+  trunk.position.y = h * 0.19;
+  trunk.castShadow = true;
+  g.add(trunk);
+  const shade = Math.random() > 0.5 ? C.foliage1 : C.foliage2;
+  const foliage = new THREE.Mesh(
+    new THREE.BoxGeometry(0.72, h * 0.72, 0.72),
+    new THREE.MeshLambertMaterial({ color: shade })
+  );
+  foliage.position.y = h * 0.6;
+  foliage.castShadow = true;
+  g.add(foliage);
+  return g;
+}
+
+// Road row
+function buildRoadRow(sx, z) {
+  const g = new THREE.Group();
+
+  // Асфальт
+  const road = makeGround(ROW_WIDTH, ROW_SIZE, C.road);
+  road.position.set(sx, -0.1, z);
+  road.receiveShadow = true;
+  g.add(road);
+
+  // Обочины
+  [-ROW_WIDTH / 2 + 0.3, ROW_WIDTH / 2 - 0.3].forEach(ox => {
+    const curb = new THREE.Mesh(
+      new THREE.BoxGeometry(0.6, 0.22, ROW_SIZE),
+      mat('curb', C.curb)
+    );
+    curb.position.set(sx + ox, -0.09, z);
+    g.add(curb);
+  });
+
+  // Разметка
+  const dashCount = Math.floor(ROW_WIDTH / 1.2);
+  for (let i = 0; i < dashCount; i++) {
+    const dash = new THREE.Mesh(
+      new THREE.BoxGeometry(0.45, 0.01, 0.12),
+      mat('dash', C.dash)
+    );
+    dash.position.set(sx - ROW_WIDTH / 2 + i * 1.2 + 0.6, 0.01, z);
+    g.add(dash);
+  }
+  return g;
+}
+
+// Water row
+function buildWaterRow(sx, z, rowIdx) {
+  const g = new THREE.Group();
+
+  // Вода
+  const water = makeGround(ROW_WIDTH, ROW_SIZE, rowIdx % 2 === 0 ? C.water1 : C.water2);
+  water.position.set(sx, -0.1, z);
+  water.receiveShadow = true;
+  g.add(water);
+
+  // Брёвна
+  const logCount = 2 + Math.floor(Math.random() * 2);
+  const spacing  = ROW_WIDTH / logCount;
+  for (let i = 0; i < logCount; i++) {
+    const logLen = 1.8 + Math.random() * 1.4;
+    const lx = sx - ROW_WIDTH / 2 + i * spacing + spacing * 0.3 + Math.random() * spacing * 0.3;
+    const logGroup = new THREE.Group();
+    const body = new THREE.Mesh(
+      new THREE.BoxGeometry(logLen, 0.28, 0.55),
+      mat('log', C.log)
+    );
+    body.castShadow = true;
+    logGroup.add(body);
+    [-logLen / 2, logLen / 2].forEach(dx => {
+      const cap = new THREE.Mesh(
+        new THREE.BoxGeometry(0.1, 0.28, 0.55),
+        mat('logcap', C.logcap)
+      );
+      cap.position.x = dx;
+      logGroup.add(cap);
+    });
+    logGroup.position.set(lx, 0.12, z);
+    g.add(logGroup);
+  }
+
+  // Кувшинки
+  const lilyCount = 2 + Math.floor(Math.random() * 3);
+  for (let i = 0; i < lilyCount; i++) {
+    const lx = sx + (Math.random() - 0.5) * (ROW_WIDTH - 1);
+    const lz = z  + (Math.random() - 0.5) * (ROW_SIZE  - 0.3);
+    const lily = new THREE.Mesh(
+      new THREE.BoxGeometry(0.3, 0.04, 0.3),
+      mat('lily', C.lily)
+    );
+    lily.position.set(lx, 0.02, lz);
+    g.add(lily);
+  }
+  return g;
+}
+
+// ── Build all sections ────────────────────────────────────────────────────────
+const allGroups = [];
+
+function buildAll() {
+  allGroups.forEach(g => scene.remove(g));
+  allGroups.length = 0;
+
+  for (let r = 0; r < ROWS_PER_SEC; r++) {
+    const z = -r * ROW_SIZE - ROW_SIZE / 2;
+
+    const g0 = buildGrassRow (SECTION_X[0], z, r); scene.add(g0); allGroups.push(g0);
+    const g1 = buildForestRow(SECTION_X[1], z, r); scene.add(g1); allGroups.push(g1);
+    const g2 = buildRoadRow  (SECTION_X[2], z   ); scene.add(g2); allGroups.push(g2);
+    const g3 = buildWaterRow (SECTION_X[3], z, r); scene.add(g3); allGroups.push(g3);
+  }
+}
+
+buildAll();
+
+// ── Section label sprites ─────────────────────────────────────────────────────
+const TYPE_LABELS = ['ТРАВА', 'ЛЕС', 'ДОРОГА', 'ВОДА'];
+SECTION_X.forEach((sx, i) => {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256; canvas.height = 64;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#FF6B00';
+  ctx.font = 'bold 36px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(TYPE_LABELS[i], 128, 32);
+  const tex  = new THREE.CanvasTexture(canvas);
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(3.5, 0.88),
+    new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, side: THREE.DoubleSide })
+  );
+  mesh.position.set(sx, 2.0, 0.8);
+  mesh.rotation.x = -Math.PI / 6;
+  scene.add(mesh);
+});
+
+// ── Live color controls ───────────────────────────────────────────────────────
+const colorMap = {
+  'c-grass1':        'grass1',
+  'c-grass2':        'grass2',
+  'c-forest-ground': 'forestGround',
+  'c-trunk':         'trunk',
+  'c-foliage1':      'foliage1',
+  'c-foliage2':      'foliage2',
+  'c-bush':          'bush',
+  'c-road':          'road',
+  'c-dash':          'dash',
+  'c-curb':          'curb',
+  'c-water1':        'water1',
+  'c-water2':        'water2',
+  'c-log':           'log',
+  'c-logcap':        'logcap',
+  'c-lily':          'lily',
+};
+
+Object.entries(colorMap).forEach(([id, key]) => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('input', () => {
+    C[key] = hexToInt(el.value);
+    // Update cached materials
+    if (mats[key]) mats[key].color.set(C[key]);
+    buildAll();
+  });
+});
+
+// ── Надписи на поверхностях ───────────────────────────────────────────────────
+const labelMeshes = [];
+
+window.addLabel = function() {
+  const text   = document.getElementById('lbl-text').value.trim() || 'HAVAL';
+  const size   = parseInt(document.getElementById('lbl-size').value);
+  const color  = document.getElementById('lbl-color').value;
+  const secIdx = parseInt(document.getElementById('lbl-surface').value);
+  const sx     = SECTION_X[secIdx];
+  const z      = -1 * ROW_SIZE - ROW_SIZE / 2;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 512; canvas.height = 128;
+  const ctx    = canvas.getContext('2d');
+  ctx.clearRect(0, 0, 512, 128);
+  ctx.fillStyle = color;
+  ctx.font      = `bold ${size * 2}px Arial Black, Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, 256, 64);
+
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(ROW_WIDTH * 0.85, ROW_SIZE * 0.7),
+    new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true, depthWrite: false })
+  );
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.set(sx, 0.02, z);
+  mesh.userData.baseX = sx;
+  mesh.userData.baseZ = z;
+  scene.add(mesh);
+  labelMeshes.push(mesh);
+
+  // Показать панель перемещения и сбросить слайдеры
+  document.getElementById('lbl-move').style.display = 'block';
+  document.getElementById('lbl-x').value   = 0;
+  document.getElementById('lbl-z').value   = 0;
+  document.getElementById('lbl-rot').value = 0;
+};
+
+window.moveLabel = function() {
+  const mesh = labelMeshes[labelMeshes.length - 1];
+  if (!mesh) return;
+  const dx  = parseFloat(document.getElementById('lbl-x').value)   * 0.1;
+  const dz  = parseFloat(document.getElementById('lbl-z').value)   * 0.1;
+  const rot = parseFloat(document.getElementById('lbl-rot').value) * Math.PI / 180;
+  mesh.position.x = mesh.userData.baseX + dx;
+  mesh.position.z = mesh.userData.baseZ + dz;
+  mesh.rotation.z = rot;
+};
+
+window.clearLabels = function() {
+  labelMeshes.forEach(m => scene.remove(m));
+  labelMeshes.length = 0;
+  document.getElementById('lbl-move').style.display = 'none';
+};
+
+// ── Resize ────────────────────────────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ── Loop ──────────────────────────────────────────────────────────────────────
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>

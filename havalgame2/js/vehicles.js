@@ -6,13 +6,14 @@ import { TILE_SIZE, BOARD_HALF } from './player.js';
 export const vehicles = [];
 
 // ─── Templates (loaded once, cloned per spawn) ───────────────────────────────
-const TEMPLATES = { tank300: null, f7: null, dargo: null, jolion: null };
+const TEMPLATES = { tank300: null, f7: null, dargo: null, jolion: null, poer: null };
 
 const MODEL_FILES = {
   tank300: 'assets/models/tank300.glb',
   f7:      'assets/models/F7.glb',
   dargo:   'assets/models/Dargo.glb',
   jolion:  'assets/models/Jolion.glb',
+  poer:    'assets/models/poer.glb',
 };
 
 const TARGET_SIZE = 1.8;
@@ -53,7 +54,7 @@ export function preloadModels() {
 // ─── Constants ────────────────────────────────────────────────────────────────
 const VEHICLE_WIDTH = 1.0;
 const HALF_ROAD     = (BOARD_HALF + 3) * TILE_SIZE;
-const MODEL_KEYS    = ['tank300', 'f7', 'dargo', 'jolion'];
+const MODEL_KEYS    = ['tank300', 'f7', 'dargo', 'jolion', 'poer'];
 
 // ─── Spawn ────────────────────────────────────────────────────────────────────
 export function spawnVehiclesForRow(scene, rowData) {

@@ -75,6 +75,7 @@
     <div class="row"><span class="key">F7</span>        <span class="val" id="r-car">rotation.y = 0</span></div>
     <div class="row"><span class="key">Dargo</span>    <span class="val" id="r-truck">rotation.y = 0</span></div>
     <div class="row"><span class="key">Jolion</span>   <span class="val" id="r-bus">rotation.y = 0</span></div>
+    <div class="row"><span class="key">Poer</span>     <span class="val" id="r-poer">rotation.y = 0</span></div>
   </div>
 </div>
 
@@ -91,6 +92,8 @@
   <button class="dir-btn" id="btn-dargo-minus">Dargo −90°</button>
   <button class="dir-btn" id="btn-jolion-plus">Jolion +90°</button>
   <button class="dir-btn" id="btn-jolion-minus">Jolion −90°</button>
+  <button class="dir-btn" id="btn-poer-plus">Poer +90°</button>
+  <button class="dir-btn" id="btn-poer-minus">Poer −90°</button>
 </div>
 
 <div id="labels">
@@ -98,6 +101,7 @@
   <div class="label"><div class="name">#2 F7</div>      <div class="rot" id="lbl-car"></div></div>
   <div class="label"><div class="name">#3 Dargo</div>   <div class="rot" id="lbl-truck"></div></div>
   <div class="label"><div class="name">#4 Jolion</div>  <div class="rot" id="lbl-bus"></div></div>
+  <div class="label"><div class="name">#5 Poer</div>    <div class="rot" id="lbl-poer"></div></div>
 </div>
 
 <div id="hint">Перетащи мышью для вращения · Колесо — зум · Кнопки справа — тест направления</div>
@@ -234,19 +238,21 @@ function addFrontArrow(group, offsetX = 0.7) {
 }
 
 // ── Разместить машины ─────────────────────────────────────────────────────────
-const POS = [-4.8, -1.6, 1.6, 4.8];
+const POS = [-6.4, -3.2, 0, 3.2, 6.4];
 
 makeNumLabel(1, 'Tank 300', POS[0]);
 makeNumLabel(2, 'F7',      POS[1]);
 makeNumLabel(3, 'Dargo',   POS[2]);
 makeNumLabel(4, 'Jolion',  POS[3]);
+makeNumLabel(5, 'Poer',    POS[4]);
 
 // ── GLB модели — данные и состояние ──────────────────────────────────────────
 const MODELS = {
-  tank300: { file: 'tank300.glb', pos: POS[0], rotY: Math.PI,     pivot: null, model: null },
+  tank300: { file: 'tank300.glb', pos: POS[0], rotY: Math.PI, pivot: null, model: null },
   f7:      { file: 'F7.glb',      pos: POS[1], rotY: Math.PI, pivot: null, model: null },
   dargo:   { file: 'Dargo.glb',   pos: POS[2], rotY: Math.PI, pivot: null, model: null },
   jolion:  { file: 'Jolion.glb',  pos: POS[3], rotY: Math.PI, pivot: null, model: null },
+  poer:    { file: 'poer.glb',    pos: POS[4], rotY: Math.PI, pivot: null, model: null },
 };
 
 const draco = new DRACOLoader();
@@ -313,6 +319,7 @@ const LABEL_IDS = {
   f7:      { panel: 'r-car',   bottom: 'lbl-car'   },
   dargo:   { panel: 'r-truck', bottom: 'lbl-truck' },
   jolion:  { panel: 'r-bus',   bottom: 'lbl-bus'   },
+  poer:    { panel: 'r-poer',  bottom: 'lbl-poer'  },
 };
 
 function updateLabels() {
