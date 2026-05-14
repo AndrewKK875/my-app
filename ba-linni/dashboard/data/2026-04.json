@@ -1,0 +1,395 @@
+{
+  "key": "2026-04",
+  "label": "Апрель 2026",
+  "updatedAt": "2026-05-14T16:14:42.061Z",
+  "summary": {
+    "totalMsgs": 143,
+    "positive": 108,
+    "neutral": 33,
+    "negative": 2,
+    "netSentiment": 106
+  },
+  "dailyTone": [
+    {
+      "date": "2026-03-31",
+      "msgs": 2,
+      "positive": 0,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-01",
+      "msgs": 6,
+      "positive": 2,
+      "neutral": 4,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-02",
+      "msgs": 1,
+      "positive": 0,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-03",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-04",
+      "msgs": 1,
+      "positive": 1,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-05",
+      "msgs": 1,
+      "positive": 0,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-06",
+      "msgs": 11,
+      "positive": 11,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-07",
+      "msgs": 20,
+      "positive": 17,
+      "neutral": 3,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-08",
+      "msgs": 6,
+      "positive": 4,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-09",
+      "msgs": 13,
+      "positive": 4,
+      "neutral": 9,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-10",
+      "msgs": 3,
+      "positive": 2,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-11",
+      "msgs": 8,
+      "positive": 7,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-12",
+      "msgs": 9,
+      "positive": 7,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-13",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-14",
+      "msgs": 2,
+      "positive": 2,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-15",
+      "msgs": 3,
+      "positive": 2,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-16",
+      "msgs": 3,
+      "positive": 2,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-17",
+      "msgs": 2,
+      "positive": 2,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-18",
+      "msgs": 3,
+      "positive": 2,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-19",
+      "msgs": 2,
+      "positive": 2,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-20",
+      "msgs": 7,
+      "positive": 6,
+      "neutral": 0,
+      "negative": 1
+    },
+    {
+      "date": "2026-04-21",
+      "msgs": 6,
+      "positive": 6,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-22",
+      "msgs": 3,
+      "positive": 3,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-23",
+      "msgs": 5,
+      "positive": 5,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-24",
+      "msgs": 2,
+      "positive": 2,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-25",
+      "msgs": 2,
+      "positive": 2,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-26",
+      "msgs": 5,
+      "positive": 4,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-27",
+      "msgs": 11,
+      "positive": 9,
+      "neutral": 1,
+      "negative": 1
+    },
+    {
+      "date": "2026-04-28",
+      "msgs": 5,
+      "positive": 3,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-29",
+      "msgs": 1,
+      "positive": 1,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-04-30",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    }
+  ],
+  "hubs": [
+    {
+      "name": "vk.com",
+      "msgs": 64,
+      "percent": 44.76,
+      "positive": 52,
+      "neutral": 12,
+      "negative": 0
+    },
+    {
+      "name": "telegram.org",
+      "msgs": 24,
+      "percent": 16.78,
+      "positive": 19,
+      "neutral": 5,
+      "negative": 0
+    },
+    {
+      "name": "irecommend.ru",
+      "msgs": 15,
+      "percent": 10.49,
+      "positive": 15,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "wildberries.ru",
+      "msgs": 10,
+      "percent": 6.99,
+      "positive": 4,
+      "neutral": 5,
+      "negative": 1
+    },
+    {
+      "name": "forumhouse.ru",
+      "msgs": 8,
+      "percent": 5.59,
+      "positive": 2,
+      "neutral": 6,
+      "negative": 0
+    },
+    {
+      "name": "market.yandex.ru",
+      "msgs": 6,
+      "percent": 4.2,
+      "positive": 3,
+      "neutral": 2,
+      "negative": 1
+    },
+    {
+      "name": "max.ru",
+      "msgs": 5,
+      "percent": 3.5,
+      "positive": 4,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "name": "ok.ru",
+      "msgs": 4,
+      "percent": 2.8,
+      "positive": 3,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "name": "ozon.ru",
+      "msgs": 2,
+      "percent": 1.4,
+      "positive": 2,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "dzen.ru",
+      "msgs": 2,
+      "percent": 1.4,
+      "positive": 2,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "instagram.com",
+      "msgs": 1,
+      "percent": 0.7,
+      "positive": 1,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "stavropol.bezformata.com",
+      "msgs": 1,
+      "percent": 0.7,
+      "positive": 1,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "2gis.ru",
+      "msgs": 1,
+      "percent": 0.7,
+      "positive": 0,
+      "neutral": 1,
+      "negative": 0
+    }
+  ],
+  "hubtypes": [
+    {
+      "name": "Соцсети",
+      "msgs": 69,
+      "percent": 48.25,
+      "positive": 56,
+      "neutral": 13,
+      "negative": 0
+    },
+    {
+      "name": "Отзывы",
+      "msgs": 34,
+      "percent": 23.78,
+      "positive": 24,
+      "neutral": 8,
+      "negative": 2
+    },
+    {
+      "name": "Мессенджеры каналы",
+      "msgs": 16,
+      "percent": 11.19,
+      "positive": 13,
+      "neutral": 3,
+      "negative": 0
+    },
+    {
+      "name": "Мессенджеры чаты",
+      "msgs": 13,
+      "percent": 9.09,
+      "positive": 10,
+      "neutral": 3,
+      "negative": 0
+    },
+    {
+      "name": "Форумы",
+      "msgs": 8,
+      "percent": 5.59,
+      "positive": 2,
+      "neutral": 6,
+      "negative": 0
+    },
+    {
+      "name": "Блоги",
+      "msgs": 2,
+      "percent": 1.4,
+      "positive": 2,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "Онлайн-СМИ",
+      "msgs": 1,
+      "percent": 0.7,
+      "positive": 1,
+      "neutral": 0,
+      "negative": 0
+    }
+  ]
+}
