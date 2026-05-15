@@ -155,7 +155,7 @@ git push origin main
 | `rejected (fetch first)` в Actions | Конфликт двух параллельных push | `git pull --no-rebase -X ours` перед `git push` |
 | `local changes overwritten` в Actions | pull до commit | Всегда: `add` → `commit` → `pull` → `push` |
 | `tophubs` отдаёт 1 площадку | Default size=1 в API | Передавать `params[size]=100` |
-| Node.js 20 deprecated в Actions | GitHub переходит на Node 24 | Использовать `node-version: '24'` |
+| Node.js 20 deprecated в Actions | GitHub переходит на Node 24 | Использовать `node-version: '24'` + добавить `env: FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true` на уровне воркфлоу |
 
 ---
 
