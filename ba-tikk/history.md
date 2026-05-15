@@ -1,6 +1,6 @@
 # История и документация — Brand Analytics Dashboard
 
-_Последнее обновление: 14 мая 2026_
+_Последнее обновление: 15 мая 2026_
 
 ---
 
@@ -32,6 +32,10 @@ _Последнее обновление: 14 мая 2026_
 │   ├── package.json
 │   └── history.md
 ├── ba-tikk/                    ← Тиккурила (ID: 14078430)
+│   └── ... (аналогичная структура)
+├── ba-liaz/                    ← Лиаз (ID: 14187919)
+│   └── ... (аналогичная структура)
+├── ba-exeed/                   ← Эксид+Экслантикс (ID: 14158990)
 │   └── ... (аналогичная структура)
 └── ba-[новый бренд]/           ← шаблон для нового бренда
     └── ... (скопировать из ba-tikk)
@@ -69,6 +73,8 @@ _Последнее обновление: 14 мая 2026_
 |---|---|---|---|
 | `ba-linni` | Линнимакс | `14015636` | https://andrewkk875.github.io/my-app/ba-linni/dashboard/ |
 | `ba-tikk` | Тиккурила | `14078430` | https://andrewkk875.github.io/my-app/ba-tikk/dashboard/ |
+| `ba-liaz` | Лиаз | `14187919` | https://andrewkk875.github.io/my-app/ba-liaz/dashboard/ |
+| `ba-exeed` | Эксид+Экслантикс | `14158990` | https://andrewkk875.github.io/my-app/ba-exeed/dashboard/ |
 
 ---
 
@@ -101,7 +107,7 @@ brandanalytics.ru/topics/[THEME_ID]/dashboard
   [название]:
     name: [Бренд] (ID [THEME_ID])
     runs-on: ubuntu-latest
-    needs: tikkurila          # ← имя предыдущего job
+    needs: exeed              # ← имя предыдущего job (сейчас последний: exeed)
     permissions:
       contents: write
     steps:

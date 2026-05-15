@@ -35,6 +35,8 @@ _Последнее обновление: 15 мая 2026_
 │   └── ... (аналогичная структура)
 ├── ba-liaz/                    ← Лиаз (ID: 14187919)
 │   └── ... (аналогичная структура)
+├── ba-exeed/                   ← Эксид+Экслантикс (ID: 14158990)
+│   └── ... (аналогичная структура)
 └── ba-[новый бренд]/           ← шаблон для нового бренда
     └── ... (скопировать из ba-tikk)
 ```
@@ -63,6 +65,8 @@ _Последнее обновление: 15 мая 2026_
 
 > **Важно:** `tophubs` по умолчанию отдаёт 1 площадку. Передавать `params[size]=100` для всех.
 
+> **Ограничение:** Statistical API даёт только агрегированную статистику. Индивидуальные посты (с текстом, автором, URL) через этот API недоступны — только через ручной экспорт из личного кабинета.
+
 ---
 
 ## Данные по брендам
@@ -72,6 +76,7 @@ _Последнее обновление: 15 мая 2026_
 | `ba-linni` | Линнимакс | `14015636` | https://andrewkk875.github.io/my-app/ba-linni/dashboard/ |
 | `ba-tikk` | Тиккурила | `14078430` | https://andrewkk875.github.io/my-app/ba-tikk/dashboard/ |
 | `ba-liaz` | Лиаз | `14187919` | https://andrewkk875.github.io/my-app/ba-liaz/dashboard/ |
+| `ba-exeed` | Эксид+Экслантикс | `14158990` | https://andrewkk875.github.io/my-app/ba-exeed/dashboard/ |
 
 ---
 
@@ -98,13 +103,13 @@ brandanalytics.ru/topics/[THEME_ID]/dashboard
 - `Тиккурила — сводный дашборд по упоминаниям` → название бренда
 
 ### 5. Добавить job в GitHub Actions
-В `.github/workflows/ba-update.yml` добавить новый блок по аналогии с `tikkurila`:
+В `.github/workflows/ba-update.yml` добавить новый блок после последнего job (сейчас `exeed`):
 
 ```yaml
   [название]:
     name: [Бренд] (ID [THEME_ID])
     runs-on: ubuntu-latest
-    needs: tikkurila          # ← имя предыдущего job
+    needs: exeed              # ← имя предыдущего job (сейчас последний: exeed)
     permissions:
       contents: write
     steps:
