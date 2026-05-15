@@ -1,15 +1,1002 @@
 {
   "key": "2026-05",
   "label": "Май 2026",
-  "updatedAt": "2026-05-15T09:11:37.590Z",
+  "updatedAt": "2026-05-15T09:13:01.711Z",
   "summary": {
-    "totalMsgs": 0,
-    "positive": 0,
-    "neutral": 0,
-    "negative": 0,
-    "netSentiment": 0
+    "totalMsgs": 5283,
+    "positive": 1719,
+    "neutral": 3084,
+    "negative": 480,
+    "netSentiment": 1239
   },
-  "dailyTone": [],
-  "hubs": [],
-  "hubtypes": []
+  "dailyTone": [
+    {
+      "date": "2026-04-30",
+      "msgs": 408,
+      "positive": 157,
+      "neutral": 228,
+      "negative": 23
+    },
+    {
+      "date": "2026-05-01",
+      "msgs": 322,
+      "positive": 82,
+      "neutral": 190,
+      "negative": 50
+    },
+    {
+      "date": "2026-05-02",
+      "msgs": 333,
+      "positive": 76,
+      "neutral": 224,
+      "negative": 33
+    },
+    {
+      "date": "2026-05-03",
+      "msgs": 579,
+      "positive": 137,
+      "neutral": 404,
+      "negative": 38
+    },
+    {
+      "date": "2026-05-04",
+      "msgs": 474,
+      "positive": 118,
+      "neutral": 317,
+      "negative": 39
+    },
+    {
+      "date": "2026-05-05",
+      "msgs": 517,
+      "positive": 214,
+      "neutral": 246,
+      "negative": 57
+    },
+    {
+      "date": "2026-05-06",
+      "msgs": 240,
+      "positive": 100,
+      "neutral": 88,
+      "negative": 52
+    },
+    {
+      "date": "2026-05-07",
+      "msgs": 13,
+      "positive": 6,
+      "neutral": 7,
+      "negative": 0
+    },
+    {
+      "date": "2026-05-08",
+      "msgs": 9,
+      "positive": 3,
+      "neutral": 5,
+      "negative": 1
+    },
+    {
+      "date": "2026-05-09",
+      "msgs": 16,
+      "positive": 7,
+      "neutral": 8,
+      "negative": 1
+    },
+    {
+      "date": "2026-05-10",
+      "msgs": 117,
+      "positive": 43,
+      "neutral": 71,
+      "negative": 3
+    },
+    {
+      "date": "2026-05-11",
+      "msgs": 1103,
+      "positive": 377,
+      "neutral": 641,
+      "negative": 85
+    },
+    {
+      "date": "2026-05-12",
+      "msgs": 929,
+      "positive": 334,
+      "neutral": 527,
+      "negative": 68
+    },
+    {
+      "date": "2026-05-13",
+      "msgs": 223,
+      "positive": 65,
+      "neutral": 128,
+      "negative": 30
+    },
+    {
+      "date": "2026-05-14",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-05-15",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    }
+  ],
+  "hubs": [
+    {
+      "name": "vk.com",
+      "msgs": 1575,
+      "percent": 29.81,
+      "positive": 397,
+      "neutral": 1092,
+      "negative": 86
+    },
+    {
+      "name": "telegram.org",
+      "msgs": 1186,
+      "percent": 22.45,
+      "positive": 325,
+      "neutral": 761,
+      "negative": 100
+    },
+    {
+      "name": "dzen.ru",
+      "msgs": 633,
+      "percent": 11.98,
+      "positive": 345,
+      "neutral": 222,
+      "negative": 66
+    },
+    {
+      "name": "wildberries.ru",
+      "msgs": 205,
+      "percent": 3.88,
+      "positive": 71,
+      "neutral": 126,
+      "negative": 8
+    },
+    {
+      "name": "max.ru",
+      "msgs": 153,
+      "percent": 2.9,
+      "positive": 19,
+      "neutral": 120,
+      "negative": 14
+    },
+    {
+      "name": "ozon.ru",
+      "msgs": 152,
+      "percent": 2.88,
+      "positive": 64,
+      "neutral": 87,
+      "negative": 1
+    },
+    {
+      "name": "drive2.ru",
+      "msgs": 145,
+      "percent": 2.74,
+      "positive": 31,
+      "neutral": 88,
+      "negative": 26
+    },
+    {
+      "name": "youtube.com",
+      "msgs": 131,
+      "percent": 2.48,
+      "positive": 43,
+      "neutral": 65,
+      "negative": 23
+    },
+    {
+      "name": "instagram.com",
+      "msgs": 113,
+      "percent": 2.14,
+      "positive": 43,
+      "neutral": 58,
+      "negative": 12
+    },
+    {
+      "name": "rutube.ru",
+      "msgs": 61,
+      "percent": 1.15,
+      "positive": 13,
+      "neutral": 47,
+      "negative": 1
+    },
+    {
+      "name": "ok.ru",
+      "msgs": 53,
+      "percent": 1,
+      "positive": 11,
+      "neutral": 38,
+      "negative": 4
+    },
+    {
+      "name": "myseldon.com",
+      "msgs": 51,
+      "percent": 0.97,
+      "positive": 19,
+      "neutral": 27,
+      "negative": 5
+    },
+    {
+      "name": "threads.com",
+      "msgs": 47,
+      "percent": 0.89,
+      "positive": 13,
+      "neutral": 26,
+      "negative": 8
+    },
+    {
+      "name": "maps.yandex.ru",
+      "msgs": 35,
+      "percent": 0.66,
+      "positive": 16,
+      "neutral": 16,
+      "negative": 3
+    },
+    {
+      "name": "mirtesen.ru",
+      "msgs": 24,
+      "percent": 0.45,
+      "positive": 8,
+      "neutral": 12,
+      "negative": 4
+    },
+    {
+      "name": "avito.ru",
+      "msgs": 24,
+      "percent": 0.45,
+      "positive": 11,
+      "neutral": 6,
+      "negative": 7
+    },
+    {
+      "name": "market.yandex.ru",
+      "msgs": 21,
+      "percent": 0.4,
+      "positive": 11,
+      "neutral": 9,
+      "negative": 1
+    },
+    {
+      "name": "auto.ru",
+      "msgs": 21,
+      "percent": 0.4,
+      "positive": 10,
+      "neutral": 8,
+      "negative": 3
+    },
+    {
+      "name": "pikabu.ru",
+      "msgs": 20,
+      "percent": 0.38,
+      "positive": 2,
+      "neutral": 9,
+      "negative": 9
+    },
+    {
+      "name": "cenamashin.ru",
+      "msgs": 20,
+      "percent": 0.38,
+      "positive": 18,
+      "neutral": 0,
+      "negative": 2
+    },
+    {
+      "name": "drom.ru",
+      "msgs": 18,
+      "percent": 0.34,
+      "positive": 2,
+      "neutral": 13,
+      "negative": 3
+    },
+    {
+      "name": "rambler.ru",
+      "msgs": 17,
+      "percent": 0.32,
+      "positive": 7,
+      "neutral": 6,
+      "negative": 4
+    },
+    {
+      "name": "2gis.ru",
+      "msgs": 16,
+      "percent": 0.3,
+      "positive": 5,
+      "neutral": 9,
+      "negative": 2
+    },
+    {
+      "name": "facebook.com",
+      "msgs": 15,
+      "percent": 0.28,
+      "positive": 1,
+      "neutral": 13,
+      "negative": 1
+    },
+    {
+      "name": "110km.ru",
+      "msgs": 14,
+      "percent": 0.27,
+      "positive": 8,
+      "neutral": 4,
+      "negative": 2
+    },
+    {
+      "name": "autoreview.ru",
+      "msgs": 11,
+      "percent": 0.21,
+      "positive": 3,
+      "neutral": 6,
+      "negative": 2
+    },
+    {
+      "name": "autopilot.ru",
+      "msgs": 10,
+      "percent": 0.19,
+      "positive": 3,
+      "neutral": 7,
+      "negative": 0
+    },
+    {
+      "name": "103news.com",
+      "msgs": 10,
+      "percent": 0.19,
+      "positive": 4,
+      "neutral": 5,
+      "negative": 1
+    },
+    {
+      "name": "moviespictures.net",
+      "msgs": 9,
+      "percent": 0.17,
+      "positive": 3,
+      "neutral": 6,
+      "negative": 0
+    },
+    {
+      "name": "google.com",
+      "msgs": 8,
+      "percent": 0.15,
+      "positive": 4,
+      "neutral": 2,
+      "negative": 2
+    },
+    {
+      "name": "auto.mail.ru",
+      "msgs": 6,
+      "percent": 0.11,
+      "positive": 5,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "name": "naavtotrasse.ru",
+      "msgs": 6,
+      "percent": 0.11,
+      "positive": 5,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "name": "zr.ru",
+      "msgs": 6,
+      "percent": 0.11,
+      "positive": 2,
+      "neutral": 4,
+      "negative": 0
+    },
+    {
+      "name": "carsecology.ru",
+      "msgs": 6,
+      "percent": 0.11,
+      "positive": 4,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "name": "news-life.pro",
+      "msgs": 6,
+      "percent": 0.11,
+      "positive": 1,
+      "neutral": 4,
+      "negative": 1
+    },
+    {
+      "name": "tenchat.ru",
+      "msgs": 6,
+      "percent": 0.11,
+      "positive": 2,
+      "neutral": 4,
+      "negative": 0
+    },
+    {
+      "name": "teletype.in",
+      "msgs": 6,
+      "percent": 0.11,
+      "positive": 5,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "name": "x.com",
+      "msgs": 5,
+      "percent": 0.09,
+      "positive": 2,
+      "neutral": 2,
+      "negative": 1
+    },
+    {
+      "name": "ixbt.com",
+      "msgs": 5,
+      "percent": 0.09,
+      "positive": 0,
+      "neutral": 2,
+      "negative": 3
+    },
+    {
+      "name": "smi.today",
+      "msgs": 5,
+      "percent": 0.09,
+      "positive": 3,
+      "neutral": 1,
+      "negative": 1
+    },
+    {
+      "name": "news24.pro",
+      "msgs": 5,
+      "percent": 0.09,
+      "positive": 2,
+      "neutral": 2,
+      "negative": 1
+    },
+    {
+      "name": "cenyavto.com",
+      "msgs": 5,
+      "percent": 0.09,
+      "positive": 3,
+      "neutral": 0,
+      "negative": 2
+    },
+    {
+      "name": "teplo-info.com",
+      "msgs": 5,
+      "percent": 0.09,
+      "positive": 1,
+      "neutral": 3,
+      "negative": 1
+    },
+    {
+      "name": "livejournal.com",
+      "msgs": 4,
+      "percent": 0.08,
+      "positive": 1,
+      "neutral": 0,
+      "negative": 3
+    },
+    {
+      "name": "lenta.ru",
+      "msgs": 4,
+      "percent": 0.08,
+      "positive": 1,
+      "neutral": 1,
+      "negative": 2
+    },
+    {
+      "name": "mgorsk.ru",
+      "msgs": 4,
+      "percent": 0.08,
+      "positive": 2,
+      "neutral": 0,
+      "negative": 2
+    },
+    {
+      "name": "rg.ru",
+      "msgs": 4,
+      "percent": 0.08,
+      "positive": 2,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "name": "motor.ru",
+      "msgs": 4,
+      "percent": 0.08,
+      "positive": 1,
+      "neutral": 2,
+      "negative": 1
+    },
+    {
+      "name": "5koleso.ru",
+      "msgs": 4,
+      "percent": 0.08,
+      "positive": 4,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "avtosreda.ru",
+      "msgs": 4,
+      "percent": 0.08,
+      "positive": 1,
+      "neutral": 1,
+      "negative": 2
+    },
+    {
+      "name": "regions.ru",
+      "msgs": 4,
+      "percent": 0.08,
+      "positive": 2,
+      "neutral": 1,
+      "negative": 1
+    },
+    {
+      "name": "vc.ru",
+      "msgs": 4,
+      "percent": 0.08,
+      "positive": 4,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "avtonovostidnya.ru",
+      "msgs": 4,
+      "percent": 0.08,
+      "positive": 1,
+      "neutral": 3,
+      "negative": 0
+    },
+    {
+      "name": "voronej.bezformata.com",
+      "msgs": 4,
+      "percent": 0.08,
+      "positive": 1,
+      "neutral": 3,
+      "negative": 0
+    },
+    {
+      "name": "sanktpeterburg.bezformata.com",
+      "msgs": 4,
+      "percent": 0.08,
+      "positive": 0,
+      "neutral": 4,
+      "negative": 0
+    },
+    {
+      "name": "китайские-автомобили.рф",
+      "msgs": 4,
+      "percent": 0.08,
+      "positive": 2,
+      "neutral": 1,
+      "negative": 1
+    },
+    {
+      "name": "101auto.ru",
+      "msgs": 4,
+      "percent": 0.08,
+      "positive": 4,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "club-tm.ru",
+      "msgs": 4,
+      "percent": 0.08,
+      "positive": 0,
+      "neutral": 4,
+      "negative": 0
+    },
+    {
+      "name": "auto.russia24.pro",
+      "msgs": 4,
+      "percent": 0.08,
+      "positive": 1,
+      "neutral": 3,
+      "negative": 0
+    },
+    {
+      "name": "novosvyat.ru",
+      "msgs": 4,
+      "percent": 0.08,
+      "positive": 0,
+      "neutral": 1,
+      "negative": 3
+    },
+    {
+      "name": "my.mail.ru",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 1,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "name": "monavista.ru",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 1,
+      "neutral": 1,
+      "negative": 1
+    },
+    {
+      "name": "kp.ru",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 1,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "name": "fontanka.ru",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 0,
+      "neutral": 2,
+      "negative": 1
+    },
+    {
+      "name": "news.mail.ru",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 2,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "name": "riavrn.ru",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 1,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "name": "roads.ru",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 0,
+      "neutral": 3,
+      "negative": 0
+    },
+    {
+      "name": "smi2.ru",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 3,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "365news.biz",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 2,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "name": "cars.ru",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 1,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "name": "123ru.net",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 0,
+      "neutral": 2,
+      "negative": 1
+    },
+    {
+      "name": "2ch.hk",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 0,
+      "neutral": 2,
+      "negative": 1
+    },
+    {
+      "name": "voronezh-news.net",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 1,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "name": "tarantas.news",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 1,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "name": "ценыавто.рф",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 2,
+      "neutral": 0,
+      "negative": 1
+    },
+    {
+      "name": "4x4.media",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 2,
+      "neutral": 0,
+      "negative": 1
+    },
+    {
+      "name": "newsfactory.su",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 0,
+      "neutral": 3,
+      "negative": 0
+    },
+    {
+      "name": "region-ural.ru",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 2,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "name": "global.wildberries.ru",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 1,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "name": "news24.com.ru",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 1,
+      "neutral": 0,
+      "negative": 2
+    },
+    {
+      "name": "novostisporta.ru",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 0,
+      "neutral": 1,
+      "negative": 2
+    },
+    {
+      "name": "topcars.su",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 1,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "name": "autogyl.ru",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 0,
+      "neutral": 3,
+      "negative": 0
+    },
+    {
+      "name": "new91.ru",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 0,
+      "neutral": 3,
+      "negative": 0
+    },
+    {
+      "name": "vsetut.pro",
+      "msgs": 3,
+      "percent": 0.06,
+      "positive": 1,
+      "neutral": 0,
+      "negative": 2
+    },
+    {
+      "name": "rbc.ru",
+      "msgs": 2,
+      "percent": 0.04,
+      "positive": 1,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "name": "178.ru",
+      "msgs": 2,
+      "percent": 0.04,
+      "positive": 0,
+      "neutral": 1,
+      "negative": 1
+    },
+    {
+      "name": "74.ru",
+      "msgs": 2,
+      "percent": 0.04,
+      "positive": 1,
+      "neutral": 0,
+      "negative": 1
+    },
+    {
+      "name": "progorodsamara.ru",
+      "msgs": 2,
+      "percent": 0.04,
+      "positive": 1,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "name": "carsweek.ru",
+      "msgs": 2,
+      "percent": 0.04,
+      "positive": 2,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "autonews.ru",
+      "msgs": 2,
+      "percent": 0.04,
+      "positive": 2,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "business-gazeta.ru",
+      "msgs": 2,
+      "percent": 0.04,
+      "positive": 1,
+      "neutral": 0,
+      "negative": 1
+    },
+    {
+      "name": "autostat.ru",
+      "msgs": 2,
+      "percent": 0.04,
+      "positive": 0,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "name": "chaspik.spb.ru",
+      "msgs": 2,
+      "percent": 0.04,
+      "positive": 1,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "name": "66.ru",
+      "msgs": 2,
+      "percent": 0.04,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 2
+    },
+    {
+      "name": "mobile-review.com",
+      "msgs": 2,
+      "percent": 0.04,
+      "positive": 2,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "runews24.ru",
+      "msgs": 2,
+      "percent": 0.04,
+      "positive": 0,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "name": "reddit.com",
+      "msgs": 2,
+      "percent": 0.04,
+      "positive": 0,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "name": "1tulatv.ru",
+      "msgs": 2,
+      "percent": 0.04,
+      "positive": 0,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "name": "neva.today",
+      "msgs": 2,
+      "percent": 0.04,
+      "positive": 0,
+      "neutral": 2,
+      "negative": 0
+    }
+  ],
+  "hubtypes": [
+    {
+      "name": "Соцсети",
+      "msgs": 1839,
+      "percent": 34.81,
+      "positive": 477,
+      "neutral": 1247,
+      "negative": 115
+    },
+    {
+      "name": "Блоги",
+      "msgs": 750,
+      "percent": 14.2,
+      "positive": 377,
+      "neutral": 277,
+      "negative": 96
+    },
+    {
+      "name": "Мессенджеры чаты",
+      "msgs": 739,
+      "percent": 13.99,
+      "positive": 216,
+      "neutral": 463,
+      "negative": 60
+    },
+    {
+      "name": "Мессенджеры каналы",
+      "msgs": 600,
+      "percent": 11.36,
+      "positive": 128,
+      "neutral": 418,
+      "negative": 54
+    },
+    {
+      "name": "Онлайн-СМИ",
+      "msgs": 597,
+      "percent": 11.3,
+      "positive": 252,
+      "neutral": 251,
+      "negative": 94
+    },
+    {
+      "name": "Отзывы",
+      "msgs": 527,
+      "percent": 9.98,
+      "positive": 209,
+      "neutral": 293,
+      "negative": 25
+    },
+    {
+      "name": "Видео",
+      "msgs": 193,
+      "percent": 3.65,
+      "positive": 56,
+      "neutral": 113,
+      "negative": 24
+    },
+    {
+      "name": "Форумы",
+      "msgs": 33,
+      "percent": 0.62,
+      "positive": 2,
+      "neutral": 20,
+      "negative": 11
+    },
+    {
+      "name": "Микроблоги",
+      "msgs": 5,
+      "percent": 0.09,
+      "positive": 2,
+      "neutral": 2,
+      "negative": 1
+    }
+  ]
 }

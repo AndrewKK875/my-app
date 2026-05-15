@@ -1,7 +1,7 @@
 {
   "key": "2026-03",
   "label": "Март 2026",
-  "updatedAt": "2026-05-15T09:11:33.722Z",
+  "updatedAt": "2026-05-15T09:12:55.689Z",
   "summary": {
     "totalMsgs": 0,
     "positive": 0,
@@ -9,7 +9,232 @@
     "negative": 0,
     "netSentiment": 0
   },
-  "dailyTone": [],
+  "dailyTone": [
+    {
+      "date": "2026-02-28",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-01",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-02",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-03",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-04",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-05",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-06",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-07",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-08",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-09",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-10",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-11",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-12",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-13",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-14",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-15",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-16",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-17",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-18",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-19",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-20",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-21",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-22",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-23",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-24",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-25",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-26",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-27",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-28",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-29",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-30",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "date": "2026-03-31",
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
+      "negative": 0
+    }
+  ],
   "hubs": [],
   "hubtypes": []
 }
