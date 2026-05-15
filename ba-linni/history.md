@@ -106,7 +106,7 @@ brandanalytics.ru/topics/[THEME_ID]/dashboard
 - `Тиккурила — сводный дашборд по упоминаниям` → название бренда
 
 ### 5. Добавить job в GitHub Actions
-В `.github/workflows/ba-update.yml` добавить новый блок по аналогии с `tikkurila`:
+В `.github/workflows/ba-update.yml` добавить новый блок после последнего job (сейчас `exeed`):
 
 ```yaml
   [название]:
