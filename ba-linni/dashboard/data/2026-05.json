@@ -1,11 +1,11 @@
 {
   "key": "2026-05",
   "label": "Май 2026",
-  "updatedAt": "2026-05-15T09:11:29.238Z",
+  "updatedAt": "2026-05-15T09:21:52.285Z",
   "summary": {
-    "totalMsgs": 21,
+    "totalMsgs": 22,
     "positive": 12,
-    "neutral": 9,
+    "neutral": 10,
     "negative": 0,
     "netSentiment": 12
   },
@@ -110,9 +110,9 @@
     },
     {
       "date": "2026-05-14",
-      "msgs": 1,
+      "msgs": 2,
       "positive": 1,
-      "neutral": 0,
+      "neutral": 1,
       "negative": 0
     },
     {
@@ -123,6 +123,136 @@
       "negative": 0
     }
   ],
-  "hubs": [],
-  "hubtypes": []
+  "hubs": [
+    {
+      "name": "vk.com",
+      "msgs": 9,
+      "percent": 40.91,
+      "positive": 5,
+      "neutral": 4,
+      "negative": 0
+    },
+    {
+      "name": "ozon.ru",
+      "msgs": 3,
+      "percent": 13.64,
+      "positive": 3,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "telegram.org",
+      "msgs": 2,
+      "percent": 9.09,
+      "positive": 0,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "name": "max.ru",
+      "msgs": 2,
+      "percent": 9.09,
+      "positive": 1,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "name": "market.yandex.ru",
+      "msgs": 1,
+      "percent": 4.55,
+      "positive": 1,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "ok.ru",
+      "msgs": 1,
+      "percent": 4.55,
+      "positive": 0,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "name": "wildberries.ru",
+      "msgs": 1,
+      "percent": 4.55,
+      "positive": 1,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "dzen.ru",
+      "msgs": 1,
+      "percent": 4.55,
+      "positive": 1,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "rutube.ru",
+      "msgs": 1,
+      "percent": 4.55,
+      "positive": 0,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "name": "threads.com",
+      "msgs": 1,
+      "percent": 4.55,
+      "positive": 0,
+      "neutral": 1,
+      "negative": 0
+    }
+  ],
+  "hubtypes": [
+    {
+      "name": "Соцсети",
+      "msgs": 11,
+      "percent": 50,
+      "positive": 5,
+      "neutral": 6,
+      "negative": 0
+    },
+    {
+      "name": "Отзывы",
+      "msgs": 5,
+      "percent": 22.73,
+      "positive": 5,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "Мессенджеры каналы",
+      "msgs": 3,
+      "percent": 13.64,
+      "positive": 1,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "name": "Блоги",
+      "msgs": 1,
+      "percent": 4.55,
+      "positive": 1,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "Видео",
+      "msgs": 1,
+      "percent": 4.55,
+      "positive": 0,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "name": "Мессенджеры чаты",
+      "msgs": 1,
+      "percent": 4.55,
+      "positive": 0,
+      "neutral": 1,
+      "negative": 0
+    }
+  ]
 }
