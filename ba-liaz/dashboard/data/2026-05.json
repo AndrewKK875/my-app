@@ -1,13 +1,13 @@
 {
   "key": "2026-05",
   "label": "Май 2026",
-  "updatedAt": "2026-05-15T09:23:04.625Z",
+  "updatedAt": "2026-05-15T09:36:46.683Z",
   "summary": {
-    "totalMsgs": 3154,
-    "positive": 340,
+    "totalMsgs": 3155,
+    "positive": 341,
     "neutral": 2500,
     "negative": 314,
-    "netSentiment": 26
+    "netSentiment": 27
   },
   "dailyTone": [
     {
@@ -110,8 +110,8 @@
     },
     {
       "date": "2026-05-14",
-      "msgs": 69,
-      "positive": 5,
+      "msgs": 70,
+      "positive": 6,
       "neutral": 61,
       "negative": 3
     },
@@ -127,7 +127,7 @@
     {
       "name": "vk.com",
       "msgs": 1203,
-      "percent": 38.14,
+      "percent": 38.13,
       "positive": 83,
       "neutral": 1005,
       "negative": 115
@@ -135,7 +135,7 @@
     {
       "name": "telegram.org",
       "msgs": 843,
-      "percent": 26.73,
+      "percent": 26.72,
       "positive": 87,
       "neutral": 644,
       "negative": 112
@@ -143,16 +143,16 @@
     {
       "name": "youtube.com",
       "msgs": 338,
-      "percent": 10.72,
+      "percent": 10.71,
       "positive": 54,
       "neutral": 258,
       "negative": 26
     },
     {
       "name": "dzen.ru",
-      "msgs": 162,
-      "percent": 5.14,
-      "positive": 20,
+      "msgs": 163,
+      "percent": 5.17,
+      "positive": 21,
       "neutral": 116,
       "negative": 26
     },
@@ -929,7 +929,7 @@
     {
       "name": "Соцсети",
       "msgs": 1397,
-      "percent": 44.29,
+      "percent": 44.28,
       "positive": 123,
       "neutral": 1145,
       "negative": 129
@@ -953,7 +953,7 @@
     {
       "name": "Мессенджеры каналы",
       "msgs": 333,
-      "percent": 10.56,
+      "percent": 10.55,
       "positive": 42,
       "neutral": 265,
       "negative": 26
@@ -968,9 +968,9 @@
     },
     {
       "name": "Блоги",
-      "msgs": 172,
-      "percent": 5.45,
-      "positive": 23,
+      "msgs": 173,
+      "percent": 5.48,
+      "positive": 24,
       "neutral": 122,
       "negative": 27
     },
