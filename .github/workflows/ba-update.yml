@@ -107,3 +107,36 @@ jobs:
           git commit -m "chore: Лиаз — обновление данных $(date -u '+%Y-%m-%d %H:%M UTC')"
           git pull origin main --no-rebase -X ours
           git push
+
+  exeed:
+    name: Эксид+Экслантикс (ID 14158990)
+    runs-on: ubuntu-latest
+    needs: liaz
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout репозитория
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Установить Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Загрузить данные
+        env:
+          BA_API_KEY: ${{ secrets.BA_API_KEY }}
+        run: node ba-exeed/dashboard/fetch_data.js
+
+      - name: Сохранить данные в репозиторий
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ba-exeed/dashboard/data/
+          git diff --cached --quiet && echo "Нет изменений" && exit 0
+          git commit -m "chore: Эксид+Экслантикс — обновление данных $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git pull origin main --no-rebase -X ours
+          git push

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Эксид+Экслантикс — Brand Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --blue:    #004cff;
+    --blue-d:  #0038cc;
+    --black:   #0a0a0a;
+    --gray-1:  #f5f5f7;
+    --gray-2:  #e8e8ed;
+    --gray-3:  #b0b0b8;
+    --gray-4:  #6e6e78;
+    --white:   #ffffff;
+    --green:   #00a651;
+    --red:     #e0001b;
+    --radius:  10px;
+    --shadow:  0 2px 12px rgba(0,0,0,.07);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--gray-1);
+    color: var(--black);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  header {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-2);
+    padding: 0 40px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo { display: flex; align-items: center; gap: 14px; }
+  .logo svg { height: 28px; width: auto; }
+  .logo-divider { width: 1px; height: 22px; background: var(--gray-2); }
+  .logo-label { font-size: 13px; font-weight: 500; color: var(--gray-4); letter-spacing: .3px; }
+  #updated { font-size: 12px; color: var(--gray-3); font-weight: 400; }
+
+  .month-bar {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-2);
+    padding: 0 40px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .month-bar-label {
+    font-size: 12px; font-weight: 500; color: var(--gray-3);
+    text-transform: uppercase; letter-spacing: .6px; margin-right: 8px;
+  }
+
+  .month-btn {
+    padding: 6px 16px; border: 1px solid var(--gray-2); border-radius: 20px;
+    background: transparent; cursor: pointer; font-size: 13px;
+    font-family: 'Inter', sans-serif; font-weight: 500; color: var(--gray-4);
+    transition: all .15s; white-space: nowrap;
+  }
+  .month-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .month-btn.active { background: var(--blue); border-color: var(--blue); color: var(--white); }
+
+  main { max-width: 1280px; margin: 0 auto; padding: 32px 40px; }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  @media (max-width: 1024px) { .cards { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 640px)  { .cards { grid-template-columns: repeat(2, 1fr); } }
+
+  .card {
+    background: var(--white); border-radius: var(--radius);
+    padding: 22px 20px 18px; box-shadow: var(--shadow);
+    border: 1px solid var(--gray-2); position: relative; overflow: hidden;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; background: var(--gray-2);
+  }
+  .card.blue::before   { background: var(--blue); }
+  .card.green::before  { background: var(--green); }
+  .card.neutral::before{ background: #2471a3; }
+  .card.red::before    { background: var(--red); }
+  .card.purple::before { background: #6c3483; }
+
+  .card .card-label {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .7px; color: var(--gray-3); margin-bottom: 10px;
+  }
+  .card .card-value { font-size: 32px; font-weight: 700; letter-spacing: -1px; color: var(--black); }
+  .card.green  .card-value { color: var(--green); }
+  .card.red    .card-value { color: var(--red); }
+  .card.neutral .card-value{ color: #2471a3; }
+  .card.purple .card-value { color: #6c3483; }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+  @media (max-width: 900px) { .row { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--white); border-radius: var(--radius);
+    padding: 24px; box-shadow: var(--shadow); border: 1px solid var(--gray-2);
+  }
+  .panel-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--gray-2);
+  }
+  .panel-title { font-size: 14px; font-weight: 600; color: var(--black); letter-spacing: -.1px; }
+  .panel-badge {
+    font-size: 11px; font-weight: 600; color: var(--blue);
+    background: rgba(0,76,255,.08); padding: 3px 10px; border-radius: 20px;
+  }
+  .chart-wrap { position: relative; height: 220px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    text-align: left; padding: 0 10px 10px; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .5px; color: var(--gray-3);
+    border-bottom: 1px solid var(--gray-2);
+  }
+  tbody td { padding: 10px; border-bottom: 1px solid var(--gray-1); color: var(--black); }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--gray-1); }
+
+  .td-name { font-weight: 500; }
+  .td-num  { font-variant-numeric: tabular-nums; text-align: right; }
+  .tone-pos { color: var(--green); font-weight: 600; }
+  .tone-neu { color: #2471a3; font-weight: 500; }
+  .tone-neg { color: var(--red); font-weight: 600; }
+
+  .bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .bar-bg   { flex: 1; background: var(--gray-2); border-radius: 4px; height: 5px; min-width: 50px; }
+  .bar-fg   { background: var(--blue); border-radius: 4px; height: 5px; }
+
+  #loading, #error { text-align: center; padding: 80px 20px; color: var(--gray-3); font-size: 15px; }
+  #error { color: var(--red); }
+
+  .spinner {
+    width: 32px; height: 32px; border: 3px solid var(--gray-2);
+    border-top-color: var(--blue); border-radius: 50%;
+    animation: spin .7s linear infinite; margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 486 261" fill="none">
+      <path fill="#004cff" d="M192.315 0v150.463h40.489v50.153h-40.489v60.186h-50.609v-60.186H0v-50.153L141.706 0zm101.221 100.309h50.609L425.119 0h60.732v20.062L394.754 130.4l91.097 110.339v20.062h-60.732l-80.974-100.309h-50.609v100.309h-60.731V0h60.731zM60.731 150.463h80.975V60.186z"/>
+    </svg>
+    <div class="logo-divider"></div>
+    <span class="logo-label">Эксид+Экслантикс — сводный дашборд по упоминаниям</span>
+  </div>
+  <span id="updated"></span>
+</header>
+
+<div class="month-bar">
+  <span class="month-bar-label">Период</span>
+  <div id="month-buttons" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+</div>
+
+<main>
+  <div id="loading">
+    <div class="spinner"></div>
+    Загрузка данных...
+  </div>
+  <div id="error" style="display:none"></div>
+
+  <div id="content" style="display:none">
+
+    <div class="cards">
+      <div class="card blue">
+        <div class="card-label">Сообщений</div>
+        <div class="card-value" id="c-total">—</div>
+      </div>
+      <div class="card green">
+        <div class="card-label">Позитив</div>
+        <div class="card-value" id="c-pos">—</div>
+      </div>
+      <div class="card neutral">
+        <div class="card-label">Нейтрал</div>
+        <div class="card-value" id="c-neu">—</div>
+      </div>
+      <div class="card red">
+        <div class="card-label">Негатив</div>
+        <div class="card-value" id="c-neg">—</div>
+      </div>
+      <div class="card purple">
+        <div class="card-label">Net Sentiment</div>
+        <div class="card-value" id="c-net">—</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Динамика сообщений</span>
+          <span class="panel-badge" id="badge-total">—</span>
+        </div>
+        <div class="chart-wrap"><canvas id="chart-daily"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Тональность по дням</span>
+        </div>
+        <div class="chart-wrap"><canvas id="chart-tone"></canvas></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Площадки</span>
+          <span class="panel-badge" id="badge-hubs">—</span>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr>
+              <th>Площадка</th>
+              <th style="text-align:right">Сообщений</th>
+              <th style="text-align:right">Доля</th>
+              <th style="text-align:right">＋</th>
+              <th style="text-align:right">○</th>
+              <th style="text-align:right">－</th>
+            </tr></thead>
+            <tbody id="body-hubs"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Типы площадок</span>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr>
+              <th>Тип</th>
+              <th style="text-align:right">Сообщений</th>
+              <th style="text-align:right">Доля</th>
+              <th style="text-align:right">＋</th>
+              <th style="text-align:right">○</th>
+              <th style="text-align:right">－</th>
+            </tr></thead>
+            <tbody id="body-types"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+const BASE = './data';
+let chartDaily = null, chartTone = null;
+
+async function loadJSON(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('HTTP ' + res.status + ': ' + url);
+  return res.json();
+}
+
+function $(id) { return document.getElementById(id); }
+function show(id) { $(id).style.display = ''; }
+function hide(id) { $(id).style.display = 'none'; }
+
+async function init() {
+  try {
+    const idx = await loadJSON(BASE + '/index.json');
+    $('updated').textContent = 'Обновлено: ' + new Date(idx.updatedAt).toLocaleString('ru-RU', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+
+    const btns = $('month-buttons');
+    idx.months.forEach((m, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'month-btn' + (i === idx.months.length - 1 ? ' active' : '');
+      btn.textContent = m.label;
+      btn.dataset.key = m.key;
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadMonth(m.key);
+      });
+      btns.appendChild(btn);
+    });
+
+    hide('loading');
+    show('content');
+    await loadMonth(idx.months[idx.months.length - 1].key);
+  } catch (e) {
+    hide('loading');
+    $('error').textContent = 'Ошибка загрузки данных: ' + e.message;
+    show('error');
+  }
+}
+
+async function loadMonth(key) {
+  const d = await loadJSON(BASE + '/' + key + '.json');
+  const s = d.summary;
+
+  $('c-total').textContent = s.totalMsgs.toLocaleString('ru');
+  $('c-pos').textContent   = s.positive.toLocaleString('ru');
+  $('c-neu').textContent   = s.neutral.toLocaleString('ru');
+  $('c-neg').textContent   = s.negative.toLocaleString('ru');
+
+  const net = s.netSentiment;
+  const netEl = $('c-net');
+  netEl.textContent = (net > 0 ? '+' : '') + net.toLocaleString('ru');
+
+  $('badge-total').textContent = s.totalMsgs.toLocaleString('ru') + ' сообщ.';
+  $('badge-hubs').textContent  = d.hubs.length + ' площадок';
+
+  renderDailyChart(d.dailyTone);
+  renderToneChart(d.dailyTone);
+  renderHubsTable(d.hubs);
+  renderTypesTable(d.hubtypes);
+}
+
+function renderDailyChart(daily) {
+  if (chartDaily) chartDaily.destroy();
+  chartDaily = new Chart($('chart-daily'), {
+    type: 'bar',
+    data: {
+      labels: daily.map(d => d.date.slice(5)),
+      datasets: [{ data: daily.map(d => d.msgs), backgroundColor: 'rgba(0,76,255,.15)', borderColor: '#004cff', borderWidth: 1.5, borderRadius: 4 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { maxTicksLimit: 10, font: { family: 'Inter', size: 11 }, color: '#b0b0b8' } },
+        y: { grid: { color: '#f0f0f4' }, ticks: { font: { family: 'Inter', size: 11 }, color: '#b0b0b8' } }
+      }
+    }
+  });
+}
+
+function renderToneChart(daily) {
+  if (chartTone) chartTone.destroy();
+  chartTone = new Chart($('chart-tone'), {
+    type: 'bar',
+    data: {
+      labels: daily.map(d => d.date.slice(5)),
+      datasets: [
+        { label: 'Позитив', data: daily.map(d => d.positive), backgroundColor: '#00a651', borderRadius: 3 },
+        { label: 'Нейтрал', data: daily.map(d => d.neutral),  backgroundColor: '#2471a3', borderRadius: 3 },
+        { label: 'Негатив', data: daily.map(d => d.negative), backgroundColor: '#e0001b', borderRadius: 3 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 11 }, boxWidth: 10, padding: 16 } } },
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { maxTicksLimit: 10, font: { family: 'Inter', size: 11 }, color: '#b0b0b8' } },
+        y: { stacked: true, grid: { color: '#f0f0f4' }, ticks: { font: { family: 'Inter', size: 11 }, color: '#b0b0b8' } }
+      }
+    }
+  });
+}
+
+function renderHubsTable(hubs) {
+  const max = hubs[0]?.msgs || 1;
+  $('body-hubs').innerHTML = hubs.map(h => `
+    <tr>
+      <td class="td-name">${h.name}</td>
+      <td class="td-num"><div class="bar-wrap"><span>${h.msgs}</span><div class="bar-bg"><div class="bar-fg" style="width:${Math.round(h.msgs/max*100)}%"></div></div></div></td>
+      <td class="td-num" style="color:var(--gray-4)">${h.percent}%</td>
+      <td class="td-num tone-pos">${h.positive}</td>
+      <td class="td-num tone-neu">${h.neutral}</td>
+      <td class="td-num tone-neg">${h.negative}</td>
+    </tr>`).join('');
+}
+
+function renderTypesTable(types) {
+  const max = types[0]?.msgs || 1;
+  $('body-types').innerHTML = types.map(t => `
+    <tr>
+      <td class="td-name">${t.name}</td>
+      <td class="td-num"><div class="bar-wrap"><span>${t.msgs}</span><div class="bar-bg"><div class="bar-fg" style="width:${Math.round(t.msgs/max*100)}%"></div></div></div></td>
+      <td class="td-num" style="color:var(--gray-4)">${t.percent}%</td>
+      <td class="td-num tone-pos">${t.positive}</td>
+      <td class="td-num tone-neu">${t.neutral}</td>
+      <td class="td-num tone-neg">${t.negative}</td>
+    </tr>`).join('');
+}
+
+init();
+</script>
+</body>
+</html>
