@@ -7,6 +7,9 @@ on:
     - cron: '0 6 * * *'   # каждый день в 6:00 UTC (9:00 МСК)
   workflow_dispatch:        # ручной запуск из GitHub
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
 
   linnimax:
