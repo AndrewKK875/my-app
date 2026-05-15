@@ -271,6 +271,67 @@
   .bar-bg   { flex: 1; background: var(--gray-2); border-radius: 4px; height: 5px; min-width: 50px; }
   .bar-fg   { background: var(--blue); border-radius: 4px; height: 5px; }
 
+  /* ── Messages section ── */
+  .tone-filter {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .tone-btn {
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--gray-2);
+    background: transparent;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gray-4);
+    cursor: pointer;
+    transition: all .15s;
+  }
+
+  .tone-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .tone-btn.active-all     { background: var(--black); border-color: var(--black); color: var(--white); }
+  .tone-btn.active-pos     { background: var(--green); border-color: var(--green); color: var(--white); }
+  .tone-btn.active-neu     { background: #2471a3;      border-color: #2471a3;      color: var(--white); }
+  .tone-btn.active-neg     { background: var(--red);   border-color: var(--red);   color: var(--white); }
+
+  .msg-text {
+    max-width: 480px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--black);
+  }
+
+  .msg-text a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .msg-text a:hover { text-decoration: underline; }
+
+  .tone-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .tone-tag-pos { background: rgba(0,166,81,.12);  color: var(--green); }
+  .tone-tag-neu { background: rgba(36,113,163,.12); color: #2471a3; }
+  .tone-tag-neg { background: rgba(224,0,27,.12);   color: var(--red); }
+
+  #msg-no-data {
+    padding: 32px;
+    text-align: center;
+    color: var(--gray-3);
+    font-size: 13px;
+  }
+
   /* ── States ── */
   #loading, #error {
     text-align: center;
@@ -363,6 +424,35 @@
       </div>
     </div>
 
+    <!-- Лента сообщений (только апрель 2026) -->
+    <div class="row single" id="messages-section" style="display:none">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Лента сообщений</span>
+          <div class="tone-filter">
+            <button class="tone-btn active-all" data-tone="all">Все</button>
+            <button class="tone-btn" data-tone="1">Позитив</button>
+            <button class="tone-btn" data-tone="0">Нейтрал</button>
+            <button class="tone-btn" data-tone="-1">Негатив</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table id="messages-table">
+            <thead><tr>
+              <th>Дата</th>
+              <th>Источник</th>
+              <th>Сообщение</th>
+              <th style="text-align:center">Тон</th>
+              <th style="text-align:right">Просмотры</th>
+              <th style="text-align:right">Лайки</th>
+            </tr></thead>
+            <tbody id="body-messages"></tbody>
+          </table>
+          <div id="msg-no-data" style="display:none">Нет сообщений с выбранной тональностью</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Таблицы -->
     <div class="row">
       <div class="panel">
@@ -410,6 +500,7 @@
 <script>
 const BASE = './data';
 let chartDaily = null, chartTone = null;
+let allMessages = [], activeToneFilter = 'all';
 
 async function loadJSON(url) {
   const res = await fetch(url);
@@ -450,6 +541,74 @@ async function init() {
   }
 }
 
+async function loadMessages(key) {
+  const section = $('messages-section');
+  if (key !== '2026-04') { section.style.display = 'none'; return; }
+  try {
+    allMessages = await loadJSON(BASE + '/messages-' + key + '.json');
+    activeToneFilter = 'all';
+    document.querySelectorAll('.tone-btn').forEach(b => b.className = 'tone-btn');
+    document.querySelector('[data-tone="all"]').classList.add('active-all');
+    renderMessages();
+    section.style.display = '';
+  } catch (e) {
+    section.style.display = 'none';
+  }
+}
+
+function renderMessages() {
+  const filtered = activeToneFilter === 'all'
+    ? allMessages
+    : allMessages.filter(m => String(m.tone) === activeToneFilter);
+
+  const tbody = $('body-messages');
+  const noData = $('msg-no-data');
+  const table  = $('messages-table');
+
+  if (!filtered.length) {
+    tbody.innerHTML = '';
+    table.style.display = 'none';
+    noData.style.display = '';
+    return;
+  }
+  table.style.display = '';
+  noData.style.display = 'none';
+
+  const toneTag = t => t === 1
+    ? '<span class="tone-tag tone-tag-pos">＋ позитив</span>'
+    : t === -1
+    ? '<span class="tone-tag tone-tag-neg">－ негатив</span>'
+    : '<span class="tone-tag tone-tag-neu">○ нейтрал</span>';
+
+  tbody.innerHTML = filtered.map(m => {
+    const snippet = m.text.replace(/\n/g, ' ').slice(0, 120) + (m.text.length > 120 ? '…' : '');
+    const dateStr = m.date.slice(5).split('-').reverse().join('.');
+    return `<tr>
+      <td style="white-space:nowrap;color:var(--gray-4)">${dateStr}</td>
+      <td style="white-space:nowrap;font-weight:500">${m.hub}</td>
+      <td class="msg-text">${m.url
+        ? `<a href="${m.url}" target="_blank" title="${m.text.replace(/"/g,'&quot;')}">${snippet}</a>`
+        : `<span title="${m.text.replace(/"/g,'&quot;')}">${snippet}</span>`
+      }</td>
+      <td style="text-align:center">${toneTag(m.tone)}</td>
+      <td class="td-num" style="color:var(--gray-4)">${m.views.toLocaleString('ru')}</td>
+      <td class="td-num" style="color:var(--gray-4)">${m.likes.toLocaleString('ru')}</td>
+    </tr>`;
+  }).join('');
+}
+
+// Фильтры тональности
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.tone-btn');
+  if (!btn) return;
+  const tone = btn.dataset.tone;
+  activeToneFilter = tone;
+  document.querySelectorAll('.tone-btn').forEach(b => b.className = 'tone-btn');
+  const cls = tone === 'all' ? 'active-all' : tone === '1' ? 'active-pos' : tone === '0' ? 'active-neu' : 'active-neg';
+  btn.classList.add(cls);
+  renderMessages();
+});
+
 async function loadMonth(key) {
   const d = await loadJSON(BASE + '/' + key + '.json');
   const s = d.summary;
@@ -471,6 +630,7 @@ async function loadMonth(key) {
   renderToneChart(d.dailyTone);
   renderHubsTable(d.hubs);
   renderTypesTable(d.hubtypes);
+  await loadMessages(key);
 }
 
 function renderDailyChart(daily) {
