@@ -1,9 +1,9 @@
 {
   "key": "2026-01",
   "label": "Январь 2026",
-  "updatedAt": "2026-05-15T08:54:12.017Z",
+  "updatedAt": "2026-05-15T09:04:32.321Z",
   "summary": {
-    "totalMsgs": 0,
+    "totalMsgs": 192,
     "positive": 41,
     "neutral": 149,
     "negative": 2,
@@ -235,7 +235,104 @@
       "negative": 0
     }
   ],
-  "hubs": [],
+  "hubs": [
+    {
+      "name": "telegram.org",
+      "msgs": 97,
+      "percent": 50.52,
+      "positive": 2,
+      "neutral": 95,
+      "negative": 0
+    },
+    {
+      "name": "vk.com",
+      "msgs": 33,
+      "percent": 17.19,
+      "positive": 7,
+      "neutral": 26,
+      "negative": 0
+    },
+    {
+      "name": "ozon.ru",
+      "msgs": 24,
+      "percent": 12.5,
+      "positive": 18,
+      "neutral": 6,
+      "negative": 0
+    },
+    {
+      "name": "wildberries.ru",
+      "msgs": 16,
+      "percent": 8.33,
+      "positive": 6,
+      "neutral": 9,
+      "negative": 1
+    },
+    {
+      "name": "instagram.com",
+      "msgs": 6,
+      "percent": 3.13,
+      "positive": 2,
+      "neutral": 3,
+      "negative": 1
+    },
+    {
+      "name": "youtube.com",
+      "msgs": 5,
+      "percent": 2.6,
+      "positive": 1,
+      "neutral": 4,
+      "negative": 0
+    },
+    {
+      "name": "threads.com",
+      "msgs": 4,
+      "percent": 2.08,
+      "positive": 3,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "name": "irecommend.ru",
+      "msgs": 2,
+      "percent": 1.04,
+      "positive": 1,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "name": "dzen.ru",
+      "msgs": 2,
+      "percent": 1.04,
+      "positive": 0,
+      "neutral": 2,
+      "negative": 0
+    },
+    {
+      "name": "facebook.com",
+      "msgs": 1,
+      "percent": 0.52,
+      "positive": 0,
+      "neutral": 1,
+      "negative": 0
+    },
+    {
+      "name": "kuban.ru",
+      "msgs": 1,
+      "percent": 0.52,
+      "positive": 1,
+      "neutral": 0,
+      "negative": 0
+    },
+    {
+      "name": "rutube.ru",
+      "msgs": 1,
+      "percent": 0.52,
+      "positive": 0,
+      "neutral": 1,
+      "negative": 0
+    }
+  ],
   "hubtypes": [
     {
       "name": "Мессенджеры чаты",
