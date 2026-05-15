@@ -1,13 +1,13 @@
 {
   "key": "2025-12",
   "label": "Декабрь 2025",
-  "updatedAt": "2026-05-15T08:53:44.783Z",
+  "updatedAt": "2026-05-15T08:54:40.681Z",
   "summary": {
-    "totalMsgs": 24,
-    "positive": 22,
-    "neutral": 2,
+    "totalMsgs": 0,
+    "positive": 0,
+    "neutral": 0,
     "negative": 0,
-    "netSentiment": 22
+    "netSentiment": 0
   },
   "dailyTone": [
     {
@@ -215,15 +215,15 @@
     },
     {
       "date": "2025-12-29",
-      "msgs": 12,
-      "positive": 10,
-      "neutral": 2,
+      "msgs": 0,
+      "positive": 0,
+      "neutral": 0,
       "negative": 0
     },
     {
       "date": "2025-12-30",
-      "msgs": 12,
-      "positive": 12,
+      "msgs": 0,
+      "positive": 0,
       "neutral": 0,
       "negative": 0
     },
@@ -235,56 +235,6 @@
       "negative": 0
     }
   ],
-  "hubs": [
-    {
-      "name": "vk.com",
-      "msgs": 10,
-      "percent": 41.67,
-      "positive": 9,
-      "neutral": 1,
-      "negative": 0
-    },
-    {
-      "name": "telegram.org",
-      "msgs": 8,
-      "percent": 33.33,
-      "positive": 8,
-      "neutral": 0,
-      "negative": 0
-    },
-    {
-      "name": "ok.ru",
-      "msgs": 6,
-      "percent": 25,
-      "positive": 5,
-      "neutral": 1,
-      "negative": 0
-    }
-  ],
-  "hubtypes": [
-    {
-      "name": "Соцсети",
-      "msgs": 16,
-      "percent": 66.67,
-      "positive": 14,
-      "neutral": 2,
-      "negative": 0
-    },
-    {
-      "name": "Мессенджеры каналы",
-      "msgs": 4,
-      "percent": 16.67,
-      "positive": 4,
-      "neutral": 0,
-      "negative": 0
-    },
-    {
-      "name": "Мессенджеры чаты",
-      "msgs": 4,
-      "percent": 16.67,
-      "positive": 4,
-      "neutral": 0,
-      "negative": 0
-    }
-  ]
+  "hubs": [],
+  "hubtypes": []
 }
