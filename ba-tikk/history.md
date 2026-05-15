@@ -146,7 +146,7 @@ const sig = md5(JSON.stringify(sortedParams) + secretKey);
 - `0` (нейтрал) — нейтральные упоминания, вакансии, объявления о продаже б/у
 - `-1` (негатив) — жалобы, негативный опыт, критика
 
-> **Статус:** автоматизация через `fetch_messages.js` пока настроена только для ba-linni.
+> **Статус:** `fetch_messages.js` настроен для ba-linni и ba-tikk. ba-liaz и ba-exeed — в планах.
 
 ---
 
