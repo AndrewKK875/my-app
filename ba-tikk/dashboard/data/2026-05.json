@@ -1,13 +1,13 @@
 {
   "key": "2026-05",
   "label": "Май 2026",
-  "updatedAt": "2026-05-14T17:19:56.499Z",
+  "updatedAt": "2026-05-15T08:31:10.691Z",
   "summary": {
-    "totalMsgs": 646,
-    "positive": 186,
-    "neutral": 436,
-    "negative": 24,
-    "netSentiment": 162
+    "totalMsgs": 683,
+    "positive": 193,
+    "neutral": 464,
+    "negative": 26,
+    "netSentiment": 167
   },
   "dailyTone": [
     {
@@ -61,17 +61,17 @@
     },
     {
       "date": "2026-05-07",
-      "msgs": 7,
+      "msgs": 8,
       "positive": 2,
-      "neutral": 5,
+      "neutral": 6,
       "negative": 0
     },
     {
       "date": "2026-05-08",
-      "msgs": 3,
+      "msgs": 5,
       "positive": 2,
-      "neutral": 0,
-      "negative": 1
+      "neutral": 1,
+      "negative": 2
     },
     {
       "date": "2026-05-09",
@@ -82,34 +82,41 @@
     },
     {
       "date": "2026-05-10",
-      "msgs": 35,
+      "msgs": 36,
       "positive": 14,
-      "neutral": 21,
+      "neutral": 22,
       "negative": 0
     },
     {
       "date": "2026-05-11",
-      "msgs": 80,
+      "msgs": 81,
       "positive": 19,
-      "neutral": 59,
+      "neutral": 60,
       "negative": 2
     },
     {
       "date": "2026-05-12",
-      "msgs": 72,
+      "msgs": 76,
       "positive": 20,
-      "neutral": 50,
+      "neutral": 54,
       "negative": 2
     },
     {
       "date": "2026-05-13",
-      "msgs": 38,
-      "positive": 11,
-      "neutral": 27,
-      "negative": 0
+      "msgs": 55,
+      "positive": 13,
+      "neutral": 41,
+      "negative": 1
     },
     {
       "date": "2026-05-14",
+      "msgs": 11,
+      "positive": 5,
+      "neutral": 6,
+      "negative": 0
+    },
+    {
+      "date": "2026-05-15",
       "msgs": 0,
       "positive": 0,
       "neutral": 0,
@@ -119,80 +126,80 @@
   "hubs": [
     {
       "name": "vk.com",
-      "msgs": 212,
-      "percent": 32.82,
-      "positive": 40,
-      "neutral": 160,
+      "msgs": 229,
+      "percent": 33.53,
+      "positive": 43,
+      "neutral": 174,
       "negative": 12
     },
     {
       "name": "wildberries.ru",
-      "msgs": 107,
-      "percent": 16.56,
+      "msgs": 113,
+      "percent": 16.54,
       "positive": 24,
-      "neutral": 80,
+      "neutral": 86,
       "negative": 3
     },
     {
       "name": "telegram.org",
-      "msgs": 96,
-      "percent": 14.86,
-      "positive": 20,
+      "msgs": 97,
+      "percent": 14.2,
+      "positive": 21,
       "neutral": 76,
       "negative": 0
     },
     {
       "name": "ozon.ru",
-      "msgs": 75,
-      "percent": 11.61,
-      "positive": 41,
-      "neutral": 34,
+      "msgs": 78,
+      "percent": 11.42,
+      "positive": 42,
+      "neutral": 36,
       "negative": 0
     },
     {
       "name": "market.yandex.ru",
-      "msgs": 32,
-      "percent": 4.95,
-      "positive": 19,
-      "neutral": 12,
-      "negative": 1
+      "msgs": 36,
+      "percent": 5.27,
+      "positive": 21,
+      "neutral": 13,
+      "negative": 2
     },
     {
       "name": "instagram.com",
-      "msgs": 30,
-      "percent": 4.64,
+      "msgs": 32,
+      "percent": 4.69,
       "positive": 12,
-      "neutral": 17,
-      "negative": 1
+      "neutral": 18,
+      "negative": 2
     },
     {
       "name": "dzen.ru",
       "msgs": 19,
-      "percent": 2.94,
+      "percent": 2.78,
       "positive": 7,
       "neutral": 9,
       "negative": 3
     },
     {
       "name": "youtube.com",
-      "msgs": 13,
-      "percent": 2.01,
+      "msgs": 14,
+      "percent": 2.05,
       "positive": 5,
-      "neutral": 7,
+      "neutral": 8,
       "negative": 1
     },
     {
       "name": "max.ru",
-      "msgs": 12,
-      "percent": 1.86,
+      "msgs": 13,
+      "percent": 1.9,
       "positive": 2,
-      "neutral": 9,
+      "neutral": 10,
       "negative": 1
     },
     {
       "name": "threads.com",
       "msgs": 10,
-      "percent": 1.55,
+      "percent": 1.46,
       "positive": 2,
       "neutral": 7,
       "negative": 1
@@ -200,7 +207,7 @@
     {
       "name": "ok.ru",
       "msgs": 7,
-      "percent": 1.08,
+      "percent": 1.02,
       "positive": 1,
       "neutral": 6,
       "negative": 0
@@ -208,7 +215,7 @@
     {
       "name": "forumhouse.ru",
       "msgs": 7,
-      "percent": 1.08,
+      "percent": 1.02,
       "positive": 1,
       "neutral": 5,
       "negative": 1
@@ -216,7 +223,7 @@
     {
       "name": "google.com",
       "msgs": 5,
-      "percent": 0.77,
+      "percent": 0.73,
       "positive": 5,
       "neutral": 0,
       "negative": 0
@@ -224,15 +231,23 @@
     {
       "name": "rutube.ru",
       "msgs": 5,
-      "percent": 0.77,
+      "percent": 0.73,
       "positive": 1,
+      "neutral": 4,
+      "negative": 0
+    },
+    {
+      "name": "facebook.com",
+      "msgs": 4,
+      "percent": 0.59,
+      "positive": 0,
       "neutral": 4,
       "negative": 0
     },
     {
       "name": "otzovik.com",
       "msgs": 4,
-      "percent": 0.62,
+      "percent": 0.59,
       "positive": 1,
       "neutral": 3,
       "negative": 0
@@ -240,17 +255,9 @@
     {
       "name": "yell.ru",
       "msgs": 3,
-      "percent": 0.46,
+      "percent": 0.44,
       "positive": 3,
       "neutral": 0,
-      "negative": 0
-    },
-    {
-      "name": "facebook.com",
-      "msgs": 2,
-      "percent": 0.31,
-      "positive": 0,
-      "neutral": 2,
       "negative": 0
     },
     {
@@ -313,56 +320,56 @@
   "hubtypes": [
     {
       "name": "Соцсети",
-      "msgs": 262,
-      "percent": 40.56,
-      "positive": 55,
-      "neutral": 193,
-      "negative": 14
+      "msgs": 283,
+      "percent": 41.43,
+      "positive": 58,
+      "neutral": 210,
+      "negative": 15
     },
     {
       "name": "Отзывы",
-      "msgs": 227,
+      "msgs": 240,
       "percent": 35.14,
-      "positive": 93,
-      "neutral": 130,
-      "negative": 4
+      "positive": 96,
+      "neutral": 139,
+      "negative": 5
     },
     {
       "name": "Мессенджеры чаты",
       "msgs": 71,
-      "percent": 10.99,
+      "percent": 10.4,
       "positive": 12,
       "neutral": 59,
       "negative": 0
     },
     {
       "name": "Мессенджеры каналы",
-      "msgs": 37,
-      "percent": 5.73,
-      "positive": 10,
-      "neutral": 26,
+      "msgs": 39,
+      "percent": 5.71,
+      "positive": 11,
+      "neutral": 27,
       "negative": 1
     },
     {
       "name": "Блоги",
       "msgs": 20,
-      "percent": 3.1,
+      "percent": 2.93,
       "positive": 8,
       "neutral": 9,
       "negative": 3
     },
     {
       "name": "Видео",
-      "msgs": 18,
-      "percent": 2.79,
+      "msgs": 19,
+      "percent": 2.78,
       "positive": 6,
-      "neutral": 11,
+      "neutral": 12,
       "negative": 1
     },
     {
       "name": "Форумы",
       "msgs": 11,
-      "percent": 1.7,
+      "percent": 1.61,
       "positive": 2,
       "neutral": 8,
       "negative": 1
