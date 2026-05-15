@@ -1,0 +1,15 @@
+{
+  "key": "2026-04",
+  "label": "Апрель 2026",
+  "updatedAt": "2026-05-15T09:11:35.505Z",
+  "summary": {
+    "totalMsgs": 0,
+    "positive": 0,
+    "neutral": 0,
+    "negative": 0,
+    "netSentiment": 0
+  },
+  "dailyTone": [],
+  "hubs": [],
+  "hubtypes": []
+}
