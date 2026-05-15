@@ -27,10 +27,17 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Загрузить данные
+      - name: Загрузить статистику
         env:
           BA_API_KEY: ${{ secrets.BA_API_KEY }}
         run: node ba-linni/dashboard/fetch_data.js
+
+      - name: Выгрузить и классифицировать сообщения
+        env:
+          BA_LOGIN: ${{ secrets.BA_LOGIN }}
+          BA_SECRET_KEY: ${{ secrets.BA_SECRET_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: node ba-linni/fetch_messages.js
 
       - name: Сохранить данные в репозиторий
         run: |
