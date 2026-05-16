@@ -1,24 +1,14 @@
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
 
-const BA_LOGIN = process.env.BA_LOGIN;
-const BA_SECRET_KEY = process.env.BA_SECRET_KEY;
+const BA_API_KEY = process.env.BA_API_KEY;
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const THEME_ID = 14131230;
 const DATA_DIR = path.join(__dirname, 'dashboard', 'data');
 
-if (!BA_LOGIN || !BA_SECRET_KEY) { console.error('BA_LOGIN и BA_SECRET_KEY обязательны'); process.exit(1); }
+if (!BA_API_KEY) { console.error('BA_API_KEY обязателен'); process.exit(1); }
 if (!OPENROUTER_API_KEY) { console.error('OPENROUTER_API_KEY обязателен'); process.exit(1); }
-
-function generateSig(params, secret) {
-  const prepared = {};
-  for (const [k, v] of Object.entries(params)) { prepared[k] = String(v); }
-  const sorted = {};
-  Object.keys(prepared).sort().forEach(k => sorted[k] = prepared[k]);
-  return crypto.createHash('md5').update(JSON.stringify(sorted) + secret).digest('hex');
-}
 
 function httpGet(url) {
   return new Promise((resolve, reject) => {
@@ -55,6 +45,18 @@ function msgKey(m) {
   return m.url || m.text.slice(0, 100);
 }
 
+function toneFromRating(ratingResult) {
+  if (ratingResult === null || ratingResult === undefined) return 0;
+  if (ratingResult <= 2) return -1;
+  if (ratingResult <= 3) return 0;
+  return 1;
+}
+
+function extractRating(reviewRating) {
+  if (!reviewRating || Array.isArray(reviewRating)) return null;
+  return reviewRating.result || null;
+}
+
 async function fetchMonthMessages(year, month) {
   const timeFrom = Math.floor(new Date(Date.UTC(year, month - 1, 1)).getTime() / 1000);
   const now = new Date();
@@ -64,36 +66,47 @@ async function fetchMonthMessages(year, month) {
 
   const all = [];
   let offset = 0;
+  const LIMIT = 5000;
+
   while (true) {
-    const params = { login: BA_LOGIN, themeId: THEME_ID, timeFrom, timeTo, offset, limit: 150 };
-    const sig = generateSig(params, BA_SECRET_KEY);
-    const qs = new URLSearchParams({ ...params, sig }).toString();
-    const batch = await httpGet('https://api.br-analytics.ru/objects/feed/messages/?' + qs);
-    const arr = Array.isArray(batch) ? batch : (batch.data || []);
+    const qs = `token=${encodeURIComponent(BA_API_KEY)}&themeId=${THEME_ID}&timeFrom=${timeFrom}&timeTo=${timeTo}&offset=${offset}&limit=${LIMIT}&fieldGroups[]=static&fieldGroups[]=text`;
+    const batch = await httpGet(`https://bans-api.brandanalytics.ru/ba_api/feed.listMessagesCustom?${qs}`);
+    const arr = Array.isArray(batch) ? batch : (batch.data || batch.items || []);
     if (!arr.length) break;
     all.push(...arr);
-    if (arr.length < 150) break;
-    offset += 150;
+    if (arr.length < LIMIT) break;
+    offset += LIMIT;
   }
 
   return all.map(m => ({
-    date:  new Date(m.timeCreate * 1000).toISOString().slice(0, 10),
-    hub:   m.hubTitle || m.hubName || '',
-    text:  cleanText(m.text) || cleanText(m.title) || '',
-    url:   m.url || '',
-    views: m.viewsCount || 0,
-    likes: m.likesCount || 0,
+    date:   new Date(m.timeCreate * 1000).toISOString().slice(0, 10),
+    hub:    m.hubTitle || m.hubName || '',
+    text:   cleanText(m.textNorm) || cleanText(m.text) || cleanText(m.title) || '',
+    url:    m.url || '',
+    views:  m.viewsCount || 0,
+    likes:  m.likesCount || 0,
+    rating: extractRating(m.review_rating),
   }));
 }
 
 async function classifyTone(messages) {
   if (!messages.length) return [];
 
-  const BATCH = 20;
-  const result = [];
+  // Сообщения без текста — классифицируем по звёздам
+  const withoutText = messages.filter(m => !m.text);
+  const withText    = messages.filter(m => m.text);
 
-  for (let i = 0; i < messages.length; i += BATCH) {
-    const batch = messages.slice(i, i + BATCH);
+  const preClassified = withoutText.map(m => ({
+    ...m,
+    tone: toneFromRating(m.rating),
+  }));
+
+  // Сообщения с текстом — классифицируем через Haiku
+  const classified = [];
+  const BATCH = 20;
+
+  for (let i = 0; i < withText.length; i += BATCH) {
+    const batch = withText.slice(i, i + BATCH);
     const numbered = batch
       .map((m, j) => `${j + 1}. [${m.hub}] ${m.text.slice(0, 300)}`)
       .join('\n\n');
@@ -130,12 +143,12 @@ ${numbered}`,
       return isNaN(n) ? 0 : Math.max(-1, Math.min(1, n));
     });
 
-    batch.forEach((m, j) => result.push({ ...m, tone: tones[j] ?? 0 }));
+    batch.forEach((m, j) => classified.push({ ...m, tone: tones[j] ?? 0 }));
 
-    if (i + BATCH < messages.length) await new Promise(r => setTimeout(r, 500));
+    if (i + BATCH < withText.length) await new Promise(r => setTimeout(r, 500));
   }
 
-  return result;
+  return [...preClassified, ...classified];
 }
 
 async function run() {

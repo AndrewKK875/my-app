@@ -74,8 +74,7 @@ jobs:
 
       - name: Выгрузить и классифицировать сообщения
         env:
-          BA_LOGIN: ${{ secrets.BA_LOGIN }}
-          BA_SECRET_KEY: ${{ secrets.BA_SECRET_KEY }}
+          BA_API_KEY: ${{ secrets.BA_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: node ba-tikk/fetch_messages.js
 
