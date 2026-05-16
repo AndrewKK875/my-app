@@ -131,6 +131,11 @@ async function fetchMonth(month) {
   for (const month of months) {
     try {
       const data = await fetchMonth(month);
+      if (data.summary.totalMsgs === 0) {
+        console.warn(`  skip ${month.label}: API вернул 0, файл не перезаписан`);
+        index.push({ key: month.key, label: month.label });
+        continue;
+      }
       fs.writeFileSync(path.join(DATA_DIR, `${month.key}.json`), JSON.stringify(data, null, 2));
       index.push({ key: month.key, label: month.label });
       console.log(`  ✓ ${month.label}: ${data.summary.totalMsgs} сообщений`);
