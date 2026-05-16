@@ -1,0 +1,1210 @@
+Feed
+GET Feed.messages¶
+Выдача сообщений ленты на основе параметрической фильтрации.
+
+Максимальный лимит получения ленты сообщений - 150 сообщений.
+
+Параметры¶
+Имя	Тип	Обязательный	Описание
+themeId	int	Да	Идентификатор темы
+timeFrom	int	Да	Дата публикации сообщения на источнике и начала выбираемого диапазона (Unix timestamp)
+timeTo	int	Да	Дата публикации сообщения на источнике и конца выбираемого диапазона (Unix timestamp)
+tsFrom	int	Нет	Дата сохранения сообщения в BA - начало выбираемого диапазона (Unix timestamp)
+tsTo	int	Нет	Дата сохранения сообщения в BA - конец выбираемого диапазона (Unix timestamp)
+offset	int	Нет	Количество пропускаемых сообщений перед выборки возвращаемых сообщений
+limit	int	Нет	Количество возвращаемых сообщений. По умолчанию 25
+basket	int	Нет	Лента корзины
+userId	int	Нет	Идентификатор пользователя, от имени которого запрашивается лента (относительно данного пользователя будут выбираться поручения)
+filter	array	Нет	Массив фильтров
+searchWord	string	Нет	Поисковая фраза
+sortingField	string	Нет	Поле для сортировки
+sortingOrder	string	Нет	Порядок сортировки (ASC, DESC)
+duplicates	int	Нет	Отображать дубликаты
+highlight	int	Нет	1 — возвращать полный текст сообщения с подсветкой ключевых слов, 0 — не возвращать
+Описание фильтров filter¶
+Фильтры используются для определения выборки сообщений. В запросе предусмотрена возможность передавать сразу несколько фильтров.
+
+Пример:
+
+?filter[fm][1]=on&filter[fm][2]=on&filter[fauthor][a4936ef10690c3b1df4539b48a966e97]=on
+
+В данном примере запрашивается лента с медиа типами 1 (Микроблоги) и 3 (Соцсети) и автор c hash a4936ef10690c3b1df4539b48a966e97 (Альфа-Банк).
+
+Фильтр состоит из двух частей - названия фильтра ([fm],[fauthor]) и идентификатора объекта (Тип источника, Источник, Автор, ГЕО-информация, тональность)
+
+Название	Объект	Описание	Доступно для типов тем
+filter[fm]	Тип источника	Данный фильтр используется для выборки ленты по типу источника. Может принимать следующие значения:
+1 = Микроблоги
+2 = Блоги
+3 = Соцсети
+4 = Новости
+5 = Видео
+6 = Форумы
+7 = Отзывы	Все
+filter[fsource]	Источник	Данный фильтр используется для выборки ленты по источнику. Описание самих источников можно найти в методе Registry.hubs	Все
+filter[fauthor]	Автор	Данный фильтр используется для выборки ленты по автору. Описание самого автора можно найти в методе Author.info	Все
+filter[ftone]	Тональность	Данный фильтр используется для выборки ленты по тональности сообщений. Может принимать следующие значения:
+-1 = Негатив
+0 = Нейтрально
+1 = Позитив
+Все
+filter[ft]	Заведенные теги	Данный фильтр используется для выборки ленты по заведенным тэгам в теме.	Все
+filter[fg]	Местоположение (Страна)	Данный фильтр используется для выборки ленты по стране сообщения. Подразумевается, что сообщению выставляется страна, определяемая как страна автора сообщения в момент написания этого сообщения. Описание страны можно найти в методе Registry.geoCountry	Все
+filter[fr]	Регион	Данный фильтр используется для выборки ленты по региону(административные единицы второго уровня - штат, регион, область) сообщения. Подразумевается, что сообщению выставляется регион, определяемый как регион автора сообщения в момент написания этого сообщения.	Все
+filter[fc]	Город	Данный фильтр используется для выборки ленты по городу сообщения. Подразумевается, что сообщению выставляется город, определяемый как город автора сообщения в момент написания этого сообщения. Описание страны можно найти в методе Registry.geoCity	Все
+filter[fage]	Возраст	Данный фильтр используется для выборки ленты по возрасту автора. Может принимать следующие значения:
+1-17 = возраст: младше 18 лет
+18-24 = возраст: 18 – 24 лет
+25-34 = возраст: 25 – 34 лет
+35-44 = возраст: 35 – 44 лет
+45-54 = возраст: 45 - 54 лет
+55-120 = возраст: 55 лет и старше
+Описание возрастных групп можно найти в методе Registry.ageGroups	Все
+filter[fword]	Популярные слова	Данный фильтр используется для выборки ленты по популярным словам.	Все
+filter[fs]	Пол автора	Данный фильтр используется для выборки ленты по полу автора.
+1 = Женский
+2 = Мужской
+0 = не определен
+Все
+filter[flang]	Язык	Данный фильтр используется для выборки ленты по языку. Может принимать следующие значения:
+0 = n/a
+1 = Русский
+2 = Английский
+6 = Испанский
+и так далее…
+Полный справочник можно найти в методе Registry.languageIds	Все
+filter[fsourcecountry]	Страна источника	Данный фильтр используется для выборки ленты по стране источника.	Все
+filter[fsourcecat]	Категория источника	Данный фильтр используется для выборки ленты по категории источника.	Все
+filter[fcustom]	Персональные фильтры	Данный фильтр используется для выборки ленты по заранее настроенным фильтрам.
+Полный список персональных фильтров можно найти в методе Statistic.customFilters	Все
+filter[ffav]	Группы авторов	Данный фильтр используется для выборки ленты по заранее настроенным группам авторов.
+Полный список групп авторов можно найти в методе Statistic.authorGroups	Соцмедиа+СМИ, Избранные источники, Сеты авторов
+filter[fauthortype]	Тип авторов	Данный фильтр используется для выборки ленты по типам авторов. Может принимать следующие значения:
+0 = Личный профиль
+1 = Сообщество
+2 = Аккаунт СМИ	Соцмедиа+СМИ, Избранные источники
+filter[faggression]	Агрессия	Данный фильтр используется для выборки ленты по виду агрессии в сообщении. Может принимать следующие значения:
+0 = Нет агрессии
+1 = Есть агрессия
+2 = Сильная агрессия	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[frole]	Роль объекта	Данный фильтр используется для выборки ленты роли объекта в сообщении. Может принимать следующие значения:
+0 = В обработке
+1 = Главная
+2 = Второстепенная
+3 = Эпизодическая
+99 = Не определена	СМИ
+filter[ftype]	Тип сообщения	Данный фильтр используется для выборки ленты по по типу сообщений. Может принимать следующие значения:
+post = Пост
+repost_edited = Репост с дополнением
+repost_not_edited = Репост без дополнения
+comment = Комментарий Для тем, у которых включен сбор всех комментариев к сообщениям вместо comment доступно два других:
+comment_without_search = Комментарии без поисковых слов
+comment_with_search = Комментарий с поисковыми словами
+stories = Stories
+empty_reviews = Оценка без текста	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[ferr]	Вовлеченность	Данный фильтр используется для выборки ленты по диапозону вовлеченности. Необходимо указывать два значения: "от" и "до".
+Пример: filter[ferr][0]=1&filter[ferr][1]=10
+Это соответствует вовлеченности от 1 до 10. Если последним параметром указать 0 - это будет считаться от 1 до бесконечности	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[fcr]	Комментарии	Данный фильтр используется для выборки ленты по диапозону количества комментариев у сообщения. Необходимо указывать два значения: "от" и "до".
+Пример: filter[fcr][0]=1&filter[fcr][1]=10
+Это соответствует количеству комментариев от 1 до 10. Если последним параметром указать 0 - это будет считаться от 1 до бесконечности	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[far]	Аудитория	Данный фильтр используется для выборки ленты по диапозону аудитории сообщения. Необходимо указывать два значения: "от" и "до".
+Пример: filter[far][0]=100&filter[far][1]=1000
+Это соответствует аудитории от 100 до 1000. Если последним параметром указать 0 - это будет считаться от 100 до бесконечности	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[fowner]	Место публикации	Данный фильтр используется для выборки ленты по месту, в котором написано сообщение.	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[fot]	Тип места публикации	Данный фильтр используется для выборки ленты по типу места публикации. Может принимать следующие значения:
+0 = Не определено
+1 = Личный аккаунт
+2 = Сообщество
+3 = Отзовик
+4 = Форум	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[freposturl]	URL репоста	Данный фильтр используется для выборки ленты с репостами по URL оригинального сообщения.	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[fattach]	Медиафайлы	Данный фильтр используется для выборки ленты по наличию фложенных медиафайлов.
+video = Видео
+image = Изображения
+audio = Аудио
+none = Без медиафайлов	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[fsmilevel]	Уровень СМИ	Данный фильтр используется для выборки ленты по уровню СМИ. Может принимать следующие значения:
+1 = Федеральный уровень
+2 = Региональный уровень	Соцмедиа+СМИ
+filter[fstoryid]	Сюжеты СМИ	Данный фильтр используется для выборки ленты по конкретным сюжетам СМИ.	СМИ
+filter[fstoryany]	Наличие сообщений в сюжетах	Данный фильтр используется для выборки ленты по сообщениям из сюжетов. Всегда принимает значение 1.	СМИ
+filter[faspect]	Аспекты	Данный фильтр используется для выборки ленты по аспектам.	Соцмедиа+СМИ
+filter[fprodaspect]	Характеристики продуктов	Данный фильтр используется для выборки ленты по характеристикам продуктов.	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[fmc]	Тематики	Данный фильтр используется для выборки ленты по тематикам.	Все
+filter[fthematic]	Категории	Данный фильтр используется для выборки ленты по категориям.	Соцмедиа+СМИ, Избранные авторы
+filter[fprog]	Программа	Данный фильтр используется для выборки ленты по программе.	СМИ
+filter[fmsgproc]	Обработка сообщений	Данный фильтр используется для выборки ленты по типам обработанных сообщений. Может принимать следующие значения:
+0 = необработанные
+1 = обработанные
+3 = избранные	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[fvr]	Просмотры	Данный фильтр используется для выборки ленты по количеству просмотров.	Соцмедиа+СМИ, Избранные авторы
+filter[fpf]	Область поиска	Данный фильтр используется для выборки ленты по области поиска. Может принимать следующие значения:
+1 = текст сообщения
+4 = текст на картинках
+5 = расшифровка видео
+6 = объекты в чекинах	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[fsourceregion]	Регион источника	Данный фильтр используется для выборки ленты по региону источника.	СМИ
+filter[fmanual]	Тип сбора	Данный фильтр используется для выборки ленты по типу сбора. Может принимать следующие значения:
+0 = автоматически
+1 = вручную	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[fgo]	Геоточка	Данный фильтр используется для выборки ленты по геоточке.	Соцмедиа+СМИ
+filter[fggp]	Группа мест	Данный фильтр используется для выборки ленты по группе мест.	Соцмедиа+СМИ
+filter[fge]	Место определено	Данный фильтр используется для выборки ленты по тем сообщениям, для которых определено место. Всегда принимает значение 1.	Соцмедиа+СМИ
+filter[fgp]	Гео-координаты	Данный фильтр используется для выборки ленты по широте и долготе. Указывается строкой вида широта,долгота, например, 52.426665,31.006251	Соцмедиа+СМИ
+filter[fgpe]	Наличие гео-координат	Данный фильтр используется для выборки ленты по наличию гео-координат (широты и долготы) у сообщения. Всегда принимает значение 1.	Соцмедиа+СМИ
+filter[fa]	Поручения	Данный фильтр используется для выборки ленты по поручениям.	Все
+filter[faso]	Создатель или исполнитель поручения	Данный фильтр используется для выборки ленты по поручениям, созданных конкретными пользователями или для конкретных пользователей.	Все
+filter[fase]	Кто назначил поручение	Данный фильтр используется для выборки ленты по поручениям, назначенных конкретными пользователями.	Все
+filter[fast]	Приоритет поручений	Данный фильтр используется для выборки ленты по приоритету поручений. Может принимать следующие значения:
+0 = срочный
+1 = обычный	Все
+filter[fasu]	Ответственные за поручения	Данный фильтр используется для выборки ленты по поручениям, за которые ответственны конкретные пользователи.	Все
+filter[fsearch]	Поиск по тексту	Данный фильтр используется для выборки ленты по наличию/отсутствию в сообщениях текста с учетом морфологии.	Все
+filter[fsw]	Стоп-слова	Данный фильтр используется для выборки ленты с учетом стоп-слов с учетом морфологии.	Все
+filter[fspam]	Тип удаления	Данный фильтр используется для выборки ленты по типу удаления. Может принимать следующие значения:
+0 = вручную
+1 = spam	Все
+filter[fauthorstatus]	Статус авторов	Данный фильтр используется для выборки ленты по статусу авторов. Может принимать следующие значения:
+0 = не верифицированные
+1 = верифицированные	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[fownerstatus]	Статус места публикации	Данный фильтр используется для выборки ленты по статусу верификации места, в котором написано сообщение. Может принимать следующие значения:
+0 = не верифицированные
+1 = верифицированные	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[faar]	Диапазон аудитории автора	Данный фильтр используется для выборки ленты по аудитории автора в указанном диапазоне.	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[faudience]	Диапазон аудитории сообщения	Данный фильтр используется для выборки ленты по аудитории сообщения в указанном диапазоне.	СМИ
+filter[fmessage]	Сообщения	Данный фильтр используется для выборки ленты по конкретным сообщениям.	Все
+filter[frr]	Диапазон оценок	Данный фильтр используется для выборки ленты по оценке сообщения в указанном диапазоне.	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[fmprr]	Диапазон медиаприсутствия	Данный фильтр используется для выборки ленты по медиаприсутствию сообщений в указанном диапазоне.	СМИ
+filter[fsquote]	Цитата	Данный фильтр используется для выборки ленты по цитатам.	СМИ
+filter[fspeaker]	Спикер	Данный фильтр используется для выборки ленты по спискерам.	СМИ
+filter[fqr]	Цитирование	Данный фильтр используется для выборки ленты по цитированию сообщений в указанном диапазоне.	СМИ
+filter[fhvr]	Аудитория СМИ	Данный фильтр используется для выборки ленты по аудитории СМИ в указанном диапазоне.	СМИ
+filter[fner]	Именованные сущности	Данный фильтр используется для выборки ленты по именованным сущностям.	СМИ
+filter[ftopsmi]	Топ-СМИ	Данный фильтр используется для выборки ленты по топ-СМИ.	СМИ
+filter[fchan]	Каналы	Данный фильтр используется для выборки ленты по каналам.	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[fprod]	Продукты	Данный фильтр используется для выборки ленты по продуктам.	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[fgprod]	Группа продуктов	Данный фильтр используется для выборки ленты по группе продуктов.	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[fsample]	Выборка	Данный фильтр используется для выборки равномерного среза ленты. Указывается в виде объекта в формате JSON, например, {"type":"uniform","percent":"10"}. Свойство type может принимать следующие значения:
+random = без учета типа источника
+uniform = с учетом типа источника	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[froot]	Комментарии к посту + пост	Данный фильтр используется для выборки конкретного поста и комментариев к нему.	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[froothash]	Комментарии к посту без поста	Данный фильтр используется для выборки всех комментариев к посту без выборки самого поста.	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[frcm]	Корневые комментарии	Данный фильтр используется для выборки корневых комментариев к посту по его id_external.	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[ffrcm]	Корневые комментарии первого уровня	Данный фильтр используется для выборки корневых комментариев первого уровня к посту по его id_external.	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[fts]	Время добавления сообщения в тему	Данный фильтр используется для выборки ленты в конкретном диапазоне времени добавления сообщений в тему.	Все
+filter[ftexthash]	Хэш текста сообщения	Данный фильтр используется для выборки ленты по хэшу текста сообщения.	Все
+filter[fwotext]	Сообщения без текста	Данный фильтр используется для выборки ленты по сообщениям с пустым текстом после нормализации (удаление смайликов и другого бессмысленного содержимого).	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[fup]	Обработанные сообщения	Данный фильтр используется для выборки ленты по обработанным сообщениям. Всегда принимает значение 1.	Все
+filter[fuf]	Избранные сообщения	Данный фильтр используется для выборки ленты по избранным сообщениям. Всегда принимает значение 1.	Все
+filter[fduplicate]	Дубликаты	Данный фильтр используется для выборки ленты по дубликатам сообщения.	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[fobscenities]	Ненормативная лексика	Данный фильтр используется для выборки ленты по ненормативной лексике. Всегда принимает значение 1. Через on включается фильтр ненормативной лексики, а через off фильтруются только сообщения с ненормативной лексикой	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+filter[fprodaspect]	Характеристики продуктов	Данный фильтр используется для выборки ленты по характеристиками продуктов.	Соцмедиа+СМИ, Избранные источники, Избранные авторы, Сеты авторов
+Типы фильтрации.
+
+Значение	Название	Описание
+on	Включающая	Возвращает сообщения в которых есть хотя бы одно из перечисленных в фильтре значений.
+off	Исключающая	Возвращает сообщения в которых нет ни одного из перечисленных в фильтре значений.
+all	Пересечение	Возвращает сообщения в которых есть одновременно все из перечисленных в фильтре значений.
+Поле для сортировки¶
+Спсиок основных полей для сортировки ленты сообщений.
+
+Поле	Название сортировки
+time_create	Дата создания
+time_store	Дата сбора
+comments_count	Комментарии
+er	Вовлеченность
+audience_count	Аудитория
+views_count	Просмотры
+review_rating.result	Оценка
+reposts_count	Репосты
+duplicate_count	Дубли
+likes_count	Лайки
+author.audience_count	Аудитория автора
+media_presence_real	Медиаприсутствие
+quotation_count	Цитирование
+cite_index	Цитируемость СМИ
+hub_visits	Аудитория СМИ
+meta__coverage	Тираж печатных СМИ
+meta__audience	Аудитория передач
+Возвращает¶
+[
+  {
+    "id": 1000205586,
+    "hash": "445e968c4a1a864d80050c7aa1dc14be20220116",
+    "externalId": "1482817540573343748",
+    "themeId": 12384080,
+    "timeCreate": 1642366225,
+    "timeStore": 1642366567,
+    "timeUpdate": 1642378531,
+    "hubId": 1,
+    "hubIconUri": "https://brandanalytics.ru/app/images/favicon/1.png",
+    "hubTitle": "twitter.com",
+    "hubName": "twitter.com",
+    "hubtypeId": 1,
+    "title": "",
+    "text": "уф, в старбаксе наконец начали называть напитки своими именами https://t.co/NHpbcObY2B<a href=\"http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg\"><img src=\"http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg\" alt=\"\"/></a>",
+    "textNorm": "уф, в старбаксе наконец начали называть напитки своими именами https://t.co/NHpbcObY2B ",
+    "textSnippet": "уф, в <span class=\"highlight\">старбаксе</span> наконец начали называть напитки своими именами <a href=\"https://t.co/NHpbcObY2B\" target=\"_blank\">t.co/NHpbcObY2B</a> ",
+    "textHighlight": "уф, в <span class=\"highlight\">старбаксе</span> наконец начали называть напитки своими именами https://t.co/NHpbcObY2B<a href=\"http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg\"><img src=\"http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg\" alt=\"\"/></a>",
+    "textHash": "40f68fb6b30e0683f6817ed3ee244bca",
+    "url": "http://twitter.com/PachaTchernof/status/1482817540573343748",
+    "toneMark": 0,
+    "excludeStatus": 0,
+    "spamBlock": 0,
+    "tags": null,
+    "tagIds": [],
+    "tagNames": [],
+    "tagIdsWithNames": [],
+    "duplicateId": "",
+    "duplicateCount": 1,
+    "fuzzyDuplicateCount": 0,
+    "isComment": 0,
+    "isRepost": 0,
+    "repostClass": 0,
+    "commentsCount": 0,
+    "audienceCount": 218,
+    "storyId": null,
+    "authorId": 0,
+    "authorRow": {
+      "id": 0,
+      "hash": "197e88a49d4ee4399acb2ef84b595369",
+      "id_external": "347977595",
+      "nickname": "PachaTchernof",
+      "fullname": "Паша Чернов",
+      "avatar": "http://pbs.twimg.com/profile_images/1445744644680159244/CgRlUbMu_normal.jpg",
+      "location": null,
+      "url": "http://twitter.com/PachaTchernof",
+      "sex": 2,
+      "birthday": "",
+      "registration": "",
+      "country_id": 20,
+      "country_name": null,
+      "city_id": 235782,
+      "city_name": null,
+      "region_id": 77,
+      "region_name": null,
+      "district_id": 0,
+      "lat": 0,
+      "lon": 0,
+      "readers_count": 218,
+      "friends_count": 307,
+      "members_count": 0,
+      "messages_count": 0,
+      "reposts_count": 0,
+      "about_info": "",
+      "photo_count": 0,
+      "likes_count": 0,
+      "education": "",
+      "talking_count": 0,
+      "author_type": 1,
+      "subscribers_count": 0,
+      "mutual_friends_count": 0,
+      "readers_list": null,
+      "contacts_social": null,
+      "circles_count": null,
+      "dynamictags_list_by_group": null,
+      "hub_id": 1,
+      "spam_block": 0
+    },
+    "messagerule": "{\"geo__object.properties.title\":[{\"from\":0,\"to\":9,\"highlight\":[[0,8]]}],\"post__text_norm\":[{\"from\":0,\"to\":87,\"highlight\":[[6,14]]}],\"post__text\":[{\"from\":0,\"to\":213,\"highlight\":[[6,14]]}]}",
+    "toneHighlightRule": "",
+    "countryId": 20,
+    "countryName": "Россия",
+    "cityId": 235782,
+    "cityName": "Москва",
+    "regionId": 77,
+    "regionName": "Москва",
+    "assignments": null,
+    "replies": null,
+    "chain": null,
+    "assignedUser": null,
+    "author": {
+      "likesList": null,
+      "repostsList": null,
+      "tagsList": null,
+      "likeTagsList": null
+    },
+    "langId": 1,
+    "langCode": "RU",
+    "lang": "ru",
+    "repostsCount": 0,
+    "likesCount": 1,
+    "viewsCount": 0,
+    "age": 0,
+    "sex": 2,
+    "rootUrl": null,
+    "er": 1,
+    "isManual": 0,
+    "citeIndex": 14102891,
+    "role": 1,
+    "geo_object": {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.706444,
+          55.747068
+        ]
+      },
+      "properties": {
+        "external_id": "12b15fd176d77003",
+        "id": 0,
+        "source": "twitter",
+        "title": "<span class=\"highlight\">Starbucks</span>",
+        "address": "Россия, Москва, Шепелюгинский переулок",
+        "country": "Россия",
+        "region": "",
+        "city": "Москва",
+        "matchForQuery": 1
+      }
+    },
+    "meta_attachments": [
+      {
+        "url": "http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg",
+        "type": "image",
+        "original_type": "image",
+        "title": "",
+        "ext": "",
+        "description": "",
+        "width": 0,
+        "height": 0,
+        "duration": 0,
+        "preview": "http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg:large",
+        "preview_bg": "http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg:large",
+        "preview_md": "http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg:medium",
+        "preview_sm": "http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg:small",
+        "storage": "",
+        "id": "",
+        "has_text": 0,
+        "matchForQuery": 0,
+        "ocr_captions": {
+          "text": "",
+          "coords": [],
+          "areas": [],
+          "text_norm": ""
+        }
+      }
+    ],
+    "tone_force": {
+      "pos": 0,
+      "neg": 0
+    },
+    "review_rating": [],
+    "not_keyword_comment": 0,
+    "root_hash": "",
+    "city_geo_point": [
+      37.61556,
+      55.75222
+    ],
+    "places_found": [
+      "geo_object_title",
+      "message_text"
+    ],
+    "msg_worked": 0,
+    "msg_favorite": 0,
+    "wom": 0,
+    "is_stories": null,
+    "text_parent_snippet": null,
+    "programName": "",
+    "meta__audience": 0,
+    "meta__coverage": 0,
+    "fsourcecat": null,
+    "mediaPresence": 0,
+    "mediaPresenceReal": 0.015176665876215,
+    "tone_processed": 1,
+    "role_processed": 1,
+    "wom_processed": 1,
+    "hub_visits": 0,
+    "quotation_count": null,
+    "readers_list": "",
+    "contacts_social": null,
+    "circles_count": 0,
+    "dynamictags_list_by_group": null,
+    "likesList": null,
+    "repostsList": null,
+    "tagsList": [
+      ""
+    ],
+    "likeTagsList": null
+  },
+  {
+    "id": 1000205581,
+    "hash": "f9583cef9356b3d2bf80e029dec539bf20220116",
+    "externalId": "1482811829285965824",
+    "themeId": 12384080,
+    "timeCreate": 1642364864,
+    "timeStore": 1642365145,
+    "timeUpdate": 1642368011,
+    "hubId": 1,
+    "hubIconUri": "https://brandanalytics.ru/app/images/favicon/1.png",
+    "hubTitle": "twitter.com",
+    "hubName": "twitter.com",
+    "hubtypeId": 1,
+    "title": "",
+    "text": "@SwedPaul В Минске открылся старбакс? Почему @koko_byy молчит? -)",
+    "textNorm": "@SwedPaul В Минске открылся старбакс? Почему @koko_byy молчит? -)",
+    "textSnippet": "<a href=\"https://twitter.com/SwedPaul\" target=\"_blank\">@SwedPaul</a> В Минске открылся <span class=\"highlight\">старбакс</span>? Почему <a href=\"https://twitter.com/koko_byy\" target=\"_blank\">@koko_byy</a> молчит? -)",
+    "textHighlight": "@SwedPaul В Минске открылся <span class=\"highlight\">старбакс</span>? Почему @koko_byy молчит? -)",
+    "textHash": "7517f710d1be000dde3618baffb6ad93",
+    "url": "http://twitter.com/cant_mi/status/1482811829285965824",
+    "toneMark": 0,
+    "excludeStatus": 0,
+    "spamBlock": 0,
+    "tags": null,
+    "tagIds": [],
+    "tagNames": [],
+    "tagIdsWithNames": [],
+    "duplicateId": "",
+    "duplicateCount": 1,
+    "fuzzyDuplicateCount": 0,
+    "isComment": 1,
+    "isRepost": 0,
+    "repostClass": 0,
+    "commentsCount": 0,
+    "audienceCount": 4879,
+    "authorId": 0,
+    "authorRow": {
+      "id": 0,
+      "hash": "6a9e6a7d68abb243fb6c37f8a3b8e829",
+      "id_external": "2959969930",
+      "nickname": "cant_mi",
+      "fullname": "cant_mi",
+      "avatar": "http://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png",
+      "location": null,
+      "url": "http://twitter.com/cant_mi",
+      "sex": 0,
+      "birthday": "",
+      "registration": "",
+      "country_id": null,
+      "country_name": null,
+      "city_id": null,
+      "city_name": null,
+      "region_id": null,
+      "region_name": null,
+      "district_id": 0,
+      "lat": 0,
+      "lon": 0,
+      "readers_count": 6,
+      "friends_count": 75,
+      "members_count": 0,
+      "messages_count": 0,
+      "reposts_count": 0,
+      "about_info": "",
+      "photo_count": 0,
+      "likes_count": 0,
+      "education": "",
+      "talking_count": 0,
+      "author_type": 1,
+      "subscribers_count": 0,
+      "mutual_friends_count": 0,
+      "readers_list": null,
+      "contacts_social": null,
+      "circles_count": null,
+      "dynamictags_list_by_group": null,
+      "hub_id": 1,
+      "spam_block": 0
+    },
+    "messagerule": "{\"post__text_norm\":[{\"from\":0,\"to\":65,\"highlight\":[[28,35],[28,35]]}],\"post__text\":[{\"from\":0,\"to\":65,\"highlight\":[[28,35]]}]}",
+    "toneHighlightRule": "",
+    "countryId": null,
+    "countryName": null,
+    "cityId": null,
+    "cityName": null,
+    "regionId": null,
+    "regionName": null,
+    "assignments": null,
+    "replies": null,
+    "chain": null,
+    "assignedUser": null,
+    "author": {
+      "likesList": null,
+      "repostsList": null,
+      "tagsList": null,
+      "likeTagsList": null
+    },
+    "langId": 1,
+    "langCode": "RU",
+    "lang": "ru",
+    "repostsCount": 0,
+    "likesCount": 0,
+    "viewsCount": 0,
+    "age": 0,
+    "sex": 0,
+    "rootUrl": null,
+    "er": 0,
+    "isManual": 0,
+    "citeIndex": 14102891,
+    "role": 1,
+    "geo_object": {
+      "type": "Feature",
+      "geometry": [],
+      "properties": {
+        "external_id": "",
+        "id": 0,
+        "source": "",
+        "title": "",
+        "address": "",
+        "country": "",
+        "region": "",
+        "city": "",
+        "matchForQuery": 0
+      }
+    },
+    "meta_attachments": [],
+    "tone_force": {
+      "pos": 0,
+      "neg": 0
+    },
+    "review_rating": [],
+    "not_keyword_comment": 0,
+    "root_hash": "df8adc9bc73340fa580b3cb8853beb7f20220116",
+    "city_geo_point": [],
+    "places_found": [
+      "message_text"
+    ],
+    "msg_worked": 0,
+    "msg_favorite": 0,
+    "wom": 1,
+    "is_stories": null,
+    "text_parent_snippet": null,
+    "programName": "",
+    "meta__audience": 0,
+    "meta__coverage": 0,
+    "fsourcecat": null,
+    "mediaPresence": 0,
+    "mediaPresenceReal": 0.015176665876215,
+    "tone_processed": 1,
+    "role_processed": 1,
+    "wom_processed": 1,
+    "hub_visits": 0,
+    "quotation_count": null,
+    "readers_list": "",
+    "contacts_social": null,
+    "circles_count": 0,
+    "dynamictags_list_by_group": null,
+    "likesList": null,
+    "repostsList": null,
+    "tagsList": [
+      ""
+    ],
+    "likeTagsList": null
+  }
+]
+Описание полей¶
+Имя	Тип	Описание	Группа полей
+id	int	Идентификатор сообщения в системе	static
+hash	string	Хэш-ключ сообщения в системе	static
+externalId	string	Идентификатор сообщения на источнике	static
+themeId	int	Идентификатор темы	static
+timeCreate	int	Дата написания сообщения	static
+timeStore	int	Дата попадания сообщения в тему	static
+timeUpdate	int	Дата последнего обновления сообщения	updatable
+hubId	int	Идентификатор источника	static
+hubIconUri	string	Ссылка на иконку источника	relational
+hubTitle	string	Название источника	relational
+hubName	string	Сайт источника	relational
+hubtypeId	int	Тип источника	static
+hub_visits	int	Аудитория СМИ	static
+title	string	Заголовок сообщения	text
+text	string	Исходный текст сообщения	text
+textNorm	string	Нормированный текст сообщения	text
+textSnippet	string	Сниппет сообщения	dynamic
+textHighlight	string	Текст сообщения с подсветкой ключевых слов	dynamic
+textHash	string	Хэш-ключ текста сообщения	text
+url	string	URL сообщения	static
+toneMark	int	Тональность сообщения	static, updatable
+excludeStatus	int	Статус сообщения (В ленте, удаленное)	static, updatable
+spamBlock	int	Идентификатор, что сообщение было написано спамером	static
+tag	int[]	Массив идентификаторов тэгов, по которым определилось сообщение (deprecated)	static, updatable
+tagIds	int[]	Массив идентификаторов тэгов, по которым определилось сообщение	static, updatable
+tagNames	string[]	Массив названий тэгов, по которым определилось сообщение (deprecated)	relational
+tagIdsWithNames	array	Массив названий тэгов c идентификаторами, по которым определилось сообщение	relational
+duplicateId	string	Идентификатор дубликата в системе	static
+duplicateCount	int	Кол-во дублей у сообщения (deprecated)	dynamic
+fuzzyDuplicateCount	int	Кол-во нечетких дублей у сообщения (deprecated)	static
+isComment	int	Является ли сообщение комментарием	static
+isRepost	int	Является ли сообщение репостом	static
+repostClass	int	Тип репоста:
+1 – репост без дополнений,
+2 – репост с дополнениями	static
+commentsCount	int	Кол-во комментариев у сообщения	static
+audienceCount	int	Размер аудитории автора или места публикации (в зависимости от того, где размещено сообщение), на момент написания сообщения	static
+authorId	int	Идентификатор автора в системе (deprecated)	static
+authorRow	object[]	Объект автора сообщения	static
+messagerule	string	Правило подсветки ключевых слов, по которым нашлось сообщение	static
+toneHighlightRule	string	Правила подсветки объектов тональности в тексте (deprecated)	static
+countryId	int	Гео информация. Идентификатор страны в системе	static
+countryName	string	Гео информация. Названия страны	relational
+cityId	int	Гео информация. Идентификатор города в системе	static
+cityName	string	Гео информация. Название города	relational
+regionId	int	Гео информация. Идентификатор региона	static
+regionName	string	Гео информация. Название региона	relational
+aggression	object[]	Агрессия в сообщении:
+0 - нет агрессии,
+1 - есть агрессия,
+2 - сильная агрессия	dynamic
+replies	object[]	Ответы на сообщение в соцсетях через branalytics.ru	dynamic
+chain	object[]	Ветки обсуждения (завязано на replies)	dynamic
+assignedUser	object[]	Пользователь последним отвечавший в соцсети через БА (берется из chain)	dynamic
+langId	int	Id языка из Registry.languageIds	static
+langCode	string	Двубуквенный код языка из Registry.languageCodes	static
+lang	string	Код основного языка сообщения по стандарту ISO 639-1. Если язык отсутствует в классификации ISO 639-1, то используется ISO 639-2. Если язык отсутствует в классификации ISO 639-2, то используется ISO 639-3	relational
+repostsCount	int	Счетчик репостов	static, counters
+likesCount	int	Счетчик лайков	static, counters
+viewsCount	int	Счетчик просмотров	static, counters
+age	int	Возраст автора	static
+sex	int	Пол автора:
+0 - не определен,
+1 - женский,
+2 - мужской	static
+rootUrl	string	Ссылка на первоисточник репоста на источнике.	static
+er	int	Вовлеченность	static, counters
+isManual	int	Добавлено ли сообщение вручную	static
+citeIndex	int	Индекс цитируемости источника	static
+role	int	Роль объекта тональности в сообщении:
+0 = В обработке
+1 = Главная
+2 = Второстепенная
+3 = Эпизодическая
+99 = Не определена	static
+geo_object	object	Полная гео информация по сообщению	static
+meta_attachments	object[]	Массив прикрепленных картинок/файлов к сообщению	static
+tone_force	object	Объект тональности:
+pos - позитив,
+neg - негатив	static
+review_rating	object	Объект рейтинга сообщения:
+raw - оценка на источнике,
+min - минимальная оценка на источнике,
+max - максимальная оценка на источнике,
+result - оценка отображаемая в Brand Analytics
+Все оценки на источниках преобразуются в 5-ти бальную шкалу Brand Analytics. От 1 до 5.	static
+not_keyword_comment	int	Является ли сообщение комментарием, который был собран потому что является комментарием к одному из постов в теме, хотя сам не содержит поисковых слов темы	static
+root_hash	string	Хеш исходного сообщения (см. rootUrl)	static
+city_geo_point	object	Координаты города	static
+places_found	string[]	В каких полях нашли ключевики (message_text, message_title, geo_object_title, image_captions, video_captions)	static
+msg_worked	int	Сообщение помечено как Обработанное	static
+msg_favorite	int	Сообщение помечено как Избранное	static
+wom	int	WOM (word of mouth):
+0 - Ответы компании
+1 - Жалобы
+2 - Сравнение
+3 - Мнения
+4 - Вопросы	static
+is_stories	int	Является ли сообщение сторисом	static
+text_parent_snippet	string	Текст родительского поста, если он есть	relational
+programName	string	Программа для сообщений с категорией источника ТВ и Радио в темах типа СМИ	static
+meta__audience	int	Аудитория для сообщений с категорией источника ТВ и Радио в темах типа СМИ	static
+meta__coverage	int	Тираж для сообщений с категорией источника Газеты и Журналы в темах типа СМИ	static
+fsourcecat	int	Идентификатор категории источника в темах типа СМИ	static
+mediaPresence	int	Индекс медиаприсутствия в темах типа СМИ	static
+mediaPresenceReal	double	Индекс медиаприсутствия в темах типа СМИ	static
+tone_processed	int	Прошло ли определение тональности для сообщения	static
+role_processed	int	Прошло ли определение ролей для сообщения	static
+wom_processed	int	Прошло ли определение WOM для сообщения	static
+quotation_count	int	Цитированию публикации в теме типа СМИ	static, counters
+postType	int	Тип сообщения	static
+isEmptyReviews	int	1 для оценок без текста	static
+aspect	array	Список аспектов и их тональность у сообщения	static, updatable
+product_aspect	array	Список характеристик продуктов и их тональность у сообщения	static
+classifier	array	Список тематик у сообщения	static, updatable
+classify	array	Список категорий у сообщения	static, updatable
+storyId	string	Идентификатор сюжета	dynamic
+Пример¶
+curl -XGET 'https://bans-api.brandanalytics.ru/ba_api/feed.messages?themeId=12384080&filter[fm][1]=on&timeFrom=1778274000&timeTo=1778878800&offset=0&limit=25&highlight=1'
+Фильтрация по типу источника (Соцсети)
+
+curl -XGET 'https://bans-api.brandanalytics.ru/ba_api/feed.messages?themeId=12384080&filter[fm][3]=on&timeFrom=1778274000&timeTo=1778878800&offset=0&limit=25'
+Фильтрация по источнику (vk.com)
+
+curl -XGET 'https://bans-api.brandanalytics.ru/ba_api/feed.messages?themeId=12384080&filter[fsource][3]=on&timeFrom=1778274000&timeTo=1778878800&offset=0&limit=25'
+Фильтрация по автору (Тюменские объявления)
+
+curl -XGET 'https://bans-api.brandanalytics.ru/ba_api/feed.messages?themeId=12384080&filter[fauthor][9bf3d73aeb1d85fb87227e97a15ee0da]=on&timeFrom=1778274000&timeTo=1778878800&offset=0&limit=25'
+Фильтрация по тональности (Позитивная)
+
+curl -XGET 'https://bans-api.brandanalytics.ru/ba_api/feed.messages?themeId=12384080&filter[ftone][1]=on&timeFrom=1778274000&timeTo=1778878800&offset=0&limit=25'
+Фильтрация по стране (Россия)
+
+curl -XGET 'https://bans-api.brandanalytics.ru/ba_api/feed.messages?themeId=12384080&filter[fg][20]=on&timeFrom=1778274000&timeTo=1778878800&offset=0&limit=25'
+Фильтрация по региону (Москва)
+
+curl -XGET 'https://bans-api.brandanalytics.ru/ba_api/feed.messages?themeId=12384080&filter[fg][20]=on&filter[fr][77]=on&timeFrom=1778274000&timeTo=1778878800&offset=0&limit=25'
+Фильтрация по городу (Москва)
+
+curl -XGET 'https://bans-api.brandanalytics.ru/ba_api/feed.messages?themeId=12384080&filter[fg][20]=on&filter[fr][77]=on&filter[fc][235782]=on&timeFrom=1778274000&timeTo=1778878800&offset=0&limit=25'
+Фильтрация по тегу (Капучино)
+
+curl -XGET 'https://bans-api.brandanalytics.ru/ba_api/feed.messages?themeId=12384080&filter[ft][4280484]=on&timeFrom=1778274000&timeTo=1778878800&offset=0&limit=25'
+Фильтрация по топ слову (Сбербанк)
+
+curl -XGET 'https://bans-api.brandanalytics.ru/ba_api/feed.messages?themeId=12384080&filter[fword][5602]=on&timeFrom=1778274000&timeTo=1778878800&offset=0&limit=25'
+Сортировка по дате
+
+curl -XGET 'https://bans-api.brandanalytics.ru/ba_api/feed.messages?themeId=12384080&timeFrom=1778274000&timeTo=1778878800&offset=0&limit=25&sortingField=time_create&sortingOrder=desc'
+Сортировка по дате сохранения в системе
+
+curl -XGET 'https://bans-api.brandanalytics.ru/ba_api/feed.messages?themeId=12384080&timeFrom=1778274000&timeTo=1778878800&offset=0&limit=25&sortingField=time_store&sortingOrder=desc'
+Сортировка по количеству комментариев
+
+curl -XGET 'https://bans-api.brandanalytics.ru/ba_api/feed.messages?themeId=12384080&timeFrom=1778274000&timeTo=1778878800&offset=0&limit=25&sortingField=comments_count&sortingOrder=desc'
+Сортировка по дублям
+
+curl -XGET 'https://bans-api.brandanalytics.ru/ba_api/feed.messages?themeId=12384080&timeFrom=1778274000&timeTo=1778878800&offset=0&limit=25&sortingField=duplicate_count&sortingOrder=desc'
+Лента удаленных сообщений за промежуток времени
+
+curl -XGET 'https://bans-api.brandanalytics.ru/ba_api/feed.messages?themeId=12384080&timeFrom=1778274000&timeTo=1778878800&offset=0&limit=25&basket=1'
+GET Feed.listMessagesCustom¶
+Новый метод для получения всех сообщений из темы. Параметры и выдача аналогичны Feed.messages, только добавлен еще один входящий параметр fieldGroups, принимающий на вход массив названий групп полей.
+
+Возможные группы	Описание	Макс сообщений в ответе	Лимит в минуту
+dynamic	Динамически рассчитываемые поля	150	2
+relational	Расширенные поля, которые требуют отдельных запросов	500	2
+text	Текстовые поля сообщения	5000	6
+static	Статические и неизменяемые поля	10000	12
+counters	Поля, содержащие счётчики, некоторые могут со временем обновляться	10000	12
+updatable	Поля, которые могут обновляться пользователем	10000	12
+Возможно использовать группу updateable, которая является псевдонимом к группе updatable. Поддержка псевдонима updateable может быть отключена в последующих версиях API.
+
+Пример¶
+curl -XGET 'https://bans-api.brandanalytics.ru/ba_api/feed.listMessagesCustom?themeId=12384080&filter[fm][1]=on&timeFrom=1778274000&timeTo=1778878800&offset=0&limit=25&fieldGroups[]=static&fieldGroups[]=text&highlight=1'
+GET Feed.countMessages¶
+Выдача количества сообщений ленты на основе параметрической фильтрации
+
+Параметры¶
+Имя	Тип	Обязательный	Описание
+themeId	int	Да	Идентификатор темы
+timeFrom	int	Да	Дата публикации сообщения на источнике и начала выбираемого диапазона (Unix timestamp)
+timeTo	int	Да	Дата публикации сообщения на источнике и конца выбираемого диапазона (Unix timestamp)
+basket	int	Нет	Лента корзины
+filter	array	Нет	Массив фильтров
+searchWord	string	Нет	Поисковая фраза
+duplicates	int	Нет	Отображать дубликаты
+Возвращает¶
+1758
+Пример¶
+curl -XGET 'https://bans-api.brandanalytics.ru/ba_api/feed.countMessages?themeId=12384080&filter[fm][1]=on&timeFrom=1778274000&timeTo=1778878800'
+GET Feed.buildOnId¶
+Построение ленты на основе Id сообщений
+
+Параметры¶
+Имя	Тип	Обязательный	Описание
+themeId	int	Да	Идентификатор темы
+ids	int[]	Да	Id сообщений
+highlight	int	Нет	1 — возвращать полный текст сообщения с подсветкой ключевых слов, 0 — не возвращать
+Возвращает¶
+[
+  {
+    "id": 1000205586,
+    "hash": "445e968c4a1a864d80050c7aa1dc14be20220116",
+    "externalId": "1482817540573343748",
+    "themeId": 12384080,
+    "timeCreate": 1642366225,
+    "timeStore": 1642366567,
+    "timeUpdate": 1642374597,
+    "hubId": 1,
+    "hubIconUri": "https://brandanalytics.ru/app/images/favicon/1.png",
+    "hubTitle": "twitter.com",
+    "hubName": "twitter.com",
+    "hubtypeId": 1,
+    "title": "",
+    "text": "уф, в старбаксе наконец начали называть напитки своими именами https://t.co/NHpbcObY2B<a href=\"http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg\"><img src=\"http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg\" alt=\"\"/></a>",
+    "textNorm": "уф, в старбаксе наконец начали называть напитки своими именами https://t.co/NHpbcObY2B ",
+    "textSnippet": "уф, в <span class=\"highlight\">старбаксе</span> наконец начали называть напитки своими именами <a href=\"https://t.co/NHpbcObY2B\" target=\"_blank\">t.co/NHpbcObY2B</a> ",
+    "textHighlight": "уф, в <span class=\"highlight\">старбаксе</span> наконец начали называть напитки своими именами https://t.co/NHpbcObY2B<a href=\"http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg\"><img src=\"http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg\" alt=\"\"/></a>",
+    "textHash": "40f68fb6b30e0683f6817ed3ee244bca",
+    "url": "http://twitter.com/PachaTchernof/status/1482817540573343748",
+    "toneMark": 0,
+    "excludeStatus": 0,
+    "spamBlock": 0,
+    "tags": null,
+    "tagIds": [],
+    "tagNames": [],
+    "tagIdsWithNames": [],
+    "duplicateId": "",
+    "duplicateCount": 1,
+    "fuzzyDuplicateCount": 0,
+    "isComment": 0,
+    "isRepost": 0,
+    "repostClass": 0,
+    "commentsCount": 0,
+    "audienceCount": 218,
+    "storyId": null,
+    "authorId": 0,
+    "authorRow": {
+      "id": 0,
+      "hash": "197e88a49d4ee4399acb2ef84b595369",
+      "id_external": "347977595",
+      "nickname": "PachaTchernof",
+      "fullname": "Паша Чернов",
+      "avatar": "http://pbs.twimg.com/profile_images/1445744644680159244/CgRlUbMu_normal.jpg",
+      "location": null,
+      "url": "http://twitter.com/PachaTchernof",
+      "sex": 2,
+      "birthday": "",
+      "registration": "",
+      "country_id": 20,
+      "country_name": null,
+      "city_id": 235782,
+      "city_name": null,
+      "region_id": 77,
+      "region_name": null,
+      "district_id": 0,
+      "lat": 0,
+      "lon": 0,
+      "readers_count": 218,
+      "friends_count": 307,
+      "members_count": 0,
+      "messages_count": 0,
+      "reposts_count": 0,
+      "about_info": "",
+      "photo_count": 0,
+      "likes_count": 0,
+      "education": "",
+      "talking_count": 0,
+      "author_type": 1,
+      "subscribers_count": 0,
+      "mutual_friends_count": 0,
+      "readers_list": null,
+      "contacts_social": null,
+      "circles_count": null,
+      "dynamictags_list_by_group": null,
+      "hub_id": 1,
+      "spam_block": 0
+    },
+    "messagerule": "{\"geo__object.properties.title\":[{\"from\":0,\"to\":9,\"highlight\":[[0,8]]}],\"post__text_norm\":[{\"from\":0,\"to\":87,\"highlight\":[[6,14]]}],\"post__text\":[{\"from\":0,\"to\":213,\"highlight\":[[6,14]]}]}",
+    "toneHighlightRule": "",
+    "countryId": 20,
+    "countryName": "Россия",
+    "cityId": 235782,
+    "cityName": "Москва",
+    "regionId": 77,
+    "regionName": "Москва",
+    "assignments": null,
+    "replies": null,
+    "chain": null,
+    "assignedUser": null,
+    "author": {
+      "likesList": null,
+      "repostsList": null,
+      "tagsList": null,
+      "likeTagsList": null
+    },
+    "langId": 1,
+    "langCode": "RU",
+    "lang": "ru",
+    "repostsCount": 0,
+    "likesCount": 1,
+    "viewsCount": 0,
+    "age": 0,
+    "sex": 2,
+    "rootUrl": null,
+    "er": 1,
+    "isManual": 0,
+    "citeIndex": 14102891,
+    "role": 1,
+    "geo_object": {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.706444,
+          55.747068
+        ]
+      },
+      "properties": {
+        "external_id": "12b15fd176d77003",
+        "id": 0,
+        "source": "twitter",
+        "title": "<span class=\"highlight\">Starbucks</span>",
+        "address": "Россия, Москва, Шепелюгинский переулок",
+        "country": "Россия",
+        "region": "",
+        "city": "Москва",
+        "matchForQuery": 1
+      }
+    },
+    "meta_attachments": [
+      {
+        "url": "http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg",
+        "type": "image",
+        "original_type": "image",
+        "title": "",
+        "ext": "",
+        "description": "",
+        "width": 0,
+        "height": 0,
+        "duration": 0,
+        "preview": "http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg:large",
+        "preview_bg": "http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg:large",
+        "preview_md": "http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg:medium",
+        "preview_sm": "http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg:small",
+        "storage": "",
+        "id": "",
+        "has_text": 0,
+        "matchForQuery": 0,
+        "ocr_captions": {
+          "text": "",
+          "coords": [],
+          "areas": [],
+          "text_norm": ""
+        }
+      }
+    ],
+    "tone_force": {
+      "pos": 0,
+      "neg": 0
+    },
+    "review_rating": [],
+    "not_keyword_comment": 0,
+    "root_hash": "",
+    "city_geo_point": [
+      37.61556,
+      55.75222
+    ],
+    "places_found": [
+      "geo_object_title",
+      "message_text"
+    ],
+    "msg_worked": 0,
+    "msg_favorite": 0,
+    "wom": 0,
+    "is_stories": null,
+    "text_parent_snippet": null,
+    "programName": "",
+    "meta__audience": 0,
+    "meta__coverage": 0,
+    "fsourcecat": null,
+    "mediaPresence": 0,
+    "mediaPresenceReal": 0.015176665876215,
+    "tone_processed": 1,
+    "role_processed": 1,
+    "wom_processed": 1,
+    "hub_visits": 0,
+    "quotation_count": null,
+    "readers_list": "",
+    "contacts_social": null,
+    "circles_count": 0,
+    "dynamictags_list_by_group": null,
+    "likesList": null,
+    "repostsList": null,
+    "tagsList": [
+      ""
+    ],
+    "likeTagsList": null
+  }
+]
+Пример¶
+curl -XGET 'https://bans-api.brandanalytics.ru/ba_api/feed.buildOnId?themeId=12384080&ids[]=12384080&highlight=1'
+GET Feed.buildOnHash¶
+Построение ленты на основе хэшей сообщений
+
+Параметры¶
+Имя	Тип	Обязательный	Описание
+themeId	int	Да	Идентификатор темы
+hashes	string[]	Да	hash сообщений
+highlight	int	Нет	1 — возвращать полный текст сообщения с подсветкой ключевых слов, 0 — не возвращать
+Возвращает¶
+[
+  {
+    "id": 1000205586,
+    "hash": "445e968c4a1a864d80050c7aa1dc14be20220116",
+    "externalId": "1482817540573343748",
+    "themeId": 12384080,
+    "timeCreate": 1642366225,
+    "timeStore": 1642366567,
+    "timeUpdate": 1642384578,
+    "hubId": 1,
+    "hubIconUri": "https://brandanalytics.ru/app/images/favicon/1.png",
+    "hubTitle": "twitter.com",
+    "hubName": "twitter.com",
+    "hubtypeId": 1,
+    "title": "",
+    "text": "уф, в старбаксе наконец начали называть напитки своими именами https://t.co/NHpbcObY2B<a href=\"http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg\"><img src=\"http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg\" alt=\"\"/></a>",
+    "textNorm": "уф, в старбаксе наконец начали называть напитки своими именами https://t.co/NHpbcObY2B ",
+    "textSnippet": "уф, в <span class=\"highlight\">старбаксе</span> наконец начали называть напитки своими именами <a href=\"https://t.co/NHpbcObY2B\" target=\"_blank\">t.co/NHpbcObY2B</a> ",
+    "textHighlight": "уф, в <span class=\"highlight\">старбаксе</span> наконец начали называть напитки своими именами https://t.co/NHpbcObY2B<a href=\"http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg\"><img src=\"http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg\" alt=\"\"/></a>",
+    "textHash": "40f68fb6b30e0683f6817ed3ee244bca",
+    "url": "http://twitter.com/PachaTchernof/status/1482817540573343748",
+    "toneMark": 0,
+    "excludeStatus": 0,
+    "spamBlock": 0,
+    "tags": null,
+    "tagIds": [],
+    "tagNames": [],
+    "tagIdsWithNames": [],
+    "duplicateId": "",
+    "duplicateCount": 1,
+    "fuzzyDuplicateCount": 0,
+    "isComment": 0,
+    "isRepost": 0,
+    "repostClass": 0,
+    "commentsCount": 0,
+    "audienceCount": 218,
+    "storyId": null,
+    "authorId": 0,
+    "authorRow": {
+      "id": 0,
+      "hash": "197e88a49d4ee4399acb2ef84b595369",
+      "id_external": "347977595",
+      "nickname": "PachaTchernof",
+      "fullname": "Паша Чернов",
+      "avatar": "http://pbs.twimg.com/profile_images/1445744644680159244/CgRlUbMu_normal.jpg",
+      "location": null,
+      "url": "http://twitter.com/PachaTchernof",
+      "sex": 2,
+      "birthday": "",
+      "registration": "",
+      "country_id": 20,
+      "country_name": null,
+      "city_id": 235782,
+      "city_name": null,
+      "region_id": 77,
+      "region_name": null,
+      "district_id": 0,
+      "lat": 0,
+      "lon": 0,
+      "readers_count": 218,
+      "friends_count": 307,
+      "members_count": 0,
+      "messages_count": 0,
+      "reposts_count": 0,
+      "about_info": "",
+      "photo_count": 0,
+      "likes_count": 0,
+      "education": "",
+      "talking_count": 0,
+      "author_type": 1,
+      "subscribers_count": 0,
+      "mutual_friends_count": 0,
+      "readers_list": null,
+      "contacts_social": null,
+      "circles_count": null,
+      "dynamictags_list_by_group": null,
+      "hub_id": 1,
+      "spam_block": 0
+    },
+    "messagerule": "{\"geo__object.properties.title\":[{\"from\":0,\"to\":9,\"highlight\":[[0,8]]}],\"post__text_norm\":[{\"from\":0,\"to\":87,\"highlight\":[[6,14]]}],\"post__text\":[{\"from\":0,\"to\":213,\"highlight\":[[6,14]]}]}",
+    "toneHighlightRule": "",
+    "countryId": 20,
+    "countryName": "Россия",
+    "cityId": 235782,
+    "cityName": "Москва",
+    "regionId": 77,
+    "regionName": "Москва",
+    "assignments": null,
+    "replies": null,
+    "chain": null,
+    "assignedUser": null,
+    "author": {
+      "likesList": null,
+      "repostsList": null,
+      "tagsList": null,
+      "likeTagsList": null
+    },
+    "langId": 1,
+    "langCode": "RU",
+    "lang": "ru",
+    "repostsCount": 0,
+    "likesCount": 1,
+    "viewsCount": 0,
+    "age": 0,
+    "sex": 2,
+    "rootUrl": null,
+    "er": 1,
+    "isManual": 0,
+    "citeIndex": 14102891,
+    "role": 1,
+    "geo_object": {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.706444,
+          55.747068
+        ]
+      },
+      "properties": {
+        "external_id": "12b15fd176d77003",
+        "id": 0,
+        "source": "twitter",
+        "title": "<span class=\"highlight\">Starbucks</span>",
+        "address": "Россия, Москва, Шепелюгинский переулок",
+        "country": "Россия",
+        "region": "",
+        "city": "Москва",
+        "matchForQuery": 1
+      }
+    },
+    "meta_attachments": [
+      {
+        "url": "http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg",
+        "type": "image",
+        "original_type": "image",
+        "title": "",
+        "ext": "",
+        "description": "",
+        "width": 0,
+        "height": 0,
+        "duration": 0,
+        "preview": "http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg:large",
+        "preview_bg": "http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg:large",
+        "preview_md": "http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg:medium",
+        "preview_sm": "http://pbs.twimg.com/media/FJQGqdEXIAUkqSD.jpg:small",
+        "storage": "",
+        "id": "",
+        "has_text": 0,
+        "matchForQuery": 0,
+        "ocr_captions": {
+          "text": "",
+          "coords": [],
+          "areas": [],
+          "text_norm": ""
+        }
+      }
+    ],
+    "tone_force": {
+      "pos": 0,
+      "neg": 0
+    },
+    "review_rating": [],
+    "not_keyword_comment": 0,
+    "root_hash": "",
+    "city_geo_point": [
+      37.61556,
+      55.75222
+    ],
+    "places_found": [
+      "geo_object_title",
+      "message_text"
+    ],
+    "msg_worked": 0,
+    "msg_favorite": 0,
+    "wom": 0,
+    "is_stories": null,
+    "text_parent_snippet": null,
+    "programName": "",
+    "meta__audience": 0,
+    "meta__coverage": 0,
+    "fsourcecat": null,
+    "mediaPresence": 0,
+    "mediaPresenceReal": 0.015176665876215,
+    "tone_processed": 1,
+    "role_processed": 1,
+    "wom_processed": 1,
+    "hub_visits": 0,
+    "quotation_count": null,
+    "readers_list": "",
+    "contacts_social": null,
+    "circles_count": 0,
+    "dynamictags_list_by_group": null,
+    "likesList": null,
+    "repostsList": null,
+    "tagsList": [
+      ""
+    ],
+    "likeTagsList": null
+  }
+]
+Пример¶
+curl -XGET 'https://bans-api.brandanalytics.ru/ba_api/feed.buildOnHash?themeId=12384080&hashes[]=445e968c4a1a864d80050c7aa1dc14be20220116&highlight=1'
