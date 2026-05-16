@@ -116,35 +116,51 @@ _Последнее обновление: 15 мая 2026_
 
 ## BA Feed API (сообщения)
 
+Используется полный Feed API Brand Analytics.
+
 | Параметр | Значение |
 |---|---|
-| Хост | `https://api.br-analytics.ru` |
-| Авторизация | Параметры `login` + `sig` (MD5 от JSON параметров + secret key) |
-| Логин | хранится в GitHub Secrets → `BA_LOGIN` |
-| Ключ | хранится в GitHub Secrets → `BA_SECRET_KEY` |
-| Theme ID Тиккурила | `14131230` (отличается от Statistical API) |
+| Хост | `https://bans-api.brandanalytics.ru` |
+| Авторизация | query-параметр `?token=КЛЮЧ` (тот же `BA_API_KEY`) |
+| Эндпоинт | `/ba_api/feed.listMessagesCustom` |
+| Theme ID Тиккурила | `14131230` (отличается от Statistical API `14078430`) |
+| Документация | `http://api.br-analytics.ru/v1/doc/` (login: brandsapi / pass: umpalumpa) |
 
-### Эндпоинт для сообщений
+### Параметры запроса
 
-`GET /objects/feed/messages/` — параметры: `themeId`, `timeFrom`, `timeTo`, `offset`, `limit` (макс 150)
+`GET /ba_api/feed.listMessagesCustom` — параметры: `themeId`, `timeFrom`, `timeTo`, `offset`, `limit` (макс 5000 для группы text), `fieldGroups[]=static&fieldGroups[]=text`
 
-### Формирование подписи (Node.js)
+### Группы полей (fieldGroups)
 
-```js
-const params = { login, themeId, timeFrom, timeTo, offset, limit };
-// все значения → строки, сортировка по ключам
-const sig = md5(JSON.stringify(sortedParams) + secretKey);
-```
+| Группа | Макс сообщений | Что включает |
+|---|---|---|
+| `static` | 10 000 | id, url, даты, площадка, тональность BA, метаданные |
+| `text` | 5 000 | textNorm, text, title, textSnippet |
+| `counters` | 10 000 | viewsCount, likesCount, repostsCount |
+
+### Ключевые поля ответа
+
+| Поле | Описание |
+|---|---|
+| `textNorm` | Нормализованный текст без HTML (предпочтительный) |
+| `text` | Исходный текст с HTML |
+| `title` | Заголовок (используется как fallback для маркетплейсов) |
+| `review_rating.result` | Оценка в 5-балльной шкале (из звёзд на маркетплейсе) |
+| `isEmptyReviews` | `1` если отзыв без текста (только звёзды) |
+| `toneMark` | Тональность по версии BA (-1/0/1) — **не используем** |
 
 ### Классификация тональности
 
-Новые сообщения автоматически классифицируются через Claude Haiku (`claude-haiku-4-5-20251001`).
-Ключ хранится в GitHub Secrets → `OPENROUTER_API_KEY`.
+**Отзывы без текста** (Ozon, Яндекс.Маркет) — по звёздам `review_rating.result`:
+- 1–2 звезды → `-1` (негатив)
+- 3 звезды → `0` (нейтрал)
+- 4–5 звёзд → `1` (позитив)
+- Нет звёзд → `0`
 
-**Методология:**
+**Отзывы с текстом** — Claude Haiku через OpenRouter (`OPENROUTER_API_KEY`):
 - `1` (позитив) — промо бренда, описания продуктов с позитивной подачей, акции
-- `0` (нейтрал) — нейтральные упоминания, вакансии, объявления о продаже б/у
-- `-1` (негатив) — жалобы, негативный опыт, критика
+- `0` (нейтрал) — нейтральные упоминания, советы без эмоций
+- `-1` (негатив) — жалобы, негативный опыт, критика качества
 
 > **Статус:** `fetch_messages.js` настроен для ba-linni и ba-tikk. ba-liaz и ba-exeed — в планах.
 
@@ -245,6 +261,8 @@ git push origin main
 | `local changes overwritten` в Actions | pull до commit | Всегда: `add` → `commit` → `pull` → `push` |
 | `tophubs` отдаёт 1 площадку | Default size=1 в API | Передавать `params[size]=100` |
 | Node.js 20 deprecated в Actions | GitHub переходит на Node 24 | Использовать `node-version: '24'` + добавить `env: FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true` на уровне воркфлоу |
+| BA Statistical API возвращает 0 при повторном запуске за день | Rate limit по теме | В `fetch_data.js` добавлена защита: если `totalMsgs === 0` — файл не перезаписывается |
+| Расхождение количества сообщений: Statistical API (780) vs Feed API (50) | Разные Theme ID: Statistical `14078430`, Feed `14131230` — охватывают разные наборы источников | Использовать Feed API с `listMessagesCustom` для полного объёма |
 
 ---
 
@@ -266,3 +284,6 @@ git push origin main
 | 15.05.2026 | Зафиксированы правила нейминга: префиксы папок (`ba-`, `pa-`, `game-`, `app-`), форматы файлов в `data/` и `tonal/`, именование скриптов, структура папок внутри бренда. Применяется к новым файлам и папкам; существующие не переименовываются. |
 | 15.05.2026 | Добавлена документация BA Feed API (`api.br-analytics.ru`): авторизация login+sig(MD5), эндпоинт сообщений, методология тональности. Theme ID Тиккурила в Feed API: `14131230`. Автоматизация `fetch_messages.js` пока настроена только для ba-linni. |
 | 15.05.2026 | Создан `fetch_messages.js` для ba-tikk (Theme ID `14131230`). Данных за март и апрель в Feed API нет — аккаунт начал собирать сообщения с мая 2026. Вручную классифицированы сообщения за май: 2+ / 39○ / 0−. Лента сообщений добавлена в дашборд. Автоматизация подключена в GitHub Actions. |
+| 16.05.2026 | Изучена документация полного Feed API (`bans-api.brandanalytics.ru/ba_api/`). Выявлено расхождение данных: Statistical API показывал 780 сообщений за май, Feed API — только 50. Причина: разные Theme ID и разные наборы источников. Выяснено, что пустые отзывы с маркетплейсов не имеют текста — классификация через Haiku невозможна. |
+| 16.05.2026 | `fetch_messages.js` переведён на полный Feed API: эндпоинт `feed.listMessagesCustom`, авторизация через `BA_API_KEY`, лимит 5000 сообщений, текст из `textNorm`. Добавлено поле `rating` (звёзды из `review_rating.result`). Пустые отзывы теперь классифицируются по звёздам, текстовые — через Haiku. Обновлён workflow: убраны `BA_LOGIN` и `BA_SECRET_KEY` из шага Тиккурилы. |
+| 16.05.2026 | Инцидент: BA Statistical API вернул 0 сообщений при повторном запуске за день (rate limit), данные Тиккурила/Лиаз/Эксид перезаписаны нулями. Данные восстановлены из git-истории (коммиты 10:45 UTC). В `fetch_data.js` Тиккурилы и Линнимакс добавлена защита: при `totalMsgs === 0` файл не перезаписывается. |
